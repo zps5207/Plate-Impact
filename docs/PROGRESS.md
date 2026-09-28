@@ -188,3 +188,16 @@ fibers: 16; host elements: 1
 ```
 
 The inspected `uel/VUEL.for` still cannot consume per-element volume correction IDs: it has no file input, `UEXTERNALDB`, common block, or element-ID property table. The app therefore emits the per-element CSV and explicitly documents the integration gap in `docs/INTERFACE.md`; applying correction requires a companion UEL/VUEL adapter or preprocessing step.
+
+Latest verification after the visualization patch:
+
+```text
+& 'C:\Users\salas\anaconda3\python.exe' -m pytest -q
+............                                                             [100%]
+12 passed in 2.93s
+
+dist\embmesh.exe visualize examples\symmetry.inp --instance Q-1 --diameter .25 --output outputs\exe-visual2
+patched deck: outputs\exe-visual2/output.inp
+host/fiber VTK: outputs\exe-visual2/host_fibers.vtk
+fibers: 16; host elements: 1
+```
