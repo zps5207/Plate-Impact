@@ -3,7 +3,9 @@
 *.lck
 *.023
 *.msg
-*.prt
-*.sta
+*.dat
 __pycache__/
+.pytest_cache/
 outputs/
+*.egg-info/
+build/

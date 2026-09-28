@@ -1,0 +1,14 @@
+*Part, name=BAD
+*Node
+1,0,0,0
+2,1,0,0
+3,0,1,0
+4,0,0,1
+*Element, type=C3D4, elset=HOST
+1,1,2,3,4
+*End Part
+*Assembly
+*Instance, name=BAD-1, part=BAD
+*End Instance
+*End Assembly
+

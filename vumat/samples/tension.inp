@@ -1,0 +1,10 @@
+** TODO: compile VUMAT and set site-specific material values.
+*Heading
+*Material, name=FIBER
+*Density
+1.,
+*Depvar
+1
+*User Material, constants=2
+1.e9, 1.e8
+
