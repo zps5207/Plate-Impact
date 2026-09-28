@@ -18,7 +18,7 @@ def write_vtk(path,fibers, fractions=None):
       h.write(f"POINTS {len(points)} float\n"+"\n".join("%g %g %g"%tuple(p) for p in points)+"\n")
       h.write(f"LINES {len(lines)} {3*len(lines)}\n"+"\n".join(f"2 {a} {b}" for a,b in lines)+"\n")
 
-def append_fibers_to_deck(original, path, fibers, fiber_type="truss", diameter=1.0, node_offset=100000, element_offset=100000, host_elset="HOST"):
+def append_fibers_to_deck(original, path, fibers, fiber_type="truss", diameter=1.0, node_offset=100000, element_offset=100000, host_elset="HOST", symmetry_nodes=None):
     typ="T3D2" if fiber_type=="truss" else "B31"; out=list(original.splitlines())
     max_node=max_elem=0; sec=''
     for line in out:
@@ -48,4 +48,8 @@ def append_fibers_to_deck(original, path, fibers, fiber_type="truss", diameter=1
       out += ["*Beam Section, elset=EMBMESH_FIBERS, material=EMBMESH_FIBER, section=CIRC", f"{diameter/2:.15g}, {n1[0]:.15g}, {n1[1]:.15g}, {n1[2]:.15g}"]
     out += ["*Material, name=EMBMESH_FIBER", "*Elastic", "1., 0.3", f"*Embedded Element, host elset={host_elset}"]
     out += ["EMBMESH_FIBERS"]
+    for set_name, labels in (symmetry_nodes or {}).items():
+      if labels:
+        out += [f"** embmesh propagated fiber nodes to symmetry set {set_name}", f"*Nset, nset={set_name}"]
+        out += [", ".join(str(x) for x in labels)]
     Path(path).write_text("\n".join(out)+"\n")

@@ -173,3 +173,18 @@ dist\embmesh.exe list examples\flat_disc.inp
 part DISC: nodes=8 elements=1 types={'C3D8': 1} bbox=[0.0, 0.0, 0.0]..[1.0, 1.0, 1.0] sets=['HOST'] surfaces=[]
 instance DISC-1: part=DISC translation=[0.0, 0.0, 0.0] rotation_angle=0
 ```
+
+## Visualization and symmetry continuation
+
+Added `embmesh visualize` and the matching executable command. It imports the selected part instance, generates fibers, writes a patched `output.inp`, combined `host_fibers.vtk` (host wireframe plus fiber lines and host volume-fraction cell scalar), `fiber_volume.csv`, and `report.json`; Python environments can add `--preview` for `preview.png`.
+
+Symmetry propagation scans source `*Boundary` records for single translational DOFs on planar node sets. Fiber nodes within the configured tolerance of the inferred X/Y/Z plane are appended to the same `*Nset` in the patched deck. The symmetry mapping and propagated labels are recorded in `report.json`.
+
+```text
+dist\embmesh.exe visualize examples\symmetry.inp --instance Q-1 --diameter .25 --output outputs\exe-visual
+patched deck: outputs\exe-visual/output.inp
+host/fiber VTK: outputs\exe-visual/host_fibers.vtk
+fibers: 16; host elements: 1
+```
+
+The inspected `uel/VUEL.for` still cannot consume per-element volume correction IDs: it has no file input, `UEXTERNALDB`, common block, or element-ID property table. The app therefore emits the per-element CSV and explicitly documents the integration gap in `docs/INTERFACE.md`; applying correction requires a companion UEL/VUEL adapter or preprocessing step.

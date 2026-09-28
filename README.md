@@ -16,3 +16,11 @@ To rebuild it with PyInstaller:
 python -m pip install pyinstaller
 python -m PyInstaller --noconfirm --clean --onefile --name embmesh embmesh_entry.py
 ```
+
+For a patched deck plus a host/fiber visualization, use:
+
+```powershell
+.\dist\embmesh.exe visualize .\examples\flat_disc.inp --instance DISC-1 --diameter 0.25 --output .\outputs\flat-view
+```
+
+This writes `output.inp`, `host_fibers.vtk`, `fiber_volume.csv`, and `report.json`. Add `--preview` when running from a Python environment with matplotlib to also write `preview.png`. Symmetry node sets found in the source `*Boundary` definitions are extended with generated fiber nodes on the same plane.

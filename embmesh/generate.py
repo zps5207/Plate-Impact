@@ -1,13 +1,16 @@
 from __future__ import annotations
 import numpy as np
+import importlib
 from .parser import parse_deck
 from .selection import select_elements
 from .fibers import flat_disc_fibers
 from .volume import fiber_volume_rows
 from .writers import write_volume_csv, write_report, write_vtk, append_fibers_to_deck
 from .geometry import point_in_hex
+from .symmetry import boundary_symmetry_sets, fiber_nodes_on_symmetry
+from .hostvtk import write_host_fiber_vtk
 
-def mesh_flat(deck_path, instance, diameter, output_dir, elset=None, gap=0., fiber_type="truss", reference=(1,0,0)):
+def mesh_flat(deck_path, instance, diameter, output_dir, elset=None, gap=0., fiber_type="truss", reference=(1,0,0), preview=False, symmetry_tolerance=1e-7):
     d=parse_deck(deck_path); elems,nodes=select_elements(d,instance,elset); fibers=flat_disc_fibers(nodes,diameter,gap=gap,reference=reference)
     out=__import__('pathlib').Path(output_dir); out.mkdir(parents=True,exist_ok=True)
     rows=fiber_volume_rows(elems,nodes,fibers,diameter); write_volume_csv(out/'fiber_volume.csv',rows)
@@ -18,5 +21,19 @@ def mesh_flat(deck_path, instance, diameter, output_dir, elset=None, gap=0., fib
       stable_dt=min((np.linalg.norm(f.points[-1]-f.points[0]) for f in fibers),default=0.)
     write_report(out/'report.json',fiber_count=len(fibers),host_count=len(elems),total_fiber_volume=sum(r[2] for r in rows),volume_fraction_min=min((r[3] for r in rows),default=0),volume_fraction_max=max((r[3] for r in rows),default=0),embedded_endpoints_inside=inside,embedded_endpoint_total=2*len(fibers),estimated_stable_time_increment=stable_dt)
     write_vtk(out/'fibers.vtk',fibers)
-    append_fibers_to_deck('\n'.join(d.original_lines),out/'output.inp',fibers,fiber_type,diameter,host_elset=elset or 'HOST')
+    fractions = {row[0]: row[3] for row in rows}
+    write_host_fiber_vtk(out/'host_fibers.vtk', elems, nodes, fibers, fractions)
+    if preview:
+      plot_host_fibers = importlib.import_module('embmesh.visualize').plot_host_fibers
+      plot_host_fibers(out/'preview.png', elems, nodes, fibers, fractions)
+    constraints = boundary_symmetry_sets(d, instance, symmetry_tolerance)
+    propagated = fiber_nodes_on_symmetry(fibers, 100000, constraints, symmetry_tolerance)
+    append_fibers_to_deck('\n'.join(d.original_lines),out/'output.inp',fibers,fiber_type,diameter,host_elset=elset or 'HOST',symmetry_nodes=propagated)
+    write_report(out/'report.json', fiber_count=len(fibers), host_count=len(elems),
+                 symmetry_constraints=constraints, propagated_symmetry_nodes=propagated,
+                 total_fiber_volume=sum(r[2] for r in rows),
+                 volume_fraction_min=min((r[3] for r in rows),default=0),
+                 volume_fraction_max=max((r[3] for r in rows),default=0),
+                 embedded_endpoints_inside=inside, embedded_endpoint_total=2*len(fibers),
+                 estimated_stable_time_increment=stable_dt)
     return fibers,rows
