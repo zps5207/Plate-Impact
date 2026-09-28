@@ -1,0 +1,9 @@
+*.odb
+*.sim
+*.lck
+*.023
+*.msg
+*.prt
+*.sta
+__pycache__/
+outputs/
