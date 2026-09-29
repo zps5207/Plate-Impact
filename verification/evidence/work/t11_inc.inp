@@ -1,0 +1,9 @@
+*Part, name=P
+*Include, input=inc_nodes.inp
+*Element, type=C3D8, elset=HOST
+1,1,2,3,4,5,6,7,8
+*End Part
+*Assembly, name=A
+*Instance, name=I, part=P
+*End Instance
+*End Assembly

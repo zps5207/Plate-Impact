@@ -1,0 +1,106 @@
+{
+ "T1.1a translate-then-rotate node 2 (hand calc)": {
+  "ok": true,
+  "detail": "mesher=[6.735557395310443e-16, 11.0, 0.0] hand-calc(translate then rotate)=[0.0, 11.0, 0.0]; rotate-then-translate would give [10.0, 1.0, 0.0]"
+ },
+ "T1.1b translation only node 7": {
+  "ok": true,
+  "detail": "mesher=[11.0, 21.0, 31.0] expected=[11,21,31]"
+ },
+ "T1.1c rotation about x, node 4 (0,1,0)->(0,0,1)": {
+  "ok": true,
+  "detail": "mesher=[0.0, 6.123233995736766e-17, 1.0]"
+ },
+ "T1.1d rotation about off-origin axis": {
+  "ok": true,
+  "detail": "mesher=[2.0, 0.0, 0.0] expected=[2,0,0]"
+ },
+ "T1.1e examples/multi_instance.inp uses Abaqus line order (translation first, rotation second)": {
+  "ok": false,
+  "detail": "example lists the 7-value rotation line BEFORE the 3-value translation line; mesher tolerates it and returns node2 of B = [1.2246467991473532e-16, 2.0, 0.0]; Abaqus would read line 1 as the translation and reject/misread it"
+ },
+ "T1.1f counts: nodes/elems/nset(generate)/elset(generate)": {
+  "ok": true,
+  "detail": "mesher=(60, 24, 10, 12) truth=(60, 24, 10, 12)"
+ },
+ "T1.1g round trip: original part/instance preserved in output.inp": {
+  "ok": false,
+  "detail": "rc=0 out nodes=60 elems=24 instances=['PLATE-1', 'EMBFIB-1']"
+ },
+ "T1.1h C3D20R with continuation line -> 1 element, 20 nodes": {
+  "ok": true,
+  "detail": "mesher elements=1 labels=[1] conn lens=[20]"
+ },
+ "T1.1i assembly-level *Nset/*Elset with instance= (CAE style) captured": {
+  "ok": false,
+  "detail": "part nsets=[['N1']]; model.Deck has no assembly-level set storage"
+ },
+ "T1.1j *Include, input=file resolved": {
+  "ok": true,
+  "detail": "nodes read via include = 8"
+ },
+ "T1.1k nonexistent deck -> nonzero exit + message": {
+  "ok": true,
+  "detail": "rc=2 stdout='' stderr=' C:\\\\Users\\\\salas\\\\OneDrive - The Pennsylvania State University\\\\Plate Impact\\\\verification\\\\evidence\\\\work\\\\does_not_exist.inp\\n'"
+ },
+ "T1.1l --elset name case-insensitive (Abaqus sets are) / unknown elset rejected": {
+  "ok": true,
+  "detail": "rc=0 host_count=24 fibers_written=112"
+ },
+ "T1.2 wedge_C3D6 (py): HexOnlyError, nonzero, no output": {
+  "ok": true,
+  "detail": "rc=3 hexonly_msg=True output_written=False raw_traceback=False last=embmesh: unsupported host element types: C3D6 (1)"
+ },
+ "T1.2 wedge_C3D6 (exe): HexOnlyError, nonzero, no output": {
+  "ok": true,
+  "detail": "rc=1 hexonly_msg=True output_written=False raw_traceback=True last=[PYI-26272:ERROR] Failed to execute script 'embmesh_entry' due to unhandled exception!"
+ },
+ "T1.2 tet_C3D4 (py): HexOnlyError, nonzero, no output": {
+  "ok": true,
+  "detail": "rc=3 hexonly_msg=True output_written=False raw_traceback=False last=embmesh: unsupported host element types: C3D4 (1)"
+ },
+ "T1.2 tet_C3D4 (exe): HexOnlyError, nonzero, no output": {
+  "ok": true,
+  "detail": "rc=1 hexonly_msg=True output_written=False raw_traceback=True last=[PYI-37068:ERROR] Failed to execute script 'embmesh_entry' due to unhandled exception!"
+ },
+ "T1.2 tet_C3D10 (py): HexOnlyError, nonzero, no output": {
+  "ok": true,
+  "detail": "rc=3 hexonly_msg=True output_written=False raw_traceback=False last=embmesh: unsupported host element types: C3D10 (1)"
+ },
+ "T1.2 tet_C3D10 (exe): HexOnlyError, nonzero, no output": {
+  "ok": true,
+  "detail": "rc=1 hexonly_msg=True output_written=False raw_traceback=True last=[PYI-26616:ERROR] Failed to execute script 'embmesh_entry' due to unhandled exception!"
+ },
+ "T1.2 shell_S4R (py): HexOnlyError, nonzero, no output": {
+  "ok": true,
+  "detail": "rc=3 hexonly_msg=True output_written=False raw_traceback=False last=embmesh: unsupported host element types: S4R (1)"
+ },
+ "T1.2 shell_S4R (exe): HexOnlyError, nonzero, no output": {
+  "ok": true,
+  "detail": "rc=1 hexonly_msg=True output_written=False raw_traceback=True last=[PYI-32620:ERROR] Failed to execute script 'embmesh_entry' due to unhandled exception!"
+ },
+ "T1.2 shell_S4 (py): HexOnlyError, nonzero, no output": {
+  "ok": true,
+  "detail": "rc=3 hexonly_msg=True output_written=False raw_traceback=False last=embmesh: unsupported host element types: S4 (1)"
+ },
+ "T1.2 shell_S4 (exe): HexOnlyError, nonzero, no output": {
+  "ok": true,
+  "detail": "rc=1 hexonly_msg=True output_written=False raw_traceback=True last=[PYI-15436:ERROR] Failed to execute script 'embmesh_entry' due to unhandled exception!"
+ },
+ "T1.2 collapsed_hex_as_wedge (py)": {
+  "ok": false,
+  "detail": "rc=0 wrote=True last=WARNING: fiber material EMBMESH_FIBER is a placeholder (E=1, nu=0.3, no density); edit the deck's *Material, name=EMBMESH_FIBER block (or pass --fiber-elastic/--fiber-density) before running Abaqus."
+ },
+ "T1.2 collapsed_hex_as_wedge (exe)": {
+  "ok": false,
+  "detail": "rc=0 wrote=True last="
+ },
+ "T1.2 mixed hex+tet part, whole part -> error": {
+  "ok": true,
+  "detail": "rc=3"
+ },
+ "T1.2 mixed part, --elset HOST (hex only) -> OK, tets excluded": {
+  "ok": true,
+  "detail": "rc=0 host_count=1 last=WARNING: fiber material EMBMESH_FIBER is a placeholder (E=1, nu=0.3, no density); edit the deck's *Material, name=EMBMESH_FIBER block (or pass --fiber-elastic/--fiber-density) before running Abaqus."
+ }
+}

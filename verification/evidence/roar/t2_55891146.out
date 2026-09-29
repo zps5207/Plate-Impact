@@ -1,0 +1,26 @@
+host: p-bc-5405  date: Mon Sep 28 18:25:54 EDT 2026
+/storage/icds/RISE/sw8/abaqus/2024/SIMULIA/Commands/abaqus
+Abaqus JOB abaqus
+Abaqus 2024
+Abaqus Site ID: SIT00008280
+Abaqus is located in the directory /storage/icds/RISE/sw8/abaqus/2024 /storage/icds/RISE/sw8/abaqus/2024/linux_a64 /storage/icds/RISE/sw8/abaqus/2024/linux_a64/code /storage/icds/RISE/sw8/abaqus/2024/linux_a64/code/bin /storage/icds/RISE/sw8/abaqus/2024/linux_a64/code/bin/SMAExternal /storage/icds/RISE/sw8/abaqus/2024/linux_a64/CAEresources /storage/icds/RISE/sw8/abaqus/2024/linux_a64/SMA
+Sequence Information:
+flat_truss_asis rc=1
+flat_truss_reloc rc=0
+flat_beam_asis rc=1
+flat_beam_reloc rc=0
+face_asis rc=1
+face_reloc rc=1
+lshape_asis rc=1
+lshape_reloc rc=1
+skew_reloc rc=1
+skew_tol1e-3 rc=1
+skew_tol0p5 rc=1
+skew_tolfrac0p3 rc=1
+cyl_reloc rc=0
+symbare_srconly rc=1
+symbare_asis rc=1
+symvalid_srconly rc=0
+symvalid_asis rc=1
+xform rc=0
+done Mon Sep 28 18:26:45 EDT 2026

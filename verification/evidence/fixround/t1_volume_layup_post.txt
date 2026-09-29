@@ -1,0 +1,60 @@
+[PASS] T1.3 t13_flat_a: total fiber volume == total length*pi d^2/4 (1e-6): csv_total=3.14159265 length*area=3.14159265 rel=0.00e+00; independent-clip total=3.14159265; per-host max err=0.00e+00
+[PASS] T1.3 t13_flat_a: bulk fraction ~ pi/4 within 2% (MC cylinders): MC=0.7841+-0.0007 csv fiber_vol/plate_vol=0.7854 (pi/4=0.7854); host_volume sum=4 vs plate 4
+[PASS] T1.3 t13_flat_a: per-host volumes match independent clipping: max rel diff 0.00e+00
+[PASS] T1.3 t13_flat_b: total fiber volume == total length*pi d^2/4 (1e-6): csv_total=10.6028671 length*area=10.6028752 rel=7.63e-07; independent-clip total=10.6028752; per-host max err=1.53e-06
+[PASS] T1.3 t13_flat_b: bulk fraction ~ pi/4 within 2% (MC cylinders): MC=0.7864+-0.0006 csv fiber_vol/plate_vol=0.7854 (pi/4=0.7854); host_volume sum=13.5 vs plate 13.5
+[FAIL] T1.3 t13_flat_b: per-host volumes match independent clipping: max rel diff 1.53e-06
+[PASS] T1.3 t13_cube_flat_a: total fiber volume == total length*pi d^2/4 (1e-6): csv_total=0.785398163 length*area=0.785398163 rel=0.00e+00; independent-clip total=0.785398163; per-host max err=0.00e+00
+[PASS] T1.3 t13_cube_flat_a: bulk fraction ~ pi/4 within 2% (MC cylinders): MC=0.7853+-0.0006 csv fiber_vol/plate_vol=0.7854 (pi/4=0.7854); host_volume sum=1 vs plate 1
+[PASS] T1.3 t13_cube_flat_a: per-host volumes match independent clipping: max rel diff 0.00e+00
+[PASS] T1.3 t13_cube_3: total fiber volume == total length*pi d^2/4 (1e-6): csv_total=21.2057342 length*area=21.2057504 rel=7.63e-07; independent-clip total=21.2057504; per-host max err=1.53e-06
+[PASS] T1.3 t13_cube_3: bulk fraction ~ pi/4 within 2% (MC cylinders): MC=0.7854+-0.0006 csv fiber_vol/plate_vol=0.7854 (pi/4=0.7854); host_volume sum=27 vs plate 27
+[FAIL] T1.3 t13_cube_3: per-host volumes match independent clipping: max rel diff 1.53e-06
+[PASS] T1.3 t13_onface: total fiber volume == total length*pi d^2/4 (1e-6): csv_total=0.785398163 length*area=0.785398163 rel=0.00e+00; independent-clip total=0.785398163; per-host max err=0.00e+00
+[FAIL] T1.3 t13_onface: bulk fraction ~ pi/4 within 2% (MC cylinders): MC=0.1962+-0.0006 csv fiber_vol/plate_vol=0.1963 (pi/4=0.7854); host_volume sum=4 vs plate 4
+[PASS] T1.3 t13_onface: per-host volumes match independent clipping: max rel diff 0.00e+00
+[PASS] T1.3 skewed/sheared mesh: host volumes vs own Gauss volume (1e-9): max rel host volume err=2.44e-12
+[FAIL] T1.3 skewed/sheared mesh: per-host fiber volume vs independent inverse-map clip (2e-3): max per-host rel diff=2.549e-02; total csv=14.184 independent=14.2316 total(length*area)=16.0221 rel(total vs length*area)=-1.147e-01
+[PASS] T1.3 non-rectangular plate (elements removed): all fiber end nodes inside a host: 0 of 48 fiber end nodes lie in no host element; length outside hosts = 0.0% of generated fiber volume; report.json embedded_endpoints_inside=48 of 48
+[PASS] T1.4 t14_a layer count (t=1, pitch=0.25): layers found=4 expected floor(t/pitch)=4 (t/pitch=4.000000)
+[PASS] T1.4 t14_a strict 0/90 alternation layer to layer: direction sets per layer=[[(np.float64(1.0), np.float64(0.0), np.float64(0.0))], [(np.float64(0.0), np.float64(1.0), np.float64(0.0))], [(np.float64(1.0), np.float64(0.0), np.float64(0.0))], [(np.float64(0.0), np.float64(1.0), np.float64(0.0))]]
+[PASS] T1.4 t14_a min centerline distance >= d (zero gap) / >= pitch: min dist=0.25 d=0.25 pitch=0.25 pair=(100000, 100001)
+[PASS] T1.4 t14_a fiber cylinders inside plate envelope (centerline >= d/2 from faces): max protrusion of any fiber cylinder beyond plate faces = 0 (d/2=0.125)
+[PASS] T1.4 t14_b layer count (t=1, pitch=0.3): layers found=3 expected floor(t/pitch)=3 (t/pitch=3.333333)
+[PASS] T1.4 t14_b strict 0/90 alternation layer to layer: direction sets per layer=[[(np.float64(1.0), np.float64(0.0), np.float64(0.0))], [(np.float64(0.0), np.float64(1.0), np.float64(0.0))], [(np.float64(1.0), np.float64(0.0), np.float64(0.0))]]
+[PASS] T1.4 t14_b min centerline distance >= d (zero gap) / >= pitch: min dist=0.3 d=0.3 pitch=0.3 pair=(100001, 100002)
+[PASS] T1.4 t14_b fiber cylinders inside plate envelope (centerline >= d/2 from faces): max protrusion of any fiber cylinder beyond plate faces = 0 (d/2=0.15)
+[PASS] T1.4 t14_c layer count (t=1, pitch=0.1): layers found=10 expected floor(t/pitch)=10 (t/pitch=10.000000)
+[PASS] T1.4 t14_c strict 0/90 alternation layer to layer: direction sets per layer=[[(np.float64(1.0), np.float64(0.0), np.float64(0.0))], [(np.float64(0.0), np.float64(1.0), np.float64(0.0))], [(np.float64(1.0), np.float64(0.0), np.float64(0.0))], [(np.float64(0.0), np.float64(1.0), np.float64(0.0))], [(np.float64(1.0), np.float64(0.0), np.float64(0.0))], [(np.float64(0.0), np.float64(1.0), np.fl
+[PASS] T1.4 t14_c min centerline distance >= d (zero gap) / >= pitch: min dist=0.1 d=0.1 pitch=0.1 pair=(100002, 100003)
+[PASS] T1.4 t14_c fiber cylinders inside plate envelope (centerline >= d/2 from faces): max protrusion of any fiber cylinder beyond plate faces = 0 (d/2=0.05)
+[PASS] T1.4 t14_d layer count (t=1, pitch=0.25): layers found=4 expected floor(t/pitch)=4 (t/pitch=4.000000)
+[PASS] T1.4 t14_d strict 0/90 alternation layer to layer: direction sets per layer=[[(np.float64(1.0), np.float64(0.0), np.float64(0.0))], [(np.float64(0.0), np.float64(1.0), np.float64(0.0))], [(np.float64(1.0), np.float64(0.0), np.float64(0.0))], [(np.float64(0.0), np.float64(1.0), np.float64(0.0))]]
+[PASS] T1.4 t14_d min centerline distance >= d (zero gap) / >= pitch: min dist=0.25 d=0.2 pitch=0.25 pair=(100000, 100001)
+[PASS] T1.4 t14_d fiber cylinders inside plate envelope (centerline >= d/2 from faces): max protrusion of any fiber cylinder beyond plate faces = 0 (d/2=0.1)
+[PASS] T1.4 t14_e layer count (t=0.7, pitch=0.4): layers found=1 expected floor(t/pitch)=1 (t/pitch=1.750000)
+[PASS] T1.4 t14_e strict 0/90 alternation layer to layer: direction sets per layer=[[(np.float64(1.0), np.float64(0.0), np.float64(0.0))]]
+[PASS] T1.4 t14_e min centerline distance >= d (zero gap) / >= pitch: min dist=0.4 d=0.4 pitch=0.4 pair=(100000, 100001)
+[PASS] T1.4 t14_e fiber cylinders inside plate envelope (centerline >= d/2 from faces): max protrusion of any fiber cylinder beyond plate faces = 0 (d/2=0.2)
+[PASS] T1.4 t14_f layer count (t=1.2, pitch=0.2): layers found=6 expected floor(t/pitch)=6 (t/pitch=6.000000)
+[PASS] T1.4 t14_f strict 0/90 alternation layer to layer: direction sets per layer=[[(np.float64(1.0), np.float64(0.0), np.float64(0.0))], [(np.float64(0.0), np.float64(1.0), np.float64(0.0))], [(np.float64(1.0), np.float64(0.0), np.float64(0.0))], [(np.float64(0.0), np.float64(1.0), np.float64(0.0))], [(np.float64(1.0), np.float64(0.0), np.float64(0.0))], [(np.float64(0.0), np.float64(1.0), np.fl
+[PASS] T1.4 t14_f min centerline distance >= d (zero gap) / >= pitch: min dist=0.2 d=0.2 pitch=0.2 pair=(100020, 100021)
+[PASS] T1.4 t14_f fiber cylinders inside plate envelope (centerline >= d/2 from faces): max protrusion of any fiber cylinder beyond plate faces = 1.388e-16 (d/2=0.1)
+[PASS] T1.4 t14_thickY plate (2, 0.5, 2): layers stack along thin axis, count 5: levels along thin axis 1: 5; per-axis level counts=[21, 5, 21]
+[PASS] T1.4 t14_thickX plate (0.5, 2, 2): layers stack along thin axis, count 5: levels along thin axis 0: 5; per-axis level counts=[5, 21, 21]
+[FAIL] T1.4 t14_cube plate (1, 1, 1): layers stack along thin axis, count 10: levels along thin axis 0: 11; per-axis level counts=[11, 11, 10]
+[FAIL] T1.4 label collision: deck with node labels >100000 processed (offset configurable): rc=4 last=embmesh: not found: 8; CLI has no --node-offset option (hard-coded 100000)
+[FAIL] T1.4 label collision: second pass on an already-fibered deck (e.g. 2nd instance) works: rc=5 last=embmesh: fiber node offset 100000 collides with existing maximum 100031
+[PASS] T1.5 truss: T3D2 + *Solid Section with area pi d^2/4: keywords=['*Element, type=C3D8R, elset=HOST', '*Element, type=T3D2, elset=EMBMESH_FIBERS_T0', '*Element, type=T3D2, elset=EMBMESH_FIBERS_T90', '*Solid Section, elset=EMBMESH_FIBERS_T0, material=EMBMESH_FIBER', '*Solid Section, elset=EMBMESH_FIBERS_T90, material=EMBMESH_FIBER']; area line=0.0490873852123405
+[FAIL] T1.5 truss: fiber material is a placeholder (E=1, nu=0.3, no density): material block=['*Elastic', '1, 0.3']; deck contains no *Density and no VUMAT hook; user must edit by hand and nothing warns them
+[PASS] T1.5 beam: B31 + *Beam Section CIRC radius d/2 and n1 present: type=B31; section=*Beam Section, elset=EMBMESH_FIBERS_T0, material=EMBMESH_FIBER, section=CIRC; data line='0.125, 0, 0, 1'; Abaqus expects radius on the first data line and n1 on a SECOND data line
+[PASS] T1.5 beam: n1 perpendicular to EVERY beam axis (single n1 for all fibers): 0 of 16 fibers have n1 parallel to axis; 0 not orthogonal; single n1=[0.0, 0.0, 1.0]
+[FAIL] T1.5 beam: fiber material is a placeholder (E=1, nu=0.3, no density): material block=['*Elastic', '1, 0.3']; deck contains no *Density and no VUMAT hook; user must edit by hand and nothing warns them
+[PASS] T1.6 --preview PNG written (python env): rc=0 err=WARNING: fiber material EMBMESH_FIBER is a placeholder (E=1, nu=0.3, no density); edit the deck's *Material, name=EMBMESH_FIBER block (or pass --fiber-elastic/--fiber-density) before running Abaqus.
+[PASS] T1.6 vtk counts (points/lines/cell scalars) vs data: points=320 lines=416 scalars=416 expected points=320 lines=416
+[PASS] T1.6 fiber volume from vtk == csv total: vtk length*area=3.14159265 csv=3.14159265
+[PASS] T1.6 host scalar (volume fraction) in vtk == csv: vtk=[np.float64(0.785398163)] csv=[np.float64(0.785398163)]
+[PASS] T1.6 vtk: fibers inside plate bbox, layers alternate x/y: inside=True layer dirs=[[0], [1], [0], [1]]
+[PASS] T1.6 host volume in csv == own Gauss host volume: csv=3.9999999999999982 own=3.999999999999999
+[PASS] T1.6 performance t16_perf1: 400 hosts, 320 fibers: wall=19.6s rc=0
+[PASS] T1.6 performance t16_perf2: 1600 hosts, 320 fibers: wall=37.0s rc=0

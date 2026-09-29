@@ -1,0 +1,25 @@
+[PASS] T1.3 unit-scale invariance of fiber volume fraction (plate 2x2x1 scaled by 1, 1e-3, 1e-6): fractions={1.0: 0.7853981637631781, 0.001: 0.7853981637631775, 1e-06: 0.7853981637631768}
+[PASS] T1.7 symmetry propagation, explicit DOF form 'XSYM, 1, 1': XSYM/YSYM fiber node sets equal hand-computed: generated={'XSYM': 16, 'YSYM': 16} expected={'XSYM': 16, 'YSYM': 16}
+[PASS] T1.7 symmetry propagation, XSYMM keyword 'XSYM, XSYMM': XSYM/YSYM fiber node sets equal hand-computed: generated={'XSYM': 16, 'YSYM': 16} expected={'XSYM': 16, 'YSYM': 16}
+[PASS] T1.7 symmetry propagation, single-DOF 'XSYM, 1': XSYM/YSYM fiber node sets equal hand-computed: generated={'XSYM': 16, 'YSYM': 16} expected={'XSYM': 16, 'YSYM': 16}
+[PASS] T1.7 symmetry propagation, instance-qualified 'PLATE-1.XSYM, 1, 1': XSYM/YSYM fiber node sets equal hand-computed: generated={'XSYM': 16, 'YSYM': 16} expected={'XSYM': 16, 'YSYM': 16}
+[PASS] T1.7 prescribed velocity 'XSYM, 1, 1, 5.0' (not a symmetry BC): fiber nodes must not silently inherit a non-zero-valued BC / value must be preserved: propagated={} (a velocity BC on XSYM plane was treated as symmetry: False)
+[PASS] T1.7 propagated *Nset is emitted inside *Assembly and merged into the sets the *Boundary refers to: *End Assembly line 237; propagated '*Nset, nset=XSYM' at line 232 (BUG-006 fixed: now before *End Assembly, not after)
+[FAIL] T1.7 amplitudes / time-varying BC passing to fiber nodes: No amplitude, velocity, pressure or contact BC handling exists in embmesh (grep 'amplitude' in embmesh/*.py: none); only single-DOF *Boundary on planar node sets is inspected
+[PASS] T1.7 report.json symmetry_constraints populated: symmetry_constraints={'XSYM': [0, 0.0], 'YSYM': [1, 0.0]} propagated={'XSYM': 16, 'YSYM': 16}
+[PASS] T1.4 curved: CLI exposes cylindrical/spherical/varying-thickness layup: visualize options: --instance, --diameter, --output, --elset, --gap, --fiber-type, --preview; only flat_disc_fibers is reachable
+[PASS] T1.4 cylindrical shell: layer count == thickness/pitch: layers=5 radii=[2.1, 2.3, 2.5, 2.7, 2.9] expected 5
+[PASS] T1.4 cylindrical shell: 0/90 (axial/hoop) alternation physically implemented: distinct fiber directions=[(np.float64(0.0), np.float64(0.0), np.float64(1.0)), (np.float64(0.0), np.float64(1.0), np.float64(0.0))] while labels claim ['t0', 't90'] (every fiber is axial; hoop layers not generated)
+[PASS] T1.4 cylindrical shell: min centerline distance >= d: min dist=0.2000 (d=0.2); angular count fixed at 32 regardless of pitch
+[PASS] T1.4 small-radius shell: fibers do not interpenetrate: r 0.5..1.0, d=0.2, count=32 -> min dist=0.2000
+[PASS] T1.4 spherical shell: radial director unit and normal to sphere tangent plane: radial_director returns P/|P| (trivial); no layup generator uses it
+[PASS] T1.4 spherical shell: smooth_normals on triangulated sphere are radial (|dot|>0.99, consistent sign): dot range=[1.000,1.000] (nonzero-degenerate poles excluded)
+[PASS] T1.4 director(): opposed normals rejected: front/back normals are opposed; director is undefined
+[PASS] T1.4 near-parallel reference vector -> valid orthonormal in-plane frame: ref=(0.001, 0, 1) n=(0, 0, 1) ok=True t0=[1.0, 0.0, 0.0]; ref=(1e-09, 0, 1) n=(0, 0, 1) ok=True t0=[1.0, 0.0, 0.0]; ref=(1e-11, 0, 1) n=(0, 0, 1) ok=True t0=[1.0, 0.0, 0.0]; ref=(1, 0, 0) n=(1, 0, 0) ok=True t0=[0.0, 1.0, 0.0]; ref=(0, 1, 0) n=(0, 1, 0) ok=True t0=[1.0, 0.0, 0.0]; ref=(1, 1e-12, 0) n=(1, 0, 0) ok=True t0=[0.0, 1.0, 0.0]
+[PASS] T1.4 rk4_streamline keeps radius on circular field (1e-4): radius drift=8.48e-10
+[FAIL] T1.4 varying-thickness plate layup: not implemented: no generator; curved.shell_layers is 1-D radial only
+[FAIL] T1.4 concentric spherical shell layup (fibers generated): not implemented: only concentric_shell_fibers (straight axial fibers on rings) exists; no spherical generator
+[FAIL] T1.8 CSV header == INTERFACE.md columns: header=['instance', 'element_label', 'host_volume', 'fiber_volume', 'volume_fraction', 'length_t0', 'length_t90']
+[PASS] T1.8 row consistency: fraction = fiber/host; fiber = (l0+l90)*area; labels = part element labels: rows=18, labels match host labels=True
+[FAIL] T1.8 UEL source ingests the fiber-volume file: grep of uel/VUEL.for for open(/READ(/UEXTERNALDB/COMMON: none found; props(1..6)=E,nu,rho,beta,b1,b2 only (jprops unused for volume). INTERFACE.md itself states no ingestion path
+[PASS] T1.8 label mapping: CSV identifies instance (part vs assembly labels): CSV header has no instance/part column: 'instance,element_label,host_volume,fiber_volume,volume_fraction,length_t0,length_t90'; two instances of the same part (labels 1..n each) would collide when both are processed
