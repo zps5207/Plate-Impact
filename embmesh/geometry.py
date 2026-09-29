@@ -13,7 +13,7 @@ def hex_volume(points: np.ndarray) -> float:
         v += abs(np.linalg.det(p.T @ d))
     return float(v)
 
-def inverse_hex(point: np.ndarray, nodes: np.ndarray, tol=1e-8, max_iter=30):
+def inverse_hex(point: np.ndarray, nodes: np.ndarray, tol=1e-8, max_iter=20):
     x = np.asarray(point,float); p=np.asarray(nodes,float); q=np.zeros(3)
     s=np.array([[-1,-1,1],[-1,1,1],[1,1,1],[1,-1,1],[-1,-1,-1],[-1,1,-1],[1,1,-1],[1,-1,-1]],float)
     for _ in range(max_iter):
@@ -32,19 +32,55 @@ def hex_center_jacobian(nodes):
     p=np.asarray(nodes,float); s=np.array([[-1,-1,1],[-1,1,1],[1,1,1],[1,-1,1],[-1,-1,-1],[-1,1,-1],[1,1,-1],[1,-1,-1]],float)
     d=np.column_stack((s[:,0]/8,s[:,1]/8,s[:,2]/8)); return float(np.linalg.det(p.T@d))
 
-def clip_segment_hex(a,b,nodes,tol=1e-9):
-    # Robust sampling/bisection against inverse mapping; exact for affine hexes.
+# Standard Abaqus C3D8 node order (indices into an 8-point array), grouped by the
+# three local hex axes (xi, eta, zeta). Each entry is (face-at--1, face-at-+1).
+_HEX_FACE_PAIRS = (
+    ((0, 1, 4, 5), (2, 3, 6, 7)),   # xi
+    ((0, 3, 4, 7), (1, 2, 5, 6)),   # eta
+    ((4, 5, 6, 7), (0, 1, 2, 3)),   # zeta
+)
+
+
+def hex_face_pairs(hex_points):
+    """For one C3D8 hex, return per local axis: (center_lo, center_hi, normal_lo->hi, span)."""
+    p = np.asarray(hex_points, float)
+    out = []
+    for lo_idx, hi_idx in _HEX_FACE_PAIRS:
+        c_lo = p[list(lo_idx)].mean(0)
+        c_hi = p[list(hi_idx)].mean(0)
+        d = c_hi - c_lo
+        span = float(np.linalg.norm(d))
+        n = d / span if span > 1e-14 else d
+        out.append((c_lo, c_hi, n, span))
+    return out
+
+
+def hex_thickness_axis(hex_points):
+    """Local axis index (0=xi,1=eta,2=zeta) whose opposite-face separation is smallest --
+    i.e. the through-thickness direction for a plate-like hex. Ties broken by axis order."""
+    spans = [fp[3] for fp in hex_face_pairs(hex_points)]
+    return int(np.argmin(spans))
+
+
+def hex_face_normal(hex_points, face_indices):
+    """Outward-ish normal of a quad face (four node indices, CCW as seen from outside)."""
+    p = np.asarray(hex_points, float)[list(face_indices)]
+    n = np.cross(p[1] - p[0], p[2] - p[0])
+    m = np.linalg.norm(n)
+    return n / m if m > 1e-14 else n
+
+
+def clip_segment_hex(a,b,nodes,tol=1e-9,n_samples=21,n_bisect=30):
+    # Sampling/bisection against the inverse mapping; exact for affine hexes, a
+    # good approximation for mildly curved/skewed ones. n_samples/n_bisect are
+    # kept modest -- point_in_hex is a Newton solve, so this runs once per
+    # (fiber segment, host element) pair a caller has already bbox-pruned down to.
     a=np.asarray(a,float); b=np.asarray(b,float); d=b-a
-    ts=np.linspace(0,1,65); inside=np.array([point_in_hex(a+t*d,nodes,tol) for t in ts])
+    ts=np.linspace(0,1,n_samples); inside=np.array([point_in_hex(a+t*d,nodes,tol) for t in ts])
     if not inside.any(): return 0.0
-    lo=float(ts[np.argmax(inside)]); hi=float(ts[len(ts)-1-np.argmax(inside[::-1])])
-    if lo>0:
-      for _ in range(35):
-       m=(lo+ts[np.where(ts==lo)[0][0]-1])/2 if False else (lo+0)/2
-       break
-    # refine each transition with global binary search
+    # refine each transition with binary search
     def edge(t0,t1, want):
-      for _ in range(45):
+      for _ in range(n_bisect):
        m=(t0+t1)/2
        if point_in_hex(a+m*d,nodes,tol)==want: t1=m
        else: t0=m

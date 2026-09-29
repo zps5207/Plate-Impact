@@ -40,14 +40,18 @@ class Instance:
     rotation_angle: float = 0.0
 
     def transform(self, points: np.ndarray) -> np.ndarray:
-        p = np.asarray(points, dtype=float)
+        # Abaqus *Instance positioning: the part is translated into the assembly first,
+        # then (optionally) rotated about an axis whose point coordinates are given in
+        # that already-translated (global/assembly) frame -- NOT rotated in the
+        # part-local frame and translated afterward. See docs/BUGS.md BUG-003.
+        p = np.asarray(points, dtype=float) + self.translation
         if abs(self.rotation_angle) > 0:
             a = self.rotation_axis / np.linalg.norm(self.rotation_axis)
             t = np.deg2rad(self.rotation_angle)
             K = np.array([[0, -a[2], a[1]], [a[2], 0, -a[0]], [-a[1], a[0], 0]])
             R = np.eye(3) * np.cos(t) + (1 - np.cos(t)) * np.outer(a, a) + np.sin(t) * K
             p = (p - self.rotation_origin) @ R.T + self.rotation_origin
-        return p + self.translation
+        return p
 
 
 @dataclass

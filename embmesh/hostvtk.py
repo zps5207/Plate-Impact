@@ -10,7 +10,8 @@ def write_host_fiber_vtk(path, elements, nodes, fibers, fractions=None):
         for node in element.connectivity[:8]: ids.append(len(points)); points.append(np.asarray(nodes[node],float))
         for a,b in HEX_EDGES: lines.append((ids[a],ids[b])); values.append(float((fractions or {}).get(label,0.)))
     for fiber in fibers:
-        start=len(points); points.extend(np.asarray(fiber.points,float).tolist()); lines.append((start,start+1)); values.append(-1.)
+        start=len(points); pts=np.asarray(fiber.points,float); points.extend(pts.tolist())
+        for k in range(len(pts)-1): lines.append((start+k,start+k+1)); values.append(-1.)
     with open(path,'w',encoding='utf-8') as f:
         f.write('# vtk DataFile Version 3.0\nembmesh host/fiber visualization\nASCII\nDATASET POLYDATA\n')
         f.write(f'POINTS {len(points)} float\n'+'\n'.join('%.12g %.12g %.12g'%tuple(p) for p in points)+'\n')

@@ -32,19 +32,20 @@ def _numbers(lines: list[str], i: int) -> tuple[list[str], int]:
 def parse_deck(path_or_text: str | Path) -> Deck:
     if isinstance(path_or_text, Path):
         base_dir = path_or_text.parent
-    elif isinstance(path_or_text, str) and "\n" not in path_or_text:
-        try: base_dir = Path(path_or_text).parent if Path(path_or_text).exists() else Path.cwd()
-        except OSError: base_dir = Path.cwd()
-    else: base_dir = Path.cwd()
-    if isinstance(path_or_text, Path):
+        if not path_or_text.exists():
+            raise FileNotFoundError(f"deck not found: {path_or_text}")
         text = path_or_text.read_text()
+    elif isinstance(path_or_text, str) and "\n" not in path_or_text:
+        p = Path(path_or_text)
+        if not p.exists():
+            raise FileNotFoundError(f"deck not found: {path_or_text}")
+        base_dir = p.parent
+        text = p.read_text()
     elif isinstance(path_or_text, str):
-        try:
-            p = Path(path_or_text)
-            text = p.read_text() if p.exists() else path_or_text
-        except OSError:
-            text = path_or_text
+        base_dir = Path.cwd()
+        text = path_or_text
     else:
+        base_dir = Path.cwd()
         text = str(path_or_text)
     lines = text.splitlines()
     deck = Deck(original_lines=lines.copy())
@@ -69,16 +70,25 @@ def parse_deck(path_or_text: str | Path) -> Deck:
                 deck.instances[current_instance.name] = current_instance
             elif section == "end instance":
                 current_instance = None
-            elif section not in {"node", "element", "nset", "elset", "surface", "assembly", "end assembly", "material", "solid section", "beam section", "embedded element", "include"}:
+            elif section == "include":
+                # The included file is named by the input= option on the *Include line
+                # itself; there is no following data line to trigger on. See BUG-008.
+                target = opts.get("input")
+                if target:
+                    inc = base_dir / str(target)
+                    if inc.exists():
+                        lines[i + 1:i + 1] = inc.read_text().splitlines()
+            elif section not in {"node", "element", "nset", "elset", "surface", "assembly", "end assembly", "material", "solid section", "beam section", "embedded element"}:
                 deck.unsupported.append(lines[i])
             i += 1
             continue
-        vals = [x.strip() for x in raw.split(",")]
-        if section == "include":
-            inc = base_dir / vals[0] if vals else None
-            if inc and inc.exists():
-                lines[i:i+1] = inc.read_text().splitlines()
-            i += 1; continue
+        # Abaqus data lines ending in a trailing comma continue onto the next line
+        # (used to keep *Node/*Element records under the 16-value-per-line limit).
+        merged = raw
+        while merged.rstrip().endswith(",") and i + 1 < len(lines):
+            i += 1
+            merged = merged.rstrip() + lines[i].strip()
+        vals = [x.strip() for x in merged.split(",")]
         if section == "node":
             if part is None: part = deck.parts.setdefault("__GENERATED__", Part("__GENERATED__"))
             try: part.nodes[int(vals[0])] = np.array([float(x) for x in vals[1:4]], float)
@@ -86,7 +96,7 @@ def parse_deck(path_or_text: str | Path) -> Deck:
         elif section == "element":
             if part is None: part = deck.parts.setdefault("__GENERATED__", Part("__GENERATED__"))
             try:
-                label = int(vals[0]); conn = tuple(int(x) for x in vals[1:])
+                label = int(vals[0]); conn = tuple(int(x) for x in vals[1:] if x)
                 typ = str(opts.get("type", "")); es = opts.get("elset")
                 part.elements[label] = Element(label, conn, typ, str(es) if es else None)
                 if es: part.elsets.setdefault(str(es), set()).add(label)
