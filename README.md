@@ -23,7 +23,7 @@ For a patched deck plus a host/fiber visualization, use:
 .\dist\embmesh.exe visualize .\examples\flat_disc.inp --instance DISC-1 --diameter 0.25 --output .\outputs\flat-view
 ```
 
-This writes `output.inp`, `host_fibers.vtk`, `fiber_volume.csv`, and `report.json`. Add `--preview` when running from a Python environment with matplotlib to also write `preview.png`. Symmetry node sets found in the source `*Boundary` definitions are extended with generated fiber nodes on the same plane. `output.inp` embeds the generated fibers as their own `*Part`/`*Instance` inside the source deck's assembly, so it loads in Abaqus as-is.
+This writes `output.inp`, `host_fibers.vtk`, `fiber_volume.csv`, and `report.json`. Add `--preview` to also write `preview.png`; the desktop application enables this automatically and provides a **View fiber embedding** button when meshing completes. Symmetry node sets found in the source `*Boundary` definitions are extended with generated fiber nodes on the same plane. `output.inp` embeds the generated fibers as their own `*Part`/`*Instance` inside the source deck's assembly, so it loads in Abaqus as-is. Fiber sections use the existing `Fiber` material by default (override with `--fiber-material`); no material definition is appended after the analysis steps.
 
 ## Flat vs. curved layup
 
@@ -35,4 +35,4 @@ This writes `output.inp`, `host_fibers.vtk`, `fiber_volume.csv`, and `report.jso
 
 Both curved modes lay down two alternating fiber families (axial/hoop for cylindrical, meridian/latitude for spherical) and inner/outer radius, thickness, and angular extent are all read from the host mesh itself -- no extra geometry description is needed beyond the axis/center.
 
-Other useful `visualize` options: `--node-offset`/`--element-offset` (default 100000; raise these if the host deck already uses labels that high, or when re-meshing an already-fibered deck), `--fiber-elastic E,nu` and `--fiber-density` (the placeholder fiber material's properties -- `embmesh` always warns that this is a placeholder to edit before running Abaqus), `--precise-volume` (also writes `fiber_volume_precise.csv`, a slower but more accurate per-host fiber volume using true cylinder/hex cross-section intersection instead of the default centerline-length approximation -- see `docs/INTERFACE.md`).
+Other useful `visualize` options: `--node-offset`/`--element-offset` (default 100000; raise these if the host deck already uses labels that high, or when re-meshing an already-fibered deck), `--fiber-material` (defaults to the `Fiber` material already defined in the source deck), and `--precise-volume` (also writes `fiber_volume_precise.csv`, a slower but more accurate per-host fiber volume using true cross-section-weighted cylinder/hex intersection volume instead of the default centerline-length approximation -- see `docs/INTERFACE.md`).

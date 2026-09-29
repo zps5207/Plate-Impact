@@ -31,10 +31,11 @@ def host_volume_rows(elements, nodes, fibers):
         rows.append((label,hex_volume(hp),total*area if area else total,t0,t90))
     return rows
 
-def fiber_volume_rows(elements,nodes,fibers,diameter):
+def fiber_volume_rows(elements, nodes, fibers, diameter, progress=None):
     area=np.pi*diameter**2/4; out=[]
     fiber_bbox = [(f, f.points.min(0), f.points.max(0)) for f in fibers]
-    for label,e in elements.items():
+    total_hosts = len(elements)
+    for index, (label, e) in enumerate(elements.items(), start=1):
         hp=np.array([nodes[i] for i in e.connectivity[:8]],float); host=hex_volume(hp); l0=l90=0.
         hmin,hmax=hp.min(0),hp.max(0)
         for f, fmin, fmax in fiber_bbox:
@@ -44,10 +45,12 @@ def fiber_volume_rows(elements,nodes,fibers,diameter):
             if f.direction=="t0": l0+=L
             else: l90+=L
         fv=(l0+l90)*area; out.append((label,host,fv,fv/host if host else 0.,l0,l90))
+        if progress and (index == total_hosts or index % max(1, total_hosts // 100) == 0):
+            progress(index, total_hosts)
     return out
 
 
-def fiber_volume_rows_precise(elements, nodes, fibers, diameter, n_along=7):
+def fiber_volume_rows_precise(elements, nodes, fibers, diameter, n_along=7, progress=None):
     """Per-host fiber volume using true cross-section-weighted cylinder/hex
     intersection (`swept_cylinder_hex_volume`) instead of `fiber_volume_rows`'s
     centerline-length x full-cross-section-area approximation. Slower (each
@@ -74,7 +77,8 @@ def fiber_volume_rows_precise(elements, nodes, fibers, diameter, n_along=7):
     radius = diameter / 2
     out = []
     fiber_bbox = [(f, f.points.min(0) - radius, f.points.max(0) + radius) for f in fibers]
-    for label, e in elements.items():
+    total_hosts = len(elements)
+    for index, (label, e) in enumerate(elements.items(), start=1):
         hp = np.array([nodes[i] for i in e.connectivity[:8]], float)
         host = hex_volume(hp); v0 = v90 = 0.0
         hmin, hmax = hp.min(0), hp.max(0)
@@ -95,4 +99,6 @@ def fiber_volume_rows_precise(elements, nodes, fibers, diameter, n_along=7):
             else: v90 += V
         fv = v0 + v90
         out.append((label, host, fv, fv / host if host else 0., v0, v90))
+        if progress and (index == total_hosts or index % max(1, total_hosts // 100) == 0):
+            progress(index, total_hosts)
     return out

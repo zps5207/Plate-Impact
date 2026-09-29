@@ -1,5 +1,5 @@
 from __future__ import annotations
-import argparse, sys
+import argparse
 from .parser import parse_deck
 from .generate import mesh
 from .errors import HexOnlyError, MesherInputError
@@ -34,22 +34,14 @@ def build_parser():
                          "(pick whichever axis is most representative of the shell), 'dx,dy,dz'")
     v.add_argument("--node-offset", type=int, default=100000, help="first generated fiber node label")
     v.add_argument("--element-offset", type=int, default=100000, help="first generated fiber element label")
-    v.add_argument("--fiber-elastic", type=_vec3_2, default=(1.0, 0.3),
-                    help="placeholder fiber material 'E,nu' used only if --fiber-material-name is not set")
-    v.add_argument("--fiber-density", type=float, default=None, help="optional placeholder fiber density")
+    v.add_argument("--fiber-material", default="Fiber",
+                    help="name of the material already defined in the input deck (default: Fiber)")
     v.add_argument("--precise-volume", action="store_true",
                     help="also write fiber_volume_precise.csv using true cross-section-weighted "
                          "cylinder/hex intersection volume instead of the default centerline-length "
                          "x area approximation (slower; most useful near host boundaries or when the "
                          "host size approaches the fiber pitch)")
     return p
-
-
-def _vec3_2(s):
-    v = [float(x) for x in s.split(",")]
-    if len(v) != 2:
-        raise argparse.ArgumentTypeError(f"expected 2 comma-separated numbers 'E,nu', got {s!r}")
-    return tuple(v)
 
 
 def main(argv=None):
@@ -67,17 +59,16 @@ def main(argv=None):
             for n, i in d.instances.items():
                 print(f"instance {n}: part={i.part} translation={i.translation.tolist()} rotation_angle={i.rotation_angle:g}")
         elif a.cmd == "visualize":
+            def progress(percent, message):
+                print(f"PROGRESS {percent} {message}", flush=True)
+
             fibers, rows = mesh(a.deck, a.instance, a.diameter, a.output, elset=a.elset, gap=a.gap,
                                  fiber_type=a.fiber_type, preview=a.preview, thickness_axis=a.thickness_axis,
                                  curved=a.curved, curve_axis_point=a.curve_axis_point, curve_axis_dir=a.curve_axis_dir,
                                  curve_center=a.curve_center, curve_pole_axis=a.curve_pole_axis,
                                  node_offset=a.node_offset, element_offset=a.element_offset,
-                                 fiber_elastic=a.fiber_elastic, fiber_density=a.fiber_density,
-                                 precise_volume=a.precise_volume)
-            print(f"WARNING: fiber material EMBMESH_FIBER is a placeholder (E={a.fiber_elastic[0]:g}, "
-                  f"nu={a.fiber_elastic[1]:g}{', density=' + format(a.fiber_density, 'g') if a.fiber_density else ', no density'}); "
-                  "edit the deck's *Material, name=EMBMESH_FIBER block (or pass --fiber-elastic/--fiber-density) before running Abaqus.",
-                  file=sys.stderr)
+                                 fiber_material=a.fiber_material, precise_volume=a.precise_volume,
+                                 progress=progress)
             print(f"patched deck: {a.output}/output.inp")
             print(f"host/fiber VTK: {a.output}/host_fibers.vtk")
             if a.preview: print(f"preview: {a.output}/preview.png")

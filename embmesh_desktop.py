@@ -44,6 +44,7 @@ class DesktopApp(ttk.Frame):
         self.thickness_axis = tk.StringVar()
         self.precise_volume = tk.BooleanVar(value=False)
         self.status = tk.StringVar(value="Choose an Abaqus input deck to begin.")
+        self.progress_value = tk.DoubleVar(value=0)
         self._build()
 
     def _build(self) -> None:
@@ -70,10 +71,14 @@ class DesktopApp(ttk.Frame):
         self.run_button = ttk.Button(controls, text="Generate embedded mesh", command=self.run_mesh)
         self.run_button.pack(side="left")
         ttk.Button(controls, text="Open output folder", command=self.open_output).pack(side="left", padx=8)
-        ttk.Label(self, textvariable=self.status).grid(row=11, column=0, columnspan=3, sticky="w", pady=(10, 4))
+        self.preview_button = ttk.Button(controls, text="View fiber embedding", command=self.open_preview, state="disabled")
+        self.preview_button.pack(side="left")
+        self.progress = ttk.Progressbar(self, variable=self.progress_value, maximum=100, mode="determinate")
+        self.progress.grid(row=11, column=0, columnspan=3, sticky="ew", pady=(10, 4))
+        ttk.Label(self, textvariable=self.status).grid(row=12, column=0, columnspan=3, sticky="w", pady=(0, 4))
         self.log = tk.Text(self, height=14, wrap="word", state="disabled", font=("Cascadia Mono", 9))
-        self.log.grid(row=12, column=0, columnspan=3, sticky="nsew")
-        self.rowconfigure(12, weight=1)
+        self.log.grid(row=13, column=0, columnspan=3, sticky="nsew")
+        self.rowconfigure(13, weight=1)
 
     def _path_row(self, row: int, label: str, value: tk.StringVar, command, button: str) -> None:
         ttk.Label(self, text=label).grid(row=row, column=0, sticky="w", pady=4)
@@ -119,7 +124,7 @@ class DesktopApp(ttk.Frame):
             output = Path(self.output.get()).expanduser()
             command = [str(engine_path()), "visualize", str(deck), "--instance", self.instance.get().strip(),
                        "--diameter", self.diameter.get(), "--output", str(output), "--gap", self.gap.get(),
-                       "--fiber-type", self.fiber_type.get()]
+                       "--fiber-type", self.fiber_type.get(), "--preview"]
             if self.thickness_axis.get().strip():
                 command += ["--thickness-axis", self.thickness_axis.get().strip()]
             if self.precise_volume.get():
@@ -128,20 +133,36 @@ class DesktopApp(ttk.Frame):
             messagebox.showerror("Cannot generate mesh", str(exc), parent=self.master)
             return
         self.run_button.configure(state="disabled")
+        self.preview_button.configure(state="disabled")
+        self.progress_value.set(0)
         self.status.set("Generating embedded mesh…")
         self.append_log("\n> " + subprocess.list2cmdline(command) + "\n")
         threading.Thread(target=self._worker, args=(command,), daemon=True).start()
 
     def _worker(self, command: list[str]) -> None:
-        result = subprocess.run(command, capture_output=True, text=True, errors="replace")
-        text = (result.stdout or "") + (result.stderr or "")
-        self.master.after(0, self._finished, result.returncode, text)
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                   text=True, errors="replace")
+        output = []
+        assert process.stdout is not None
+        for line in process.stdout:
+            output.append(line)
+            self.master.after(0, self._output_line, line)
+        self.master.after(0, self._finished, process.wait(), "".join(output))
+
+    def _output_line(self, line: str) -> None:
+        if line.startswith("PROGRESS "):
+            _, percent, message = line.rstrip("\r\n").split(" ", 2)
+            self.progress_value.set(float(percent))
+            self.status.set(message)
+        else:
+            self.append_log(line)
 
     def _finished(self, returncode: int, text: str) -> None:
-        self.append_log(text + ("\n" if text and not text.endswith("\n") else ""))
         self.run_button.configure(state="normal")
         if returncode == 0:
-            self.status.set("Done. Open the output folder to find output.inp and visualization files.")
+            self.progress_value.set(100)
+            self.preview_button.configure(state="normal")
+            self.status.set("Done. View fiber embedding or open the output folder.")
             messagebox.showinfo("Embedded mesh created", "Meshing completed successfully.", parent=self.master)
         else:
             self.status.set(f"Meshing failed (exit code {returncode}). See the log below.")
@@ -153,6 +174,13 @@ class DesktopApp(ttk.Frame):
             messagebox.showwarning("Output folder unavailable", "Generate a mesh first, or choose an existing output folder.", parent=self.master)
             return
         os.startfile(folder)  # Windows desktop app
+
+    def open_preview(self) -> None:
+        preview = Path(self.output.get()).expanduser() / "preview.png"
+        if not preview.is_file():
+            messagebox.showwarning("Preview unavailable", "Generate a mesh before opening its embedding preview.", parent=self.master)
+            return
+        os.startfile(preview)  # Windows desktop app
 
 
 def main() -> None:

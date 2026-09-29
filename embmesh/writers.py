@@ -49,8 +49,7 @@ def _beam_normal(tangent, up_hint):
 
 def append_fibers_to_deck(original, path, fibers, fiber_type="truss", diameter=1.0, node_offset=100000,
                            element_offset=100000, host_elset="HOST", host_instance=None, symmetry_nodes=None,
-                           fiber_instance_name="EMBFIB-1", fiber_part_name="EMBFIB", fiber_material=None,
-                           fiber_elastic=(1.0, 0.3), fiber_density=None):
+                           fiber_instance_name="EMBFIB-1", fiber_part_name="EMBFIB", fiber_material="Fiber"):
     """Append the generated fibers as a real, Abaqus-loadable addition to `original`.
 
     Abaqus rejects `*Node`/`*Element`/`*Solid Section`/`*Beam Section` unless they
@@ -108,14 +107,14 @@ def append_fibers_to_deck(original, path, fibers, fiber_type="truss", diameter=1
     for i, d in enumerate(directions):
         ename = all_elset_names[i]
         if fiber_type == "truss":
-            section_lines += [f"*Solid Section, elset={ename}, material=EMBMESH_FIBER",
+            section_lines += [f"*Solid Section, elset={ename}, material={fiber_material}",
                                f"{np.pi * diameter ** 2 / 4:.15g}"]
         else:
             # give the section a harmless default n1; every element's true local
             # orientation is overridden explicitly via *Normal below (BUG-002 fix:
             # a single shared n1 is not valid once fibers are not all parallel).
             default_n1 = _beam_normal(np.array([1., 0., 0.]), np.array([0., 0., 1.]))
-            section_lines += [f"*Beam Section, elset={ename}, material=EMBMESH_FIBER, section=CIRC",
+            section_lines += [f"*Beam Section, elset={ename}, material={fiber_material}, section=CIRC",
                                f"{diameter / 2:.15g}, {default_n1[0]:.15g}, {default_n1[1]:.15g}, {default_n1[2]:.15g}"]
     if fiber_type == "beam" and normals:
         section_lines += ["*Normal"] + [f"{e}, {n}, {v[0]:.12g}, {v[1]:.12g}, {v[2]:.12g}" for e, n, v in normals]
@@ -138,11 +137,8 @@ def append_fibers_to_deck(original, path, fibers, fiber_type="truss", diameter=1
     except ValueError:
         raise ValueError("source deck has no *Assembly ... *End Assembly block; cannot embed fibers")
 
-    mat = [] if fiber_material else [
-        "*Material, name=EMBMESH_FIBER", "*Elastic", f"{fiber_elastic[0]:.12g}, {fiber_elastic[1]:.12g}",
-    ]
-    if not fiber_material and fiber_density:
-        mat[1:1] = ["*Density", f"{fiber_density:.12g},"]
-
-    new = out[:ip] + fib_part + out[ip:ia] + fib_instance + emb + nset_lines + out[ia:] + mat
+    # Fiber is assumed to be defined in the source deck.  Do not append a
+    # material block after the analysis steps: Abaqus reads material definitions
+    # in the model-data region, before the first *Step.
+    new = out[:ip] + fib_part + out[ip:ia] + fib_instance + emb + nset_lines + out[ia:]
     Path(path).write_text("\n".join(new) + "\n")

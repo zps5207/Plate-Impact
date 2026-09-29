@@ -36,16 +36,23 @@ def _stable_time_increment(fibers):
 def mesh(deck_path, instance, diameter, output_dir, elset=None, gap=0., fiber_type="truss", reference=(1, 0, 0),
          preview=False, symmetry_tolerance=1e-7, thickness_axis=None, node_offset=100000, element_offset=100000,
          curved=None, curve_axis_point=(0., 0., 0.), curve_axis_dir=(0., 0., 1.), curve_center=(0., 0., 0.),
-         curve_pole_axis=(0., 0., 1.), fiber_material=None, fiber_elastic=(1.0, 0.3), fiber_density=None,
-         precise_volume=False):
+         curve_pole_axis=(0., 0., 1.), fiber_material="Fiber", precise_volume=False,
+         progress=None):
     """Mesh a host region with embedded fibers. `curved` selects the layup family:
     None/'flat' (default) for a flat plate/box/cube, 'cylindrical' for a plate
     curved about a single axis, or 'spherical' for a spherically curved plate."""
+    def report(percent, message):
+        if progress:
+            progress(percent, message)
+
+    report(5, "Reading Abaqus input deck")
     _validate(diameter, gap)
     d = parse_deck(deck_path)
+    report(15, "Selecting host elements")
     elems, nodes = select_elements(d, instance, elset)
     curved = (curved or "flat").lower()
     curve_meta = {}
+    report(25, "Generating fiber layout")
     if curved in ("flat", "none", ""):
         fibers = flat_disc_fibers(nodes, diameter, thickness_axis=thickness_axis, gap=gap, reference=reference)
     elif curved in ("cylindrical", "cylinder", "single-axis", "single_axis"):
@@ -56,17 +63,27 @@ def mesh(deck_path, instance, diameter, output_dir, elset=None, gap=0., fiber_ty
         raise ValueError(f"unknown --curved mode {curved!r}; expected flat, cylindrical, or spherical")
 
     out = Path(output_dir); out.mkdir(parents=True, exist_ok=True)
-    rows = fiber_volume_rows(elems, nodes, fibers, diameter)
+    report(35, "Calculating fiber volume in host elements")
+    rows = fiber_volume_rows(
+        elems, nodes, fibers, diameter,
+        progress=lambda done, total: report(35 + 25 * done / total,
+                                            f"Calculating fiber volume ({done}/{total} host elements)"))
     write_volume_csv(out / 'fiber_volume.csv', rows, instance=instance)
+    report(60, "Writing volume results")
     precise_rows = None
     if precise_volume:
-        precise_rows = fiber_volume_rows_precise(elems, nodes, fibers, diameter)
+        report(65, "Calculating precise fiber volumes")
+        precise_rows = fiber_volume_rows_precise(
+            elems, nodes, fibers, diameter,
+            progress=lambda done, total: report(65 + 10 * done / total,
+                                                f"Calculating precise fiber volumes ({done}/{total} host elements)"))
         write_precise_volume_csv(out / 'fiber_volume_precise.csv', precise_rows, instance=instance)
     # "embedded endpoints inside a host" is a cheap sanity check on the fiber
     # *endpoints* only (bbox-pruned per host, since checking every point of every
     # curved polyline against every host with no pruning is O(points*hosts) and
     # was the dominant cost for curved layups -- fiber_volume_rows above already
     # does the real, fully-pruned per-segment embedding measurement).
+    report(75, "Checking fiber embedding and symmetry")
     host_boxes = [(np.asarray(hp := [nodes[i] for i in e.connectivity[:8]]).min(0),
                    np.asarray(hp).max(0), hp) for e in elems.values()]
     def _in_any_host(p):
@@ -81,6 +98,7 @@ def mesh(deck_path, instance, diameter, output_dir, elset=None, gap=0., fiber_ty
     constraints = boundary_symmetry_sets(d, instance, symmetry_tolerance)
     propagated = fiber_nodes_on_symmetry(fibers, node_offset, constraints, symmetry_tolerance)
 
+    report(85, "Writing visualization files")
     write_vtk(out / 'fibers.vtk', fibers)
     fractions = {row[0]: row[3] for row in rows}
     write_host_fiber_vtk(out / 'host_fibers.vtk', elems, nodes, fibers, fractions)
@@ -88,10 +106,11 @@ def mesh(deck_path, instance, diameter, output_dir, elset=None, gap=0., fiber_ty
         plot_host_fibers = importlib.import_module('embmesh.visualize').plot_host_fibers
         plot_host_fibers(out / 'preview.png', elems, nodes, fibers, fractions)
 
+    report(92, "Writing embedded Abaqus deck")
     append_fibers_to_deck('\n'.join(d.original_lines), out / 'output.inp', fibers, fiber_type, diameter,
                            node_offset=node_offset, element_offset=element_offset,
                            host_elset=elset or 'HOST', host_instance=instance, symmetry_nodes=propagated,
-                           fiber_material=fiber_material, fiber_elastic=fiber_elastic, fiber_density=fiber_density)
+                           fiber_material=fiber_material)
     report_kw = dict(fiber_count=len(fibers), host_count=len(elems), curved=curved,
                  curve_meta={k: (list(v) if isinstance(v, np.ndarray) else v) for k, v in curve_meta.items()},
                  symmetry_constraints={k: [int(v[0]), float(v[1])] for k, v in constraints.items()},
@@ -110,6 +129,7 @@ def mesh(deck_path, instance, diameter, output_dir, elset=None, gap=0., fiber_ty
             volume_fraction_precise_max=max((r[3] for r in precise_rows), default=0),
             precise_vs_length_max_rel_diff=max(diffs, default=0.0))
     write_report(out / 'report.json', **report_kw)
+    report(100, "Meshing complete")
     return fibers, rows
 
 
