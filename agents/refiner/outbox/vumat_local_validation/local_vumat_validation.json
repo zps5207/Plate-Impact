@@ -1,0 +1,42 @@
+{
+  "source": "vumat/VUMAT_tension_only.for",
+  "parameters_pa": {
+    "E_tension": 100000000000.0,
+    "G_shear": 50000000000.0,
+    "failure_stress": 2000000000.0
+  },
+  "scope": "local material-point transcription; not an Abaqus execution",
+  "results": [
+    {
+      "name": "truss_tension_is_elastic",
+      "passed": true,
+      "detail": "stress=500000000 Pa; expected=500000000 Pa"
+    },
+    {
+      "name": "truss_compression_is_slack",
+      "passed": true,
+      "detail": "stress=0 Pa; expected=0 Pa; state=1.0"
+    },
+    {
+      "name": "truss_failure_deletes_at_threshold",
+      "passed": true,
+      "detail": "stress=0 Pa; state=0.0; threshold=2e+09 Pa"
+    },
+    {
+      "name": "deleted_point_remains_zero",
+      "passed": true,
+      "detail": "stress=0 Pa; state=0.0"
+    },
+    {
+      "name": "beam_shear_is_50_GPa_times_gamma",
+      "passed": false,
+      "detail": "source stress_component_2=0 Pa; requested G*gamma=100000000 Pa"
+    },
+    {
+      "name": "beam_bending_component_is_suppressed",
+      "passed": false,
+      "detail": "source retains positive nonaxial stress=123000000 Pa"
+    }
+  ],
+  "all_requested_behaviors_pass": false
+}

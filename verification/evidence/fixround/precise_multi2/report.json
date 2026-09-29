@@ -1,0 +1,18 @@
+{
+  "curve_meta": {},
+  "curved": "flat",
+  "embedded_endpoint_total": 64,
+  "embedded_endpoints_inside": 64,
+  "estimated_stable_time_increment": 2.0,
+  "fiber_count": 32,
+  "host_count": 32,
+  "precise_vs_length_max_rel_diff": 0.11111111144224808,
+  "propagated_symmetry_nodes": {},
+  "symmetry_constraints": {},
+  "total_fiber_volume": 3.141592655345295,
+  "total_fiber_volume_precise": 3.0979594232327052,
+  "volume_fraction_max": 0.7853981639826162,
+  "volume_fraction_min": 0.7853981636900318,
+  "volume_fraction_precise_max": 0.8508480105585468,
+  "volume_fraction_precise_min": 0.6981317010578062
+}

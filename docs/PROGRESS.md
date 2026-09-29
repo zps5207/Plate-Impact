@@ -93,6 +93,10 @@ Copied `VUEL.for` to `uel/` without numerical edits; `uel/PROVENANCE.md` records
 
 Added the pure-Python tension-only elastic-brittle update rule, tests for tension/compression/failure, sample input decks, and an SLURM template with TODO site placeholders. The Fortran file is intentionally marked TODO for the Abaqus-version-specific full VUMAT signature and has not been run locally.
 
+### Checkpoint 9 — split truss/beam VUMATs, VUEL interaction smoke test (2026-09-29)
+
+Split the single tension-only VUMAT into `vumat/VUMAT_truss.for` (T3D2, tension-only, shear discarded) and `vumat/VUMAT_beam.for` (B31, tension+shear elastic, bending and compression suppressed), both elastic-brittle (E=100 GPa, G=50 GPa) with a documented future-damage-tracking TODO in place of the current instantaneous-deletion rule. Added `vumat/VUMAT_fibers_combined.for`, a dispatcher needed because Abaqus links one user-subroutine file per job and both fiber types appear together in the new T4 job. Added `verification/validate_vumat_fibers.py` (a from-scratch local material-point oracle, not shared code with the VUMAT sources) plus `tests/test_vumat_fibers.py`; both new VUMATs pass all 12 requested-behavior checks. Added `verification/make_t4.py`, generating a 1-host-element/4-fiber smoke test with two host variants: a VUEL user-element host (`verification/roar/t4/vuel_fiber_smoke.inp`) and a native C3D8 host (`c3d8_fiber_smoke.inp`) to isolate the VUEL-coupling question from the beam-VUMAT-support question. Coupling to the VUEL host is via directly shared corner-node DOFs (not Abaqus's native `*Embedded Element`, which is not documented for a user-element host). See `docs/VUMAT_PROGRESS_2026-09-29.md` for the full report, and `docs/BUGS.md` BUG-016/RISK-017 for what remains unverified: whether the RESSTIFF regularization actually clears the real Abaqus packager error, and whether Abaqus/Explicit runs a VUMAT on a B31 element at all. Neither T4 deck has been run on Abaqus/ROAR yet.
+
 ## Acceptance command outputs (current)
 
 ```text

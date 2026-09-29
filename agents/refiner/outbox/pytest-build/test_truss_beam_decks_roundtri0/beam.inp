@@ -1,0 +1,28 @@
+*Part, name=P
+*Node
+1,0,0,0
+2,1,0,0
+*End Part
+*Part, name=EMBFIB
+*Node, nset=EMBMESH_NODES
+100000, 0, 0, 0
+100001, 1, 0, 0
+*Element, type=B31, elset=EMBMESH_FIBERS_T0
+100000, 100000,100001
+*Beam Section, elset=EMBMESH_FIBERS_T0, material=EMBMESH_FIBER, section=CIRC
+0.1, 0, 0, 1
+*Normal
+100000, 100000, 0, 0, 1
+100000, 100001, 0, 0, 1
+*End Part
+*Assembly, name=A
+*Instance, name=P-1, part=P
+*End Instance
+*Instance, name=EMBFIB-1, part=EMBFIB
+*End Instance
+*Embedded Element, host elset=HOST
+EMBFIB-1.EMBMESH_FIBERS_T0
+*End Assembly
+*Material, name=EMBMESH_FIBER
+*Elastic
+1, 0.3
