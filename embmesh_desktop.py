@@ -26,6 +26,17 @@ def engine_path() -> Path:
     return candidate
 
 
+def instance_names(list_output: str) -> list[str]:
+    """Extract assembly-instance names from ``embmesh list`` output."""
+    names = []
+    for line in list_output.splitlines():
+        if line.startswith("instance "):
+            name = line[len("instance "):].split(":", 1)[0].strip()
+            if name:
+                names.append(name)
+    return names
+
+
 class DesktopApp(ttk.Frame):
     def __init__(self, master: tk.Tk) -> None:
         super().__init__(master, padding=14)
@@ -55,7 +66,11 @@ class DesktopApp(ttk.Frame):
             row=1, column=0, columnspan=3, sticky="w", pady=(0, 12))
         self._path_row(2, "Input deck (.inp)", self.deck, self.choose_deck, "Browse…")
         self._path_row(3, "Output folder", self.output, self.choose_output, "Browse…")
-        self._entry_row(4, "Instance name", self.instance, "Assembly instance to mesh, e.g. DISC-1")
+        ttk.Label(self, text="Instance name").grid(row=4, column=0, sticky="w", pady=4)
+        self.instance_combo = ttk.Combobox(self, textvariable=self.instance, state="disabled")
+        self.instance_combo.grid(row=4, column=1, sticky="ew", pady=4)
+        ttk.Label(self, text="Select an assembly instance found in the input deck").grid(
+            row=4, column=2, sticky="w", padx=(8, 0))
         self._entry_row(5, "Fiber diameter", self.diameter, "Positive length in the deck's units")
         self._entry_row(6, "In-plane gap", self.gap, "Optional; default 0")
         ttk.Label(self, text="Fiber type").grid(row=7, column=0, sticky="w", pady=4)
@@ -96,6 +111,40 @@ class DesktopApp(ttk.Frame):
             self.deck.set(name)
             if not self.output.get():
                 self.output.set(str(Path(name).with_suffix("")) + "-embmesh")
+            self.load_instances(Path(name))
+
+    def load_instances(self, deck: Path) -> None:
+        """Run the lightweight parser without blocking the desktop interface."""
+        self.instance.set("")
+        self.instance_combo.configure(values=(), state="disabled")
+        self.status.set("Reading assembly instances from input deck…")
+        try:
+            command = [str(engine_path()), "list", str(deck)]
+        except FileNotFoundError as exc:
+            self.status.set("Could not find the bundled mesher executable.")
+            self.append_log(f"{exc}\n")
+            return
+        threading.Thread(target=self._instance_worker, args=(deck, command), daemon=True).start()
+
+    def _instance_worker(self, deck: Path, command: list[str]) -> None:
+        result = subprocess.run(command, capture_output=True, text=True, errors="replace")
+        self.master.after(0, self._instances_loaded, deck, result.returncode,
+                          (result.stdout or "") + (result.stderr or ""))
+
+    def _instances_loaded(self, deck: Path, returncode: int, output: str) -> None:
+        # A user may select a different deck while this parse is running.
+        if Path(self.deck.get()).expanduser() != deck:
+            return
+        names = instance_names(output) if returncode == 0 else []
+        if names:
+            self.instance_combo.configure(values=names, state="readonly")
+            self.instance.set(names[0])
+            self.status.set(f"Found {len(names)} assembly instance(s).")
+        else:
+            self.instance_combo.configure(values=(), state="disabled")
+            self.status.set("No assembly instances found in the selected deck.")
+            if output:
+                self.append_log(output + ("\n" if not output.endswith("\n") else ""))
 
     def choose_output(self) -> None:
         name = filedialog.askdirectory(title="Select output folder")
@@ -114,7 +163,7 @@ class DesktopApp(ttk.Frame):
             if not deck.is_file():
                 raise ValueError("Choose an existing .inp deck.")
             if not self.instance.get().strip():
-                raise ValueError("Enter the assembly instance name.")
+                raise ValueError("Select an assembly instance from the input deck.")
             if float(self.diameter.get()) <= 0:
                 raise ValueError("Fiber diameter must be positive.")
             if float(self.gap.get()) < 0:
