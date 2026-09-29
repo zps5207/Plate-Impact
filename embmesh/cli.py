@@ -1,5 +1,6 @@
 from __future__ import annotations
 import argparse
+import sys
 from .parser import parse_deck
 from .generate import mesh
 from .errors import HexOnlyError, MesherInputError
@@ -20,7 +21,8 @@ def build_parser():
     v.add_argument("deck"); v.add_argument("--instance", required=True); v.add_argument("--diameter", type=float, required=True)
     v.add_argument("--output", required=True); v.add_argument("--elset"); v.add_argument("--gap", type=float, default=0.0)
     v.add_argument("--fiber-type", choices=("truss", "beam"), default="truss")
-    v.add_argument("--preview", action="store_true", help="also render a PNG (requires matplotlib)")
+    v.add_argument("--preview", action="store_true",
+                    help="also render an interactive, rotatable HTML preview (requires plotly)")
     v.add_argument("--thickness-axis", help="flat/box layup only: 'x', 'y', 'z', or 'dx,dy,dz'; "
                                              "auto-detected from the host bounding box if omitted")
     v.add_argument("--curved", choices=("flat", "cylindrical", "spherical"), default="flat",
@@ -71,7 +73,7 @@ def main(argv=None):
                                  progress=progress)
             print(f"patched deck: {a.output}/output.inp")
             print(f"host/fiber VTK: {a.output}/host_fibers.vtk")
-            if a.preview: print(f"preview: {a.output}/preview.png")
+            if a.preview: print(f"preview: {a.output}/preview.html")
             if a.precise_volume: print(f"precise per-host volumes: {a.output}/fiber_volume_precise.csv")
             print(f"fibers: {len(fibers)}; host elements: {len(rows)}")
         return 0

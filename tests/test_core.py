@@ -27,7 +27,7 @@ def test_layup_and_vumat():
  s,dead=update_tension_only(.005,0,100,2); s,dead=update_tension_only(-.01,s,100,2); assert s==0 and not dead
 
 def test_flat_fibers_and_volume():
- d=parse_deck(DECK); fs=flat_disc_fibers(d.instance_nodes('I'),.25,gap=0); assert fs
+ d=parse_deck(DECK); fs=flat_disc_fibers(d.parts['P'].elements,d.instance_nodes('I'),.25,gap=0); assert fs
  rows=fiber_volume_rows(d.parts['P'].elements,d.instance_nodes('I'),fs,.25); assert rows[0][2]>=0 and rows[0][3]<=1
 
 def test_config_validation(tmp_path):
@@ -60,7 +60,7 @@ def test_swept_cylinder_volume_does_not_drop_true_exterior_boundary():
 
 def test_fiber_volume_rows_precise_runs_and_is_close_to_fast_for_a_centered_fiber():
  d=parse_deck(DECK); nodes=d.instance_nodes('I')
- fs=flat_disc_fibers(nodes,.1,gap=0.4)  # sparse, well clear of host faces
+ fs=flat_disc_fibers(d.parts['P'].elements,nodes,.1,gap=0.4)  # sparse, well clear of host faces
  fast=fiber_volume_rows(d.parts['P'].elements,nodes,fs,.1)
  precise=fiber_volume_rows_precise(d.parts['P'].elements,nodes,fs,.1)
  assert abs(fast[0][2]-precise[0][2])/fast[0][2]<1e-3

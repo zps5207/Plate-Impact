@@ -1,1 +1,2 @@
 dist/embmesh.exe filter=lfs diff=lfs merge=lfs -text
+dist/Embedded[[:space:]]Element[[:space:]]Mesher.exe filter=lfs diff=lfs merge=lfs -text

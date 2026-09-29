@@ -225,11 +225,11 @@ class DesktopApp(ttk.Frame):
         os.startfile(folder)  # Windows desktop app
 
     def open_preview(self) -> None:
-        preview = Path(self.output.get()).expanduser() / "preview.png"
+        preview = Path(self.output.get()).expanduser() / "preview.html"
         if not preview.is_file():
             messagebox.showwarning("Preview unavailable", "Generate a mesh before opening its embedding preview.", parent=self.master)
             return
-        os.startfile(preview)  # Windows desktop app
+        os.startfile(preview)  # opens in the default browser; drag to rotate, scroll to zoom
 
 
 def main() -> None:

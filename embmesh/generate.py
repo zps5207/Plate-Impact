@@ -54,7 +54,7 @@ def mesh(deck_path, instance, diameter, output_dir, elset=None, gap=0., fiber_ty
     curve_meta = {}
     report(25, "Generating fiber layout")
     if curved in ("flat", "none", ""):
-        fibers = flat_disc_fibers(nodes, diameter, thickness_axis=thickness_axis, gap=gap, reference=reference)
+        fibers = flat_disc_fibers(elems, nodes, diameter, thickness_axis=thickness_axis, gap=gap, reference=reference)
     elif curved in ("cylindrical", "cylinder", "single-axis", "single_axis"):
         fibers, curve_meta = cylindrical_fibers(nodes, diameter, curve_axis_point, curve_axis_dir, gap=gap, reference=reference)
     elif curved in ("spherical", "sphere"):
@@ -104,7 +104,7 @@ def mesh(deck_path, instance, diameter, output_dir, elset=None, gap=0., fiber_ty
     write_host_fiber_vtk(out / 'host_fibers.vtk', elems, nodes, fibers, fractions)
     if preview:
         plot_host_fibers = importlib.import_module('embmesh.visualize').plot_host_fibers
-        plot_host_fibers(out / 'preview.png', elems, nodes, fibers, fractions)
+        plot_host_fibers(out / 'preview.html', elems, nodes, fibers, fractions)
 
     report(92, "Writing embedded Abaqus deck")
     append_fibers_to_deck('\n'.join(d.original_lines), out / 'output.inp', fibers, fiber_type, diameter,
