@@ -24,11 +24,13 @@
 *Element, type=B31, elset=BEAMFIBER_A
 201, 4, 8
 *Beam Section, elset=BEAMFIBER_A, material=BEAMFIBER, section=CIRC
-0.005, 1, 0, 0
+0.005
+1, 0, 0
 *Element, type=B31, elset=BEAMFIBER_B
 202, 2, 8
 *Beam Section, elset=BEAMFIBER_B, material=BEAMFIBER, section=CIRC
-0.005, 0.707106781187, 0.707106781187, 0
+0.005
+0.707106781187, 0.707106781187, 0
 *End Part
 *Assembly, name=Assembly
 *Instance, name=CELL-1, part=CELL

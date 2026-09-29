@@ -10,12 +10,76 @@ compression and the beam doesn't load in bending; write this report. Also
 reviewed the local material-point oracle already run against the pilot VUMAT
 (`agents/refiner/outbox/vumat_local_validation/`).
 
-No Abaqus run happened this session (no ROAR submission was made — see
-**What was not done** below). Everything here is either new source, or checked
-by a local, non-Abaqus Python transcription oracle. That distinction matters:
-this project has already found (BUG-016) that a VUMAT which looks correct at
-the source level can still be rejected outright by real Abaqus/Explicit, so
-nothing below should be read as "confirmed to run."
+**Update, same day, after the human approved a ROAR submission**: both T4
+smoke-test variants now run to `THE ANALYSIS HAS COMPLETED SUCCESSFULLY` with
+zero errors on real Abaqus 2024 (jobs 55900454 and 55900492). That confirms
+the `RESSTIFF` fix for BUG-016 and settles RISK-017 (VUMAT does run on B31 on
+this install) — see **ROAR run results** below for the full account,
+including two more real, previously-unconfirmed bugs (BUG-018, BUG-019) found
+and fixed along the way. The rest of this report below "ROAR run results" is
+left as originally written (before any Abaqus run happened) so the record of
+what was and wasn't known at each point stays intact; read the update section
+first for the current state.
+
+## ROAR run results (2026-09-29, later same session)
+
+The human approved a ROAR submission and supplied a live `SSH_AUTH_SOCK` for
+this session's Bash tool, per `~/.ssh` agent-forwarding conventions this
+project already uses (see the ROAR access memory). Work happened in the
+existing `/storage/home/zps5207/scratch/plate_impact_verif/` workspace,
+alongside T2/T3, under a new `t4/` subfolder for decks and job-specific user
+files, with `t4.sbatch` mirroring `t3.sbatch`'s pattern.
+
+**Job history** (each `rc` is the `abaqus job=... user=...` process exit code
+captured by `t4.sbatch`; `.dat`/`.stdout` paths are under
+`run_<deck>/<deck>.{dat,stdout}` in that scratch workspace):
+
+| Job | Decks | Outcome |
+|---|---|---|
+| 55900407 | vuel_fiber_smoke, c3d8_fiber_smoke | Both rc=1, but not a real result: the decks were copied to the wrong path (`t4.sbatch` expects a `t4/` subfolder; the first `scp` landed the files at the workspace root). Fixed by moving the files into `t4/`. |
+| 55900412 | same, after the path fix | Both rc=1. Real Abaqus error this time: `*Beam Section` element 201 "IS CLOSE TO PARALLEL WITH ITS BEAM SECTION AXIS" — traced to BUG-018 (radius+n1 combined on one data line silently drops the given n1). Fixed in `verification/make_t4.py`. |
+| 55900454 | same, after the BUG-018 fix | **c3d8_fiber_smoke: rc=0, completed successfully.** vuel_fiber_smoke: rc=1, new error — `*User Element, type=U1` rejected (BUG-019: Explicit user-element type keys must start with `VU`). Fixed. |
+| 55900492 | vuel_fiber_smoke only (c3d8 already confirmed) | **rc=0, completed successfully.** |
+
+**What this confirms:**
+- **BUG-016's `RESSTIFF` fix works** (for the new split VUMATs): `c3d8_fiber_smoke` — 2 T3D2 `TRUSSFIBER` elements + 2 B31 `BEAMFIBER` elements, both via `VUMAT_fibers_combined.for` — got through Abaqus's packager and the entire Explicit step with no error. The `zero or negative initial dilatational modulus` error that blocked `VUMAT_tension_only.for` (BUG-016) did not recur.
+- **RISK-017 is cleared for this Abaqus 2024 install**: a `*User Material` on a B31 beam element was accepted at input-file-processing time and the VUMAT was called and drove the analysis to completion, despite Abaqus's documented VUMAT-element-type list not naming beams. Whichever of "the docs are stricter than the implementation" or "beam has an undocumented allowance" is true, the practical answer for this project is: it works, on this install, with this file's assumed `strainInc` layout (axial, then shear).
+- **The VUEL host and the fiber VUMATs interact successfully**: `vuel_fiber_smoke` — the same 4 fibers, but the host is `uel/VUEL.for`'s user element instead of native C3D8 — also completed with zero errors. Coupling is via directly shared corner-node DOFs (no `*Embedded Element`), as planned; Abaqus accepted a `*User Element` and `*User Material`-driven fiber elements sharing nodes in the same analysis with no complaint.
+
+**Two more real, confirmed, previously-unconfirmed bugs were found and fixed
+along the way** (full detail in `docs/BUGS.md`):
+- **BUG-018**: `*Beam Section, section=CIRC` with `radius, n1x, n1y, n1z` all
+  on one data line silently does not use the given `n1` — Abaqus falls back
+  to its own automatic default normal, which is degenerate whenever the
+  beam's own axis coincides with whichever direction that default prefers.
+  This project's own `verification/t1_volume_layup.py` had already raised
+  this exact suspicion in a code comment, unconfirmed, months ago; it just
+  never surfaced as a hard error in the one beam deck previously run on real
+  Abaqus (T3's `single_uniax_along_d0.25_beam`) because that beam's axis
+  happened not to coincide with the default direction. **This defect is also
+  present in `embmesh/writers.py::append_fibers_to_deck` itself** (the real
+  mesher, not just this session's test decks) and was not fixed there — see
+  `docs/BUGS.md` BUG-018 for why, and for the fix needed.
+- **BUG-019**: Abaqus/Explicit user-element type keys must start with `VU`
+  (e.g. `VU1`); `U1` (a convention this session picked from habit, not from
+  this project's own `uel/VUEL.for`, which never specifies a deck-side type
+  key) is rejected outright. Fixed by renaming to `VU1`.
+
+**What this run does NOT confirm** (still open, honestly):
+- The *quantitative* physics of the beam's shear/bending split under a real,
+  intentionally-bending load case — this smoke test's minimal boundary
+  conditions (see `verification/make_t4.py`) were chosen to get nonzero,
+  mixed strain into all 4 fibers structurally, not to isolate and check a
+  specific bending mode's suppression numerically against the ODB's stress
+  output. The local oracle (`verification/validate_vumat_fibers.py`) already
+  checks that at the material-point level; extracting and checking the
+  ODB's actual field output from these two completed jobs is a reasonable
+  next step but was not done this session.
+- Whether `RESSTIFF`'s specific value (`1.0e-4`) is well-chosen for any
+  particular real fiber/host stiffness ratio beyond this smoke test's SI
+  units and property choices.
+- `VUMAT_tension_only.for` itself was not re-tried; BUG-016 stays open for
+  that specific file (superseded by the new split files for new work).
 
 ## What was reviewed first
 
@@ -69,16 +133,17 @@ in the files' own header comments (a tracked damage variable is explicitly
 called out as a planned replacement for the current instantaneous-deletion
 rule — this session did not implement damage tracking, only noted it).
 
-### Fixing the BUG-016 blocker (unconfirmed)
+### Fixing the BUG-016 blocker (now confirmed — see "ROAR run results" above)
 
 Since a truly zero-stiffness branch is the suspected cause of BUG-016's
 packager error, both new files replace the exact-zero compression/bending
 branches with `RESSTIFF = 1.0D-4` times the nominal modulus — small enough to
 be physically negligible in the tension/shear-dominated regime these fibers
 are meant for, but nonzero so Abaqus's pre-increment-1 stiffness probe (if
-that is really what's failing) has a slope to find. **This is a candidate
-fix only.** It has not been run against real Abaqus. BUG-016 stays open for
-these files until a ROAR run either clears or reproduces the packager error.
+that is really what's failing) has a slope to find. This paragraph originally
+ended by calling it unconfirmed; it is no longer unconfirmed — ROAR job
+55900454 ran `c3d8_fiber_smoke` (both fiber materials, both element types)
+through the packager and the full step with no error.
 
 ### A bug the local oracle caught in this session's own code
 
@@ -147,31 +212,39 @@ GPa values directly — a deliberate departure from the mm/tonne/s/MPa
 convention `verification/make_t3.py`'s mesher-driven decks use, since this is
 a standalone hand-built job, not mesher output.
 
-**These decks have not been run.** They are new keyword text I wrote by hand
-(no mesher, no Abaqus datacheck), so — exactly like every other deck in this
-repo before its first real ROAR run — keyword-syntax mistakes are plausible
-until Abaqus itself parses them. I checked the parts I could reason about
-concretely (e.g., `*Boundary` needs `CELL-1.<node>` instance-qualified
-references at assembly level, not bare integers — caught and fixed during
-generation; each `*Beam Section`'s `n1` is checked by hand to be perpendicular
-to its own element's axis) but I do not have Abaqus available in this
-environment to datacheck it end-to-end.
+**Update: both decks have now been run** (see "ROAR run results" above). My
+static reasoning at the time this paragraph was first written (before any
+run) turned out to be right about one thing (`*Boundary` needing
+instance-qualified node references) and to miss two others entirely: BUG-018
+(the beam section `n1`/radius data-line issue — I explicitly claimed to have
+"checked by hand" that each `n1` was perpendicular to its own axis, which is
+true and irrelevant, since the real defect was that Abaqus wasn't reading my
+`n1` at all) and BUG-019 (the `U1` vs `VU1` element-type key). Leaving that
+original claim in the historical section below as a record of what looked
+sufficient before a real run and wasn't.
 
 ## What was not done
 
-- **No Abaqus run, on ROAR or anywhere else.** This session did not ask the
-  human to approve a ROAR submission (the project's stated rule is that every
-  cluster submission needs explicit approval each time, and an SSH/Duo push
-  is disruptive to ask for mid-task without a clear go-ahead). Everything
-  under "confirmed" language above is about local, non-Abaqus checks only. If
-  you want the T4 decks actually run, that is the natural next step and needs
-  your approval for the ROAR submission itself.
-- **RESSTIFF is unverified against the actual BUG-016 error.** It is a
-  reasoned candidate fix, not a confirmed one.
-- **RISK-017 (VUMAT-on-beam support) is unverified either way.** It might
-  work exactly as assumed, might error immediately and cleanly, or might run
-  silently with a different `strainInc` layout than assumed. Only a real run
-  distinguishes these.
+- **RESSTIFF is now confirmed to clear BUG-016's packager error** (job
+  55900454) — no longer an open item, though see "ROAR run results" above
+  for what this one run does and doesn't establish.
+- **RISK-017 (VUMAT-on-beam support) is now cleared for this Abaqus 2024
+  install** (same job) — also no longer open in the "might not run at all"
+  sense; the remaining open question is the quantitative-physics one noted
+  above, not whether it runs.
+- **`embmesh/writers.py` still has BUG-018's defect** (combined radius+n1 on
+  one `*Beam Section` data line) — this was found and fixed only in this
+  session's own `verification/make_t4.py`, not in the actual mesher. Any
+  mesher-generated beam deck whose fiber direction coincides with Abaqus's
+  default-normal preference will still hit this. Not fixed in the mesher
+  itself this session (out of scope for a VUMAT-progress task; flagged in
+  `docs/BUGS.md` BUG-018 for a follow-up).
+- **ODB field-output extraction was not done.** Both completed jobs' `.odb`
+  files exist on ROAR scratch; pulling actual stress/strain time histories
+  out of them (the way `verification/roar/extract_energy.py` already does
+  for energy) to numerically confirm zero compression/bending stress in this
+  specific run, rather than relying on the local oracle plus "the job didn't
+  error," is a reasonable next step not taken this session.
 - **Damage tracking** was not implemented — only noted as a planned future
   version, per the goal.
 - **No changes to `verification/make_t3.py`, `verification/roar/t3/`, or
@@ -185,13 +258,18 @@ environment to datacheck it end-to-end.
   (`verification/evidence/T0_pytest_basetemp.txt`), not something this
   session's changes caused.
 
-## Suggested next step
+## Suggested next step (updated after the ROAR run)
 
-Get your approval to submit `verification/roar/t4/c3d8_fiber_smoke.inp` (the
-simpler variant — no VUEL, isolates the beam-VUMAT question) to ROAR first.
-Its outcome should be read as follows: an immediate input-file-processing
-error naming beam elements would confirm the "VUMAT isn't supported on B31"
-concern outright; the BUG-016-style packager error would show whether
-`RESSTIFF` actually fixes it; a clean run through the step would clear both
-open questions for the simplest case. Only after that would running
-`vuel_fiber_smoke.inp` add information about VUEL coupling specifically.
+The "get approval to submit" step above happened and both variants now
+complete successfully — that suggested next step is done. Reasonable
+follow-ups, none done yet:
+
+1. Fix BUG-018 in `embmesh/writers.py` itself (not just this session's test
+   generator), since it affects any real mesher-generated beam deck, not
+   only this smoke test.
+2. Extract the two completed jobs' ODB field output to numerically confirm
+   zero (or near-`RESSTIFF`) compression/bending stress in this specific
+   run, closing the "quantitative physics not yet checked" gap noted above.
+3. Decide whether `RESSTIFF = 1.0e-4` is the right value for real fiber/host
+   stiffness ratios beyond this smoke test's own SI-unit property choices,
+   before using these VUMATs on a real (non-smoke-test) job.

@@ -1,0 +1,186 @@
+Analysis initiated from SIMULIA established products
+Abaqus JOB c3d8_fiber_smoke
+Abaqus 2024
+USING MEMORY DOUG-LEA ALLOCATOR
+Abaqus License Manager checked out the following licenses:
+Abaqus/Explicit checked out 5 tokens from Flexnet server license2.2e.hpc.psu.edu.
+<253 out of 300 licenses remain available>.
+Begin Compiling Single Precision Abaqus/Explicit User Subroutines
+Tue 29 Sep 2026 10:44:47 AM EDT
+Intel(R) Fortran Intel(R) 64 Compiler Classic for applications running on Intel(R) 64, Version 2021.4.0 Build 20210910_000000
+Copyright (C) 1985-2021 Intel Corporation.  All rights reserved.
+
+ Intel(R) Fortran 2021.4.0-2742
+End Compiling Single Precision Abaqus/Explicit User Subroutines
+Begin Linking Single Precision Abaqus/Explicit User Subroutines
+Intel(R) Fortran Intel(R) 64 Compiler Classic for applications running on Intel(R) 64, Version 2021.4.0 Build 20210910_000000
+Copyright (C) 1985-2021 Intel Corporation.  All rights reserved.
+
+GNU ld version 2.30-128.el8_10
+End Linking Single Precision Abaqus/Explicit User Subroutines
+Tue 29 Sep 2026 10:44:51 AM EDT
+Begin Analysis Input File Processor
+Tue 29 Sep 2026 10:44:51 AM EDT
+Run pre
+Tue 29 Sep 2026 10:44:52 AM EDT
+End Analysis Input File Processor
+Begin Abaqus/Explicit Packager
+Tue 29 Sep 2026 10:44:52 AM EDT
+PAC_NUM_THREADS VALUE: 1
+Run package
+Abaqus/Explicit 2024                             DATE 29-Sep-2026  TIME 10:44:53
+-------------------------------------------------------------------------------
+ PREPROCESSOR WARNING MESSAGES
+-------------------------------------------------------------------------------
+
+
+***WARNING: There are 5 warning messages in the data (.dat) file.  Please
+            check the data file for possible errors in the input file.
+
+
+-------------------------------------------------------------------------------
+  USER SUBROUTINE VUMAT
+-------------------------------------------------------------------------------
+
+
+***WARNING: A material defined in user subroutine VUMAT must be defined as
+            purely elastic (using the initial elastic modulus) at the
+            beginning of the analysis (stepTime=0). This is an informative
+            message. It does not necessarily indicate that user subroutine
+            VUMAT is incorrectly defined.
+
+
+-------------------------------------------------------------------------------
+ MODEL INFORMATION (IN GLOBAL X-Y COORDINATES)
+-------------------------------------------------------------------------------
+
+   Total mass in model = 7800.8
+   Center of mass of model = ( 4.999909E-01, 5.000000E-01, 4.999909E-01)
+
+    Moments of Inertia :
+                 About Center of Mass              About Origin
+      I(XX)          3.900386E+03                  7.800702E+03
+      I(YY)          3.900386E+03                  7.800631E+03
+      I(ZZ)          3.900386E+03                  7.800702E+03
+      I(XY)          3.534107E-02                 -1.950122E+03
+      I(YZ)         -1.577732E-01                 -1.950316E+03
+      I(ZX)          3.935537E-06                 -1.950122E+03
+
+-------------------------------------------------------------------------------
+ STABLE TIME INCREMENT INFORMATION
+-------------------------------------------------------------------------------
+
+
+  The stable time increment estimate for each element is based on
+  linearization about the initial state.
+
+
+   Initial time increment = 1.13804E-04
+
+   Statistics for all elements:
+      Mean = 1.33868E-02
+      Standard deviation = 8.67445E-03
+
+   Most critical elements:
+    Element number   Rank    Time increment   Increment ratio
+    (Instance name)
+   ----------------------------------------------------------
+           1          1       1.138042E-04      1.000000E+00
+    CELL-1
+         201          2       1.194863E-02      9.524452E-03
+    CELL-1
+         101          3       1.250920E-02      9.097639E-03
+    CELL-1
+         202          4       2.069564E-02      5.498944E-03
+    CELL-1
+         102          5       2.166656E-02      5.252525E-03
+    CELL-1
+
+
+  Instance name for the most critical element will be printed if the critical
+  element changes or at the beginning of a new page.
+
+
+Tue 29 Sep 2026 10:44:53 AM EDT
+End Abaqus/Explicit Packager
+Begin Abaqus/Explicit Analysis
+Tue 29 Sep 2026 10:44:53 AM EDT
+Run explicit
+
+Abaqus/Explicit 2024                             DATE 29-Sep-2026  TIME 10:44:54
+
+The single precision Abaqus/Explicit executable will be used in this analysis.
+
+
+-------------------------------------------------------------------------------
+ SOLUTION PROGRESS
+-------------------------------------------------------------------------------
+
+ STEP 1  ORIGIN 0.0000
+
+  Total memory used for step 1 is approximately 0.9 megabytes.
+  Global time estimation algorithm will be used.
+  Scaling factor:  1.0000
+              STEP     TOTAL      WALL      STABLE    CRITICAL    KINETIC      TOTAL
+INCREMENT     TIME      TIME      TIME   INCREMENT     ELEMENT     ENERGY     ENERGY
+        0  0.000E+00 0.000E+00  00:00:00 1.138E-04           1  0.000E+00  0.000E+00
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+Output Field Frame Number     0, of      5, at step time 0.000E+00
+        5  5.690E-04 5.690E-04  00:00:00 1.138E-04           1  2.373E-01  1.201E-02
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+       10  1.138E-03 1.138E-03  00:00:00 1.138E-04           1  5.465E+00  6.980E-02
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+       15  1.707E-03 1.707E-03  00:00:00 1.138E-04           1  2.741E+01  7.130E-02
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+       18  2.048E-03 2.048E-03  00:00:00 1.138E-04           1  4.613E+01  3.600E-02
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+Output Field Frame Number     1, of      5, at step time 2.048E-03
+       23  2.617E-03 2.617E-03  00:00:01 1.138E-04           1  8.448E+01  6.004E-03
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+       28  3.186E-03 3.186E-03  00:00:01 1.138E-04           1  1.432E+02 -7.726E-02
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+       33  3.755E-03 3.755E-03  00:00:01 1.138E-04           1  1.993E+02 -2.934E-01
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+       36  4.097E-03 4.097E-03  00:00:01 1.138E-04           1  2.175E+02 -4.462E-01
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+Output Field Frame Number     2, of      5, at step time 4.097E-03
+       41  4.666E-03 4.666E-03  00:00:01 1.138E-04           1  2.406E+02 -7.573E-01
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+       46  5.235E-03 5.235E-03  00:00:01 1.138E-04           1  2.548E+02 -1.168E+00
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+       51  5.804E-03 5.804E-03  00:00:01 1.138E-04           1  2.269E+02 -1.619E+00
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+       53  6.031E-03 6.031E-03  00:00:01 1.138E-04           1  2.065E+02 -1.817E+00
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+Output Field Frame Number     3, of      5, at step time 6.031E-03
+       58  6.600E-03 6.600E-03  00:00:01 1.138E-04           1  1.602E+02 -2.345E+00
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+       63  7.169E-03 7.169E-03  00:00:01 1.138E-04           1  1.135E+02 -2.805E+00
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+       68  7.738E-03 7.738E-03  00:00:01 1.138E-04           1  5.889E+01 -3.181E+00
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+       71  8.079E-03 8.079E-03  00:00:01 1.138E-04           1  3.397E+01 -3.410E+00
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+Output Field Frame Number     4, of      5, at step time 8.079E-03
+       76  8.648E-03 8.648E-03  00:00:01 1.138E-04           1  1.209E+01 -3.683E+00
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+       81  9.215E-03 9.215E-03  00:00:01 1.138E-04           1  1.896E+00 -3.802E+00
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+       86  9.777E-03 9.777E-03  00:00:01 1.138E-04           1  1.790E-01 -3.869E+00
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+       88  1.000E-02 1.000E-02  00:00:01 1.138E-04           1  3.209E-01 -3.879E+00
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+Restart Number  1 at 1.00000E-02
+Output Field Frame Number     5, of      5, at step time 1.000E-02
+  EXPLICIT EXECUTABLE TIME SUMMARY
+       USER TIME (SEC)      =  4.00000E-02
+       SYSTEM TIME (SEC)    =  2.00000E-02
+       WALLCLOCK TIME (SEC) =            1
+              INIT (SEC) =          0
+              MAIN (SEC) =          1
+
+  THE ANALYSIS HAS COMPLETED SUCCESSFULLY
+
+Tue 29 Sep 2026 10:44:55 AM EDT
+End Abaqus/Explicit Analysis
+Abaqus JOB c3d8_fiber_smoke COMPLETED

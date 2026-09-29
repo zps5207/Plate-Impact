@@ -12,9 +12,9 @@
 6, 1, 0, 1
 7, 1, 1, 1
 8, 0, 1, 1
-*User Element, type=U1, nodes=8, coordinates=3, properties=6, variables=48
+*User Element, type=VU1, nodes=8, coordinates=3, properties=6, variables=48
 1, 2, 3
-*Element, type=U1, elset=HOSTUEL
+*Element, type=VU1, elset=HOSTUEL
 1, 1, 2, 3, 4, 5, 6, 7, 8
 *UEL Property, elset=HOSTUEL
 2e+11, 0.3, 7800, 0, 0.06, 1.2
@@ -26,11 +26,13 @@
 *Element, type=B31, elset=BEAMFIBER_A
 201, 4, 8
 *Beam Section, elset=BEAMFIBER_A, material=BEAMFIBER, section=CIRC
-0.005, 1, 0, 0
+0.005
+1, 0, 0
 *Element, type=B31, elset=BEAMFIBER_B
 202, 2, 8
 *Beam Section, elset=BEAMFIBER_B, material=BEAMFIBER, section=CIRC
-0.005, 0.707106781187, 0.707106781187, 0
+0.005
+0.707106781187, 0.707106781187, 0
 *End Part
 *Assembly, name=Assembly
 *Instance, name=CELL-1, part=CELL

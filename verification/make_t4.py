@@ -63,9 +63,11 @@ def build_inp(host="vuel"):
     L += ["*Part, name=CELL", "*Node"]
     L += [f"{n}, {c[0]:.6g}, {c[1]:.6g}, {c[2]:.6g}" for n, c in NODES.items()]
     if host == "vuel":
-        L += ["*User Element, type=U1, nodes=8, coordinates=3, properties=6, variables=48",
+        # Abaqus/Explicit user-element type keys must start with "VU" (Standard's
+        # own convention, "U1", is rejected in Explicit -- see docs/BUGS.md BUG-018).
+        L += ["*User Element, type=VU1, nodes=8, coordinates=3, properties=6, variables=48",
               "1, 2, 3",
-              "*Element, type=U1, elset=HOSTUEL",
+              "*Element, type=VU1, elset=HOSTUEL",
               "1, " + ", ".join(str(n) for n in range(1, 9)),
               "*UEL Property, elset=HOSTUEL",
               f"{HOST_PROPS['E']:.6g}, {HOST_PROPS['nu']:.6g}, {HOST_PROPS['rho']:.6g}, "
@@ -82,14 +84,19 @@ def build_inp(host="vuel"):
           f"*Solid Section, elset=TRUSSFIBERS, material=TRUSSFIBER",
           f"{AREA:.12g}"]
     # 2 beam fibers, each its own elset so each gets a valid (non-parallel) n1.
+    # n1 on its OWN data line (2nd), not combined with radius on the 1st --
+    # see docs/BUGS.md BUG-018: combining them on one line silently drops n1
+    # to Abaqus's own automatic default instead of using the given value.
     L += ["*Element, type=B31, elset=BEAMFIBER_A",
           "201, 4, 8",   # vertical edge, axis = +z
           "*Beam Section, elset=BEAMFIBER_A, material=BEAMFIBER, section=CIRC",
-          f"{RADIUS:.12g}, {N1_A[0]:.12g}, {N1_A[1]:.12g}, {N1_A[2]:.12g}",
+          f"{RADIUS:.12g}",
+          f"{N1_A[0]:.12g}, {N1_A[1]:.12g}, {N1_A[2]:.12g}",
           "*Element, type=B31, elset=BEAMFIBER_B",
           "202, 2, 8",   # face/space diagonal
           "*Beam Section, elset=BEAMFIBER_B, material=BEAMFIBER, section=CIRC",
-          f"{RADIUS:.12g}, {N1_B[0]:.12g}, {N1_B[1]:.12g}, {N1_B[2]:.12g}"]
+          f"{RADIUS:.12g}",
+          f"{N1_B[0]:.12g}, {N1_B[1]:.12g}, {N1_B[2]:.12g}"]
     L += ["*End Part"]
     L += ["*Assembly, name=Assembly", "*Instance, name=CELL-1, part=CELL", "*End Instance",
           "*Nset, nset=FIXED, instance=CELL-1", "1",
