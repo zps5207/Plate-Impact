@@ -11,6 +11,17 @@ def write_volume_csv(path, rows, instance=None):
     with open(path,"w",newline="") as f:
         w=csv.writer(f); w.writerow(header); w.writerows(rows)
 
+def write_precise_volume_csv(path, rows, instance=None):
+    """Rows from volume.fiber_volume_rows_precise: cross-section-weighted
+    cylinder/hex intersection volume per host, not the length x area
+    approximation `write_volume_csv` records -- see that function's docstring."""
+    header = ["element_label", "host_volume", "fiber_volume_precise", "volume_fraction_precise", "volume_t0", "volume_t90"]
+    if instance is not None:
+        header = ["instance"] + header
+        rows = [(instance,) + tuple(r) for r in rows]
+    with open(path, "w", newline="") as f:
+        w = csv.writer(f); w.writerow(header); w.writerows(rows)
+
 def write_report(path, **data): Path(path).write_text(json.dumps(data,indent=2,sort_keys=True))
 
 def write_vtk(path,fibers, fractions=None):
