@@ -49,7 +49,8 @@ def _beam_normal(tangent, up_hint):
 
 def append_fibers_to_deck(original, path, fibers, fiber_type="truss", diameter=1.0, node_offset=100000,
                            element_offset=100000, host_elset="HOST", host_instance=None, symmetry_nodes=None,
-                           fiber_instance_name="EMBFIB-1", fiber_part_name="EMBFIB", fiber_material="Fiber"):
+                           fiber_instance_name="EMBFIB-1", fiber_part_name="EMBFIB", fiber_material="Fiber",
+                           host_labels=None, host_elset_name="EMBMESH_HOST"):
     """Append the generated fibers as a real, Abaqus-loadable addition to `original`.
 
     Abaqus rejects `*Node`/`*Element`/`*Solid Section`/`*Beam Section` unless they
@@ -59,6 +60,21 @@ def append_fibers_to_deck(original, path, fibers, fiber_type="truss", diameter=1
     instanced inside the existing `*Assembly ... *End Assembly` (inserted just
     before `*End Assembly`, whatever else that block already contains), with
     `*Embedded Element` referencing the host by its instance-qualified elset.
+
+    `host_labels` (the exact host element labels `select_elements` chose --
+    every caller in this codebase now passes this) makes the host elset
+    self-contained: a fresh `*Elset, elset=<host_elset_name>, instance=...`
+    listing exactly those labels is written into the assembly block, and
+    `*Embedded Element` references that. Without it (`host_labels=None`, kept
+    only for direct callers that never set it up), `host_elset`/`host_instance`
+    are used as a *reference* to a set the caller asserts already exists in
+    the source deck -- which was the previous, silently broken default
+    behavior: `host_elset` defaulted to the literal name "HOST", a set that
+    generally does not exist anywhere in a real source deck (confirmed
+    against Abaqus 2024: every embedded node failed with "ON AN EMBEDDED
+    ELEMENT DOES NOT LIE IN ANY HOST ELEMENT", because Abaqus could not even
+    resolve the referenced host elset -- "Unknown part instance set
+    <instance>.HOST" -- not because of any actual geometric placement issue).
     """
     typ = "T3D2" if fiber_type == "truss" else "B31"
     out = list(original.splitlines())
@@ -122,7 +138,18 @@ def append_fibers_to_deck(original, path, fibers, fiber_type="truss", diameter=1
     fib_part = [f"*Part, name={fiber_part_name}"] + node_lines + section_lines + ["*End Part"]
     fib_instance = [f"*Instance, name={fiber_instance_name}, part={fiber_part_name}", "*End Instance"]
 
-    host_ref = f"{host_instance}.{host_elset}" if host_instance else host_elset
+    host_elset_lines = []
+    if host_labels is not None:
+        # A fresh, self-contained assembly-level elset -- valid regardless of
+        # whether the source deck happens to define anything by this name --
+        # referenced by its bare name (an assembly *Elset with instance= is
+        # scoped at the assembly level, no instance prefix needed/allowed).
+        host_elset_lines = [f"*Elset, elset={host_elset_name}, instance={host_instance}"]
+        labels = sorted(host_labels)
+        host_elset_lines += [", ".join(str(x) for x in labels[i:i + 16]) for i in range(0, len(labels), 16)]
+        host_ref = host_elset_name
+    else:
+        host_ref = f"{host_instance}.{host_elset}" if host_instance else host_elset
     emb = [f"*Embedded Element, host elset={host_ref}"] + [f"{fiber_instance_name}.{n}" for n in all_elset_names]
 
     nset_lines = []
@@ -140,5 +167,5 @@ def append_fibers_to_deck(original, path, fibers, fiber_type="truss", diameter=1
     # Fiber is assumed to be defined in the source deck.  Do not append a
     # material block after the analysis steps: Abaqus reads material definitions
     # in the model-data region, before the first *Step.
-    new = out[:ip] + fib_part + out[ip:ia] + fib_instance + emb + nset_lines + out[ia:]
+    new = out[:ip] + fib_part + out[ip:ia] + fib_instance + host_elset_lines + emb + nset_lines + out[ia:]
     Path(path).write_text("\n".join(new) + "\n")

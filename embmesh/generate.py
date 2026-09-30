@@ -110,7 +110,7 @@ def mesh(deck_path, instance, diameter, output_dir, elset=None, gap=0., fiber_ty
     append_fibers_to_deck('\n'.join(d.original_lines), out / 'output.inp', fibers, fiber_type, diameter,
                            node_offset=node_offset, element_offset=element_offset,
                            host_elset=elset or 'HOST', host_instance=instance, symmetry_nodes=propagated,
-                           fiber_material=fiber_material)
+                           fiber_material=fiber_material, host_labels=list(elems.keys()))
     report_kw = dict(fiber_count=len(fibers), host_count=len(elems), curved=curved,
                  curve_meta={k: (list(v) if isinstance(v, np.ndarray) else v) for k, v in curve_meta.items()},
                  symmetry_constraints={k: [int(v[0]), float(v[1])] for k, v in constraints.items()},
