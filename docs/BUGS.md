@@ -25,6 +25,7 @@ Commit under test: `9176486` (branch `mesher-v0.1`). All repro commands run with
 | RISK-017 | **cleared (for this Abaqus 2024 install)** | vumat | Abaqus/Explicit's documented VUMAT-capable element types are continuum/shell/membrane/truss; beam is not listed. `VUMAT_beam.for` uses it on B31 anyway (2026-09-29 goal decision). Confirmed on real Abaqus 2024 (ROAR job 55900454): the VUMAT is called for the B31 element and the job (`c3d8_fiber_smoke`) runs to `THE ANALYSIS HAS COMPLETED SUCCESSFULLY` with this file's assumed `strainInc` layout (axial, then shear) |
 | BUG-018 | major, confirmed, **fixed** | writers/vumat decks | `*Beam Section, section=CIRC` with radius and `n1` combined on ONE data line silently does not use the given `n1` -- Abaqus falls back to its own automatic default normal, which is degenerate (parallel to the element axis) whenever the beam's own axis happens to coincide with Abaqus's preferred default-normal direction. Confirmed on real Abaqus 2024 |
 | BUG-019 | major, confirmed, **fixed** | verification/make_t4.py | Abaqus/Explicit user-element type keys must start with `VU` (e.g. `VU1`); the Standard-only convention `U1` is rejected (`ELEMENT TYPE U1 IS NOT AVAILABLE IN Abaqus/Explicit`). Confirmed on real Abaqus 2024 |
+| BUG-020 | major, confirmed, **Abaqus limitation, not an embmesh defect** | Abaqus/Explicit itself | Native `*Embedded Element` fails 100% of embedded fiber nodes (uniformly, not geometry-dependent) when the host is a `*User Element` (VUEL) instead of a native continuum element, even with a confirmed-valid host elset. Confirmed on real Abaqus 2024 (ROAR job 55933355); blocks a VUEL-host toggle from reusing the mesher's existing embedding path |
 
 ---
 
@@ -349,3 +350,22 @@ Commit under test: `9176486` (branch `mesher-v0.1`). All repro commands run with
 - Evidence: `verification/evidence/T1_volume_layup.log` (`T1.5 truss/beam: fiber material is a placeholder`).
 - Suspected cause: hard-coded literal in `append_fibers_to_deck`.
 - Proposed fix (not applied): add `--fiber-modulus`/`--fiber-density`/`--fiber-poisson` CLI options (or accept a material block passthrough), and/or print a warning naming the placeholder values on every run.
+
+### BUG-020 — native `*Embedded Element` does not work on a `*User Element` (VUEL) host
+- Severity: major (blocks a native-embedding-based VUEL host toggle entirely)
+- Component: Abaqus/Explicit itself (not an embmesh code defect); relevant to any future `embmesh` host-element-type option
+- Repro: `verification/make_t5_uel_embed.py` generates two decks that are byte-identical except for the host element block: `c3d8_host.inp` (native `*Element, type=C3D8R` + `*Solid Section`) and `vuel_host.inp` (`*User Element, type=VU1` + `*Element, type=VU1` + `*UEL Property`, `uel/VUEL.for`). Both use the mesher's own real multi-element (2x2x2) host and a genuine floating-point fiber layup (`embmesh visualize --diameter 0.2 --gap 0.05`, truss fibers) written through the now-fixed `EMBMESH_HOST` elset + `*Embedded Element` path (see the fix immediately preceding this entry) -- so the elset itself is confirmed valid and active in both decks.
+- Expected: if `*Embedded Element`'s host point-location search works on a `*User Element` host at all, `vuel_host.inp` should either succeed like its control, or fail with a *geometric* placement error for specific nodes (e.g. a node genuinely outside the host envelope), not fail for every embedded node uniformly.
+- Actual, confirmed against real Abaqus 2024 (ROAR job 55933355, 2026-09-30): `c3d8_host` completed successfully (`THE ANALYSIS HAS COMPLETED SUCCESSFULLY`). `vuel_host` failed at the Analysis Input File Processor stage with all 32 embedded fiber nodes rejected:
+  ```
+  ***ERROR: NODE 100000 INSTANCE EMBFIB-1 ON AN EMBEDDED ELEMENT DOES NOT LIE IN
+             ANY HOST ELEMENT. CHECK COORDINATES, EXTERIOR TOLERANCE AND ABSOLUTE
+             EXTERIOR TOLERANCE PARAMETERS, AND THE HOST ELEMENT SET DEFINITION.
+  ... (repeated for nodes 100001-100031)
+  ***ERROR: 32 nodes on an embedded element do not lie in any host element.
+  ```
+  100% failure, uniform across every node regardless of its actual geometric position, strongly indicates Abaqus's embedded-element host search does not attempt point-location against `*User Element` hosts at all (as opposed to a geometry/tolerance problem, which would fail some nodes and not others).
+- Evidence: `verification/roar/t5/{c3d8_host,vuel_host}.inp`, ROAR job 55933355 (`run_c3d8_host/c3d8_host.{dat,stdout}` rc=0, `run_vuel_host/vuel_host.{dat,stdout}` rc=1).
+- Corroborates and extends the caution already recorded in `docs/VUMAT_PROGRESS_2026-09-29.md` (make_t4.py's `vuel_fiber_smoke` deliberately avoided `*Embedded Element` for its VUEL host, coupling via directly shared corner-node DOFs instead) -- that avoidance was justified; this is the first test that actually exercised `*Embedded Element`'s host search against a VUEL host with real non-corner-coincident fiber nodes, and it fails outright.
+- Consequence for a future host-element-type toggle: a VUEL host option cannot reuse the mesher's existing `*Embedded Element`-based coupling unchanged. It needs either (a) a node-snapped coupling scheme (generate fiber nodes coincident with existing host mesh nodes, sharing DOFs directly -- the only coupling this project has confirmed works with VUEL, so far only demonstrated for a single host element) generalized to a real multi-element host and arbitrary fiber layout, or (b) some other tie/constraint mechanism (e.g. `*Tie`, `*MPC`, `*Coupling`) verified against real Abaqus first. Not attempted in this session.
+- Proposed fix: none applicable to embmesh itself (this is an Abaqus/Explicit capability limit, not a mesher defect); any fix lives in the coupling-strategy design for VUEL-host support.

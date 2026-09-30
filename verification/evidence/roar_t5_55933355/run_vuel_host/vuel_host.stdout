@@ -1,0 +1,32 @@
+Analysis initiated from SIMULIA established products
+Abaqus JOB vuel_host
+Abaqus 2024
+USING MEMORY DOUG-LEA ALLOCATOR
+Abaqus License Manager checked out the following licenses:
+Abaqus/Explicit checked out 5 tokens from Flexnet server license2.2e.hpc.psu.edu.
+<253 out of 300 licenses remain available>.
+Begin Compiling Single Precision Abaqus/Explicit User Subroutines
+Wed 30 Sep 2026 03:23:12 PM EDT
+Intel(R) Fortran Intel(R) 64 Compiler Classic for applications running on Intel(R) 64, Version 2021.4.0 Build 20210910_000000
+Copyright (C) 1985-2021 Intel Corporation.  All rights reserved.
+
+ Intel(R) Fortran 2021.4.0-2742
+vuel_host_user.for(38): remark #15009: vuel_ has been targeted for automatic cpu dispatch
+vuel_host_user.for(540): remark #15009: shape8h_tl_ has been targeted for automatic cpu dispatch
+vuel_host_user.for(902): remark #15009: build_bl_matrix_ has been targeted for automatic cpu dispatch
+vuel_host_user.for(752): remark #15009: compute_green_lagrange_ has been targeted for automatic cpu dispatch
+End Compiling Single Precision Abaqus/Explicit User Subroutines
+Begin Linking Single Precision Abaqus/Explicit User Subroutines
+Intel(R) Fortran Intel(R) 64 Compiler Classic for applications running on Intel(R) 64, Version 2021.4.0 Build 20210910_000000
+Copyright (C) 1985-2021 Intel Corporation.  All rights reserved.
+
+GNU ld version 2.30-128.el8_10
+End Linking Single Precision Abaqus/Explicit User Subroutines
+Wed 30 Sep 2026 03:23:19 PM EDT
+Begin Analysis Input File Processor
+Wed 30 Sep 2026 03:23:19 PM EDT
+Run pre
+Wed 30 Sep 2026 03:23:20 PM EDT
+Abaqus Error: Analysis Input File Processor exited with an error - Please see the 
+vuel_host.dat file for possible error messages if the file exists.
+Abaqus/Analysis exited with errors

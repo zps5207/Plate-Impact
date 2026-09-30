@@ -1,0 +1,170 @@
+Analysis initiated from SIMULIA established products
+Abaqus JOB c3d8_host
+Abaqus 2024
+USING MEMORY DOUG-LEA ALLOCATOR
+Abaqus License Manager checked out the following licenses:
+Abaqus/Explicit checked out 5 tokens from Flexnet server license2.2e.hpc.psu.edu.
+<253 out of 300 licenses remain available>.
+Begin Analysis Input File Processor
+Wed 30 Sep 2026 03:23:06 PM EDT
+Run pre
+Wed 30 Sep 2026 03:23:07 PM EDT
+End Analysis Input File Processor
+Begin Abaqus/Explicit Packager
+Wed 30 Sep 2026 03:23:07 PM EDT
+PAC_NUM_THREADS VALUE: 1
+Run package
+Abaqus/Explicit 2024                             DATE 30-Sep-2026  TIME 15:23:08
+-------------------------------------------------------------------------------
+ PREPROCESSOR WARNING MESSAGES
+-------------------------------------------------------------------------------
+
+
+***WARNING: There are 5 warning messages in the data (.dat) file.  Please
+            check the data file for possible errors in the input file.
+
+
+-------------------------------------------------------------------------------
+ MODEL INFORMATION (IN GLOBAL X-Y COORDINATES)
+-------------------------------------------------------------------------------
+
+   Total mass in model = 2.10478E-09
+   Center of mass of model = ( 4.946266E-01, 4.946266E-01, 4.892533E-01)
+
+    Moments of Inertia :
+                 About Center of Mass              About Origin
+      I(XX)          5.196698E-10                  1.538433E-09
+      I(YY)          5.196697E-10                  1.538433E-09
+      I(ZZ)          5.973231E-10                  1.627214E-09
+      I(XY)          6.074509E-14                 -5.148846E-10
+      I(YZ)         -1.574954E-12                 -5.109262E-10
+      I(ZX)          1.252478E-12                 -5.080987E-10
+
+-------------------------------------------------------------------------------
+ STABLE TIME INCREMENT INFORMATION
+-------------------------------------------------------------------------------
+
+
+  The stable time increment estimate for each element is based on
+  linearization about the initial state.
+
+
+   Initial time increment = 8.24830E-08
+
+   Statistics for all elements:
+      Mean = 1.03675E-07
+      Standard deviation = 3.06141E-08
+
+   Most critical elements:
+    Element number   Rank    Time increment   Increment ratio
+    (Instance name)
+   ----------------------------------------------------------
+      100000          1       8.248301E-08      1.000000E+00
+    EMBFIB-1
+      100002          2       8.248301E-08      1.000000E+00
+    EMBFIB-1
+      100008          3       8.248301E-08      1.000000E+00
+    EMBFIB-1
+      100010          4       8.248301E-08      1.000000E+00
+    EMBFIB-1
+      100001          5       8.248304E-08      9.999996E-01
+    EMBFIB-1
+      100003          6       8.248304E-08      9.999996E-01
+    EMBFIB-1
+      100004          7       8.248304E-08      9.999996E-01
+    EMBFIB-1
+      100006          8       8.248304E-08      9.999996E-01
+    EMBFIB-1
+      100009          9       8.248304E-08      9.999996E-01
+    EMBFIB-1
+      100011         10       8.248304E-08      9.999996E-01
+    EMBFIB-1
+
+
+  Instance name for the most critical element will be printed if the critical
+  element changes or at the beginning of a new page.
+
+
+Wed 30 Sep 2026 03:23:09 PM EDT
+End Abaqus/Explicit Packager
+Begin Abaqus/Explicit Analysis
+Wed 30 Sep 2026 03:23:09 PM EDT
+Run explicit
+
+Abaqus/Explicit 2024                             DATE 30-Sep-2026  TIME 15:23:09
+
+The single precision Abaqus/Explicit executable will be used in this analysis.
+
+
+-------------------------------------------------------------------------------
+ SOLUTION PROGRESS
+-------------------------------------------------------------------------------
+
+ STEP 1  ORIGIN 0.0000
+
+  Total memory used for step 1 is approximately 1.0 megabytes.
+  Global time estimation algorithm will be used.
+  Scaling factor:  1.0000
+              STEP     TOTAL      WALL      STABLE    CRITICAL    KINETIC      TOTAL
+INCREMENT     TIME      TIME      TIME   INCREMENT     ELEMENT     ENERGY     ENERGY
+        0  0.000E+00 0.000E+00  00:00:01 8.248E-08      100010  0.000E+00  0.000E+00
+INSTANCE WITH CRITICAL ELEMENT: EMBFIB-1
+Output Field Frame Number     0, of      5, at step time 0.000E+00
+      607  5.007E-05 5.007E-05  00:00:01 8.248E-08      100014  2.284E-10 -9.168E-12
+INSTANCE WITH CRITICAL ELEMENT: EMBFIB-1
+     1214  1.001E-04 1.001E-04  00:00:01 8.248E-08      100006  2.960E-09 -1.189E-10
+INSTANCE WITH CRITICAL ELEMENT: EMBFIB-1
+     1821  1.502E-04 1.502E-04  00:00:01 8.248E-08      100007  1.195E-08 -1.649E-09
+INSTANCE WITH CRITICAL ELEMENT: EMBFIB-1
+     2425  2.000E-04 2.000E-04  00:00:01 8.248E-08      100007  2.959E-08 -2.147E-08
+INSTANCE WITH CRITICAL ELEMENT: EMBFIB-1
+Output Field Frame Number     1, of      5, at step time 2.000E-04
+     3032  2.501E-04 2.501E-04  00:00:01 8.248E-08      100007  5.598E-08 -9.796E-08
+INSTANCE WITH CRITICAL ELEMENT: EMBFIB-1
+     3639  3.001E-04 3.001E-04  00:00:01 8.248E-08      100007  8.829E-08 -3.239E-07
+INSTANCE WITH CRITICAL ELEMENT: EMBFIB-1
+     4246  3.502E-04 3.502E-04  00:00:01 8.248E-08      100007  1.219E-07 -8.295E-07
+INSTANCE WITH CRITICAL ELEMENT: EMBFIB-1
+     4850  4.000E-04 4.000E-04  00:00:01 8.248E-08      100007  1.511E-07 -1.457E-06
+INSTANCE WITH CRITICAL ELEMENT: EMBFIB-1
+Output Field Frame Number     2, of      5, at step time 4.000E-04
+     5457  4.501E-04 4.501E-04  00:00:01 8.248E-08      100007  1.713E-07 -2.590E-06
+INSTANCE WITH CRITICAL ELEMENT: EMBFIB-1
+     6064  5.002E-04 5.002E-04  00:00:01 8.248E-08      100007  1.788E-07 -3.178E-06
+INSTANCE WITH CRITICAL ELEMENT: EMBFIB-1
+     6671  5.502E-04 5.502E-04  00:00:01 8.248E-08      100007  1.722E-07 -3.811E-06
+INSTANCE WITH CRITICAL ELEMENT: EMBFIB-1
+     7275  6.000E-04 6.000E-04  00:00:01 8.248E-08      100007  1.529E-07 -1.312E-06
+INSTANCE WITH CRITICAL ELEMENT: EMBFIB-1
+Output Field Frame Number     3, of      5, at step time 6.000E-04
+     7882  6.501E-04 6.501E-04  00:00:01 8.248E-08      100007  1.240E-07  4.111E-06
+INSTANCE WITH CRITICAL ELEMENT: EMBFIB-1
+     8489  7.002E-04 7.002E-04  00:00:01 8.247E-08      100007  9.060E-08  1.102E-05
+INSTANCE WITH CRITICAL ELEMENT: EMBFIB-1
+     9096  7.502E-04 7.502E-04  00:00:01 8.247E-08      100007  5.814E-08  1.820E-05
+INSTANCE WITH CRITICAL ELEMENT: EMBFIB-1
+     9700  8.001E-04 8.001E-04  00:00:01 8.247E-08      100007  3.151E-08  2.705E-05
+INSTANCE WITH CRITICAL ELEMENT: EMBFIB-1
+Output Field Frame Number     4, of      5, at step time 8.001E-04
+    10307  8.501E-04 8.501E-04  00:00:01 8.247E-08      100007  1.325E-08  3.371E-05
+INSTANCE WITH CRITICAL ELEMENT: EMBFIB-1
+    10914  9.002E-04 9.002E-04  00:00:01 8.247E-08      100007  3.752E-09  3.805E-05
+INSTANCE WITH CRITICAL ELEMENT: EMBFIB-1
+    11521  9.503E-04 9.503E-04  00:00:01 8.247E-08      100007  6.453E-10  3.896E-05
+INSTANCE WITH CRITICAL ELEMENT: EMBFIB-1
+    12125  1.000E-03 1.000E-03  00:00:01 8.247E-08      100007  2.018E-10  4.025E-05
+INSTANCE WITH CRITICAL ELEMENT: EMBFIB-1
+Restart Number  1 at 1.00000E-03
+Output Field Frame Number     5, of      5, at step time 1.000E-03
+  EXPLICIT EXECUTABLE TIME SUMMARY
+       USER TIME (SEC)      =  0.26000
+       SYSTEM TIME (SEC)    =  3.00000E-02
+       WALLCLOCK TIME (SEC) =            1
+              INIT (SEC) =          1
+              MAIN (SEC) =          0
+
+  THE ANALYSIS HAS COMPLETED SUCCESSFULLY
+
+Wed 30 Sep 2026 03:23:11 PM EDT
+End Abaqus/Explicit Analysis
+Abaqus JOB c3d8_host COMPLETED
