@@ -2,7 +2,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 import numpy as np
 from .layup import orthogonal_directions
-from .geometry import clip_segment_hex_bounds
+from .geometry import boundary_faces, segment_boundary_crossings
 
 _AXES = {"x": np.array([1., 0, 0]), "y": np.array([0., 1, 0]), "z": np.array([0., 0, 1])}
 
@@ -66,59 +66,58 @@ def _layer_positions(lo, hi, diameter, gap, eps=1e-9):
     return [lo + diameter / 2 + k * pitch for k in range(max(n, 0))]
 
 
-def _host_bounds(elems, nodes):
-    """Pre-compute each host hex's node array and axis-aligned bbox once, reused
-    for every fiber row's boundary clip below."""
-    out = []
-    for e in elems.values():
-        hp = np.asarray([nodes[i] for i in e.connectivity[:8]], float)
-        out.append((hp, hp.min(0), hp.max(0)))
-    return out
+def _boundary_quads(elems, nodes):
+    """Pre-compute the host mesh's outer-boundary quads as physical node
+    coordinates (once per `flat_disc_fibers` call), reused for every fiber
+    row's boundary clip below."""
+    return [tuple(np.asarray(nodes[n], float) for n in face) for face in boundary_faces(elems)]
 
 
-def _row_coverage(a, b, host_bounds):
+def _row_coverage(a, b, boundary_quads):
     """Parametric sub-intervals of segment a->b (each a (t_lo, t_hi) in [0, 1])
-    that actually lie inside the union of host hexes, merging touching/overlapping
-    hosts into contiguous runs. This is what makes a fiber row follow the host
-    mesh's real (possibly curved/irregular) in-plane boundary instead of the
-    bounding box of the whole node cloud -- a rectangular candidate row over a
-    round or notched plate is trimmed down to just the part that actually sits
-    over host material (BUG-009: fibers overshooting a non-rectangular plate)."""
-    a = np.asarray(a, float); b = np.asarray(b, float)
-    lo_bb, hi_bb = np.minimum(a, b), np.maximum(a, b)
-    intervals = []
-    for hp, hmin, hmax in host_bounds:
-        if np.any(hi_bb < hmin - 1e-9) or np.any(lo_bb > hmax + 1e-9):
-            continue
-        bounds = clip_segment_hex_bounds(a, b, hp)
-        if bounds is not None:
-            intervals.append(bounds)
-    if not intervals:
-        return []
-    intervals.sort()
-    merged = [list(intervals[0])]
-    for t_lo, t_hi in intervals[1:]:
-        if t_lo <= merged[-1][1] + 1e-7:
-            merged[-1][1] = max(merged[-1][1], t_hi)
-        else:
-            merged.append([t_lo, t_hi])
-    return [tuple(m) for m in merged]
+    that actually lie inside the host material, from where the segment crosses
+    the host mesh's *outer* boundary surface (see
+    `geometry.segment_boundary_crossings`). This is what makes a fiber row
+    follow the host mesh's real (possibly curved/irregular) in-plane boundary
+    instead of the bounding box of the whole node cloud -- a rectangular
+    candidate row over a round or notched plate is trimmed down to just the
+    part that actually sits over host material (BUG-009: fibers overshooting
+    a non-rectangular plate) -- while staying a single continuous run through
+    the interior: unlike clipping against every individual host element (which
+    can spuriously fragment a row at internal element boundaries, especially
+    where the host mesh has small or skewed elements), only the plate's true
+    outer edge can end a row."""
+    crossings = segment_boundary_crossings(a, b, boundary_quads)
+    return [(crossings[i], crossings[i + 1]) for i in range(0, len(crossings) - 1, 2)]
 
 
 def flat_disc_fibers(elems, nodes, diameter, thickness_axis=None, gap=0.0, reference=(1, 0, 0), end_inset=0.0):
     """Straight 0/90 fiber layup for a flat plate, box, or cube (parallel front/back
     faces). `thickness_axis` selects/overrides the through-thickness direction --
-    see `pick_thickness_axis`. Each candidate row is clipped to the actual host
-    element footprint (`elems`), not just the node cloud's bounding box, so a
-    non-rectangular in-plane boundary (round, notched, L-shaped, ...) is respected
-    -- see `_row_coverage`."""
+    see `pick_thickness_axis`. Each row is generated full-width (as in a
+    conventional 0/90 layup projected onto the part) and then clipped to the
+    host mesh's true outer boundary (`elems`) -- not the node cloud's bounding
+    box, and not the individual host elements it happens to cross -- so a
+    non-rectangular in-plane boundary (round, notched, L-shaped, ...) is
+    respected while every row still stays one continuous run from edge to
+    edge, exactly as a real ply would. See `_row_coverage`."""
     pts = np.asarray(list(nodes.values()), float)
     axis = pick_thickness_axis(nodes, thickness_axis)
     center = pts.mean(0)
     t0, t1 = orthogonal_directions(reference, axis)
     w = pts @ axis
     lo, hi = w.min(), w.max()
-    host_bounds = _host_bounds(elems, nodes)
+    boundary_quads = _boundary_quads(elems, nodes)
+    # A fiber row clipped exactly to the host's true boundary surface lands its
+    # endpoint exactly ON that surface -- a measure-zero, numerically ambiguous
+    # case for *any* point-in-host test (ours, and Abaqus's own embedded-element
+    # host search; see docs/BUGS.md BUG-009, where Abaqus rejected embedded
+    # nodes sitting exactly at a host face even with widened tolerances). A tiny
+    # nudge inward -- far smaller than the fiber diameter or any host element,
+    # so it changes nothing visually or physically -- puts every endpoint
+    # solidly inside a host instead of balanced on its edge.
+    model_scale = max(float(np.linalg.norm(pts.max(0) - pts.min(0))), diameter)
+    boundary_eps = model_scale * 1e-6
     fibers = []
     label = 1
     for k, z in enumerate(_layer_positions(lo, hi, diameter, gap)):
@@ -133,14 +132,14 @@ def flat_disc_fibers(elems, nodes, diameter, thickness_axis=None, gap=0.0, refer
             a_full = base + lo2 * d
             b_full = base + hi2 * d
             span = hi2 - lo2
-            for t_lo, t_hi in _row_coverage(a_full, b_full, host_bounds):
+            for t_lo, t_hi in _row_coverage(a_full, b_full, boundary_quads):
                 # end_inset (default 0) is an optional caller-requested margin,
                 # applied on top of the real host-footprint clip above -- e.g. a
                 # fully-packed lattice that exactly tiles a rectangular host (as
                 # in the flat-plate acceptance test) is expected to run flush to
-                # the host boundary with no inset at all.
-                lo3 = lo2 + t_lo * span + end_inset
-                hi3 = lo2 + t_hi * span - end_inset
+                # the host boundary, modulo only the tiny numerical nudge above.
+                lo3 = lo2 + t_lo * span + end_inset + boundary_eps
+                hi3 = lo2 + t_hi * span - end_inset - boundary_eps
                 if hi3 <= lo3:
                     continue
                 fibers.append(Fiber(label, np.array([base + lo3 * d, base + hi3 * d]), k, "t0" if j == 0 else "t90"))

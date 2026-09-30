@@ -137,6 +137,88 @@ def _disk_offsets(e1, e2, radius):
     return np.asarray(pts)
 
 
+# Standard Abaqus C3D8 node order (indices into element.connectivity[:8]),
+# one CCW-from-outside quad per face -- matches HEX_EDGES in embmesh.hostvtk.
+HEX_FACES = ((0, 1, 2, 3), (4, 5, 6, 7), (0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7))
+
+
+def boundary_faces(elements):
+    """The host mesh's outer-skin quad faces (as node-label tuples): a face
+    shared by two neighboring host hexes is internal and is dropped. Faces are
+    matched by their node-label set, so this only relies on the host mesh being
+    conforming (shared nodes on shared faces), which is already required for a
+    valid Abaqus mesh. Shared by `embmesh.fibers` (clipping a fiber row to the
+    host's true outer edge) and `embmesh.visualize` (rendering that same outer
+    surface)."""
+    counts: dict[frozenset, int] = {}
+    face_nodes: dict[frozenset, tuple] = {}
+    for element in elements.values():
+        conn = element.connectivity[:8]
+        for face in HEX_FACES:
+            ids = tuple(conn[i] for i in face)
+            key = frozenset(ids)
+            counts[key] = counts.get(key, 0) + 1
+            face_nodes[key] = ids
+    return [face_nodes[k] for k, c in counts.items() if c == 1]
+
+
+def _ray_triangle(p0, d, v0, v1, v2, eps=1e-12):
+    """Moeller-Trumbore ray/triangle intersection, two-sided (no back-face
+    culling -- we only care about *where* a line crosses the boundary surface,
+    not which side it's approached from). Returns the parametric t along
+    p0 + t*d where the (infinite) ray hits triangle v0,v1,v2, or None if it
+    misses or runs parallel to the triangle's plane."""
+    e1 = v1 - v0; e2 = v2 - v0
+    h = np.cross(d, e2)
+    det = e1 @ h
+    if -eps < det < eps:
+        return None
+    f = 1.0 / det
+    s = p0 - v0
+    u = f * (s @ h)
+    if u < -1e-9 or u > 1 + 1e-9:
+        return None
+    q = np.cross(s, e1)
+    v = f * (d @ q)
+    if v < -1e-9 or u + v > 1 + 1e-9:
+        return None
+    return f * (e2 @ q)
+
+
+def segment_boundary_crossings(a, b, boundary_quads, tol=1e-7):
+    """Parametric t in [0, 1] for every point where segment a->b crosses the
+    host mesh's outer boundary surface (`boundary_quads`: each a 4-tuple of
+    physical node coordinates, from `boundary_faces` + a node-coordinate
+    lookup, one triangulated diagonal-split pair per quad). Near-duplicate
+    crossings (the ray passing exactly through a boundary quad's shared
+    diagonal is hit once by each of its two triangles) are merged.
+
+    This is what lets a fiber row be clipped to the plate's true outer edge
+    without ever testing individual interior host elements: between two
+    consecutive boundary crossings, the segment is either entirely inside or
+    entirely outside the host material, by construction of a valid,
+    conforming, watertight solid mesh -- so unlike clipping against every
+    host element's own (possibly skewed, possibly numerically marginal)
+    interior geometry, this cannot fragment a single continuous row into
+    spurious pieces at internal element boundaries."""
+    a = np.asarray(a, float); b = np.asarray(b, float)
+    d = b - a
+    hits = []
+    for quad in boundary_quads:
+        v0, v1, v2, v3 = quad
+        for tri in ((v0, v1, v2), (v0, v2, v3)):
+            t = _ray_triangle(a, d, *tri)
+            if t is not None and -tol <= t <= 1 + tol:
+                hits.append(min(max(t, 0.0), 1.0))
+    hits.sort()
+    merged = []
+    for t in hits:
+        if merged and t - merged[-1] <= tol:
+            continue
+        merged.append(t)
+    return merged
+
+
 def swept_cylinder_hex_volume(a, b, radius, nodes, tol=1e-8, n_along=7, t_range=None):
     """Volume of the intersection between a straight cylinder (centerline a->b,
     the given radius) and one host hex -- unlike `clip_segment_hex`'s length x

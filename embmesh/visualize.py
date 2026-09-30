@@ -7,30 +7,9 @@ import numpy as np
 # implementation (kept importable from here too so nothing that imported it
 # from this module breaks).
 from .hostvtk import HEX_EDGES, write_host_fiber_vtk  # noqa: F401
-
-# Standard Abaqus C3D8 node order (indices into element.connectivity[:8]),
-# one CCW-from-outside quad per face -- matches HEX_EDGES above.
-_HEX_FACES = ((0, 1, 2, 3), (4, 5, 6, 7), (0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7))
-
-
-def _boundary_faces(elements):
-    """The host mesh's outer-skin quad faces: a face shared by two neighboring
-    host hexes is internal and is dropped (it would otherwise be drawn twice,
-    doubling the triangle count for no visual benefit and making a translucent
-    render of adjacent faces look artificially darker/more opaque where they
-    overlap). Faces are matched by their node-label set, so this only relies on
-    the host mesh being conforming (shared nodes on shared faces), which is
-    already required for a valid Abaqus mesh."""
-    counts: dict[frozenset, int] = {}
-    face_nodes: dict[frozenset, tuple] = {}
-    for element in elements.values():
-        conn = element.connectivity[:8]
-        for face in _HEX_FACES:
-            ids = tuple(conn[i] for i in face)
-            key = frozenset(ids)
-            counts[key] = counts.get(key, 0) + 1
-            face_nodes[key] = ids
-    return [face_nodes[k] for k, c in counts.items() if c == 1]
+# boundary_faces (the host mesh's outer-skin quads) is shared with
+# embmesh.fibers, which clips fiber rows to this same true outer edge.
+from .geometry import boundary_faces as _boundary_faces
 
 
 def plot_host_fibers(path, elements, nodes, fibers, fractions=None):
