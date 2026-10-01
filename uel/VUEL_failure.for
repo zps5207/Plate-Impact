@@ -84,6 +84,32 @@ C     DETF<=0 is always an immediate trip regardless of JAC_FAIL's value,
 C     so an inverted element cannot be missed even if JAC_FAIL were set to
 C     0 or negative by mistake.
 C
+C     DEAD-STATE HYGIENE (new in this branch, Stage 4): once failed, a
+C     few more quantities besides stress/force are also suppressed or
+C     overridden so the dead element does not keep quietly influencing
+C     the analysis:
+C       - dtimeStable is reported as a large sentinel (1D30) instead of
+C         the element's own computed value, so a dead element never keeps
+C         capping the analysis's GLOBAL stable time increment (Abaqus
+C         takes the minimum dtimeStable over all elements) just because
+C         it still has mass.
+C       - Rayleigh and bulk-viscosity dissipation are no longer
+C         accumulated into the energy array once failed (ELIE/plastic
+C         dissipation were already skipped from the branch this was added
+C         on top of). STRESS_VISC/STRESS_BULK are still computed from the
+C         dead element's current strain rate (its nodes keep moving under
+C         their own inertia), but since its actual contribution to FINT
+C         is zero, attributing nonzero "dissipation" to it would be a
+C         bookkeeping error -- a dead element does zero work, full stop.
+C       - Kinetic energy (ELKE) is deliberately NOT suppressed: the dead
+C         element's nodes still have mass and velocity, and that is a
+C         real, correct contribution to the model's total kinetic energy
+C         that should not disappear just because the element stopped
+C         exerting force.
+C       - Mass itself is never touched (still true, repeated from above):
+C         a UEL's amass is set once at jMassCalc and this file has no
+C         hook to revisit it afterward.
+C
 C     Props array:
 C       props(1)  = Young's modulus E [Pa]
 C       props(2)  = Poisson's ratio nu [-]
@@ -734,16 +760,26 @@ C             (zero when the step was elastic, DGAMMA=0)
      *            + 0.5D0*(SIGY_OLD+SIGY_NEW)*DGAMMA*DVOL
             END IF
 C
-C           Rayleigh dissipation
-            DO I = 1, 6
-              DAMP_DISSIP = DAMP_DISSIP 
+C           Rayleigh and bulk-viscosity dissipation -- skipped once failed,
+C           same as ELIE/PLASTIC_DISSIP above. STRESS_VISC/STRESS_BULK are
+C           computed from this increment's strain rate regardless of
+C           failed state (the dead element's nodes keep moving under
+C           their own inertia), but STRESS_TOTAL is zeroed for a failed
+C           element before it reaches FINT, so it does zero actual work;
+C           without this guard these two energy quantities would silently
+C           keep accumulating for an element contributing no force,
+C           exactly the "energy bookkeeping error" dead-state hygiene is
+C           meant to avoid (Stage 4).
+            IF (.NOT. ELEM_ALREADY_FAILED) THEN
+              DO I = 1, 6
+                DAMP_DISSIP = DAMP_DISSIP
      *                      + STRESS_VISC(I) * STRAINRATE_VEC(I) * DVOL * dtimeCur
-            END DO
+              END DO
 C
-C           Bulk viscosity dissipation
-            IF (EVDOT .LT. 0.0D0) THEN
-              BV_DISSIP = BV_DISSIP 
-     *                    + QBULK * DABS(EVDOT) * DVOL * dtimeCur
+              IF (EVDOT .LT. 0.0D0) THEN
+                BV_DISSIP = BV_DISSIP
+     *                      + QBULK * DABS(EVDOT) * DVOL * dtimeCur
+              END IF
             END IF
 C
           END DO
@@ -801,15 +837,28 @@ C         ----------------------------------------------------------
 C         Stable time increment
 C         For finite strain, wave speed changes with deformation
 C         Conservative estimate using reference wave speed
-C         ----------------------------------------------------------
-          CHARLEN = ELVOL ** (1.0D0 / 3.0D0)
-          OMEGA_MAX = CWAVE / CHARLEN * 2.0D0
-          XI_DAMP = BETA_RAYLEIGH * OMEGA_MAX / 2.0D0
-          DTELEM = (2.0D0 / OMEGA_MAX) * 
-     *             (DSQRT(1.0D0 + XI_DAMP*XI_DAMP) - XI_DAMP)
-          DTELEM = 0.8D0 * DTELEM
 C
-          dtimeStable(KBLOCK) = DTELEM
+C         Once failed, this element carries zero stiffness/stress, so its
+C         own material wave speed no longer bounds a meaningful stable
+C         increment -- report a large sentinel instead of DTELEM so a
+C         dead element never continues to CAP the analysis's global
+C         stable time increment (Abaqus takes the minimum dtimeStable
+C         over all active elements; without this, a failed element would
+C         keep enforcing the same small dt as before it died, for the
+C         rest of the analysis, purely because it still has mass).
+C         ----------------------------------------------------------
+          IF (ELEM_ALREADY_FAILED) THEN
+            dtimeStable(KBLOCK) = 1.0D30
+          ELSE
+            CHARLEN = ELVOL ** (1.0D0 / 3.0D0)
+            OMEGA_MAX = CWAVE / CHARLEN * 2.0D0
+            XI_DAMP = BETA_RAYLEIGH * OMEGA_MAX / 2.0D0
+            DTELEM = (2.0D0 / OMEGA_MAX) *
+     *               (DSQRT(1.0D0 + XI_DAMP*XI_DAMP) - XI_DAMP)
+            DTELEM = 0.8D0 * DTELEM
+C
+            dtimeStable(KBLOCK) = DTELEM
+          END IF
 C
 C         Debug output
           IF (NCALLS .LE. 10 .OR. MOD(NCALLS, 1000) .EQ. 0) THEN
@@ -821,7 +870,7 @@ C         Debug output
             WRITE(*,*) 'S11, S22, S33 =', STRESS_PK2(1), STRESS_PK2(2),
      *                  STRESS_PK2(3)
             WRITE(*,*) 'ELIE =', ELIE, ' ELKE =', ELKE
-            WRITE(*,*) 'DTELEM =', DTELEM
+            WRITE(*,*) 'dtimeStable =', dtimeStable(KBLOCK)
           END IF
 C
         END IF
