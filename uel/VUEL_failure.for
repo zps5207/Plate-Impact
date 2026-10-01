@@ -26,7 +26,31 @@ C       4. Second Piola-Kirchhoff stress S (work-conjugate to E)
 C       5. Internal force: f = integral(B_L^T * S * dV_0)
 C       6. All integrals over reference configuration (dV_0)
 C
-C     FAILURE CRITERION (new in this branch):
+C     PLASTICITY (new in this branch, Stage 1 of
+C     docs/VUEL_PLASTIC_FAILURE_STAGE0_PLAN.md): additive Green-Lagrange
+C     decomposition E = Ee + Ep applied directly to the existing
+C     Lagrangian (S,E) pair -- J2 (von Mises) yield with LINEAR isotropic
+C     hardening, closed-form radial return (no local Newton iteration;
+C     exact for linear hardening). This reuses the existing CMAT/BL_MAT/
+C     energy machinery completely unchanged; only the "stress from
+C     strain" step gets an elastic-predictor/plastic-corrector split.
+C     IPLAST<=0 (props(10)) reproduces the original pure St.
+C     Venant-Kirchhoff elastic law exactly (the plastic strain state
+C     never moves from zero in that case) -- this is a superset of the
+C     original file's behavior, not a replacement.
+C       NOT a multiplicative F=Fe*Fp finite-strain plasticity model: it
+C       decomposes strain additively, not the deformation gradient
+C       multiplicatively, so accuracy will degrade vs. a rigorous
+C       large-strain model at very large stretches. It IS exactly as
+C       objective as the existing elastic law under superposed rigid
+C       rotation (both S and E are Lagrangian tensors, invariant under
+C       rotation by construction -- no Jaumann/corotational correction is
+C       needed, unlike a hypoelastic rate-form model). See the Stage 0
+C       plan doc for the full derivation and the Voigt-convention
+C       bookkeeping (engineering/doubled shear strain vs. true shear
+C       stress) this update depends on getting right.
+C
+C     FAILURE CRITERION (added in an earlier stage of this branch):
 C       At each Gauss point, the three normal engineering (nominal)
 C       strains are recovered from the Green-Lagrange normal strains via
 C       the 1-D stretch relation  lambda_i = sqrt(2*E_ii + 1),
@@ -39,26 +63,42 @@ C       removed from amass/the mesh -- VUEL mass is only ever computed
 C       once (jMassCalc is called once up front), so a UEL has no hook to
 C       shed nodal mass the way native *Element Progressive Failure does.
 C       That inability is itself part of what this branch is testing.
+C       Once latched, the plastic state (below) is frozen -- the whole
+C       elastic-plastic update is skipped for a failed element.
 C
 C     Props array:
-C       props(1) = Young's modulus E [Pa]
-C       props(2) = Poisson's ratio nu [-]
-C       props(3) = Density rho [kg/m^3]
-C       props(4) = Rayleigh damping beta [s]
-C       props(5) = Linear bulk viscosity b1 [-] (typical: 0.06)
-C       props(6) = Quadratic bulk viscosity b2 [-] (typical: 1.2)
-C       props(7) = EPS_FAIL: failure threshold on max abs normal
-C                  engineering strain [-] (goal suggested ~1.0; see
-C                  verification report for why the compression test
-C                  here uses a smaller value)
+C       props(1)  = Young's modulus E [Pa]
+C       props(2)  = Poisson's ratio nu [-]
+C       props(3)  = Density rho [kg/m^3]
+C       props(4)  = Rayleigh damping beta [s]
+C       props(5)  = Linear bulk viscosity b1 [-] (typical: 0.06)
+C       props(6)  = Quadratic bulk viscosity b2 [-] (typical: 1.2)
+C       props(7)  = EPS_FAIL: failure threshold on max abs normal
+C                   engineering strain [-] (goal suggested ~1.0; see
+C                   verification report for why the compression test
+C                   here uses a smaller value)
+C       props(8)  = SIGY0: initial J2 yield stress [Pa]
+C       props(9)  = HMOD: linear isotropic hardening modulus [Pa]
+C       props(10) = IPLAST: 0 = pure elastic (original behavior),
+C                   nonzero = elastic-plastic path active
 C
-C     State variables (nsvars = 49):
-C       svars(1:6)   = PK2 stress at GP 1 (S11, S22, S33, S12, S13, S23)
-C       svars(7:12)  = PK2 stress at GP 2
+C     State variables (nsvars = 105):
+C       svars(1:6)    = PK2 stress at GP 1 (S11, S22, S33, S12, S13, S23)
+C       svars(7:12)   = PK2 stress at GP 2
 C       ...
-C       svars(49)    = element failure flag: 0.0 = intact (default),
-C                      1.0 = failed/eroded (requested output as SVARS)
-C       svars(43:48) = PK2 stress at GP 8
+C       svars(43:48)  = PK2 stress at GP 8
+C       svars(49)     = element failure flag: 0.0 = intact (default),
+C                       1.0 = failed/eroded (requested output as SVARS)
+C       svars(50:56)  = plastic state at GP 1: Ep tensor (6, same
+C                       engineering-shear-Voigt convention as the
+C                       STRAIN_VEC this file already uses) + PEEQ
+C                       (accumulated equivalent plastic strain, 1 scalar)
+C       svars(57:63)  = plastic state at GP 2
+C       ...
+C       svars(99:105) = plastic state at GP 8
+C       (general: GP k's plastic state occupies
+C       svars(49 + (k-1)*7 + 1 : 49 + (k-1)*7 + 7), last of the 7 being
+C       PEEQ)
 C
 C======================================================================
       SUBROUTINE VUEL(nblock,rhs,amass,dtimeStable,svars,nsvars,
@@ -189,6 +229,17 @@ C     Failure criterion variables (new in this branch)
       REAL*8 ELEM_MAXABS_ENG
       LOGICAL ELEM_ALREADY_FAILED
 C
+C     Plasticity variables (new in this branch, Stage 1): additive
+C     Green-Lagrange J2 return mapping with linear isotropic hardening.
+C     See docs/VUEL_PLASTIC_FAILURE_STAGE0_PLAN.md for the derivation.
+      REAL*8 SIGY0, HMOD, IPLAST
+      REAL*8 EP_VEC(6), PEEQ_OLD
+      REAL*8 EE_TRIAL_VEC(6), S_TRIAL_VEC(6), EE_NEW_VEC(6)
+      REAL*8 DEP_VEC(6), SDEV(6)
+      REAL*8 P_HYDRO, SIGMA_TRIAL, SIGY_OLD, SIGY_NEW, DGAMMA
+      REAL*8 PLASTIC_DISSIP
+      INTEGER IGPBASE
+C
 C     Debug output control
       INTEGER NCALLS
       DATA NCALLS / 0 /
@@ -221,6 +272,9 @@ C----------------------------------------------------------------------
       B1_BULK = props(5)
       B2_BULK = props(6)
       EPS_FAIL = props(7)
+      SIGY0 = props(8)
+      HMOD = props(9)
+      IPLAST = props(10)
 C
 C     Lame parameters (same as small strain)
       ALAMBDA = EMOD * ENU / ((1.0D0 + ENU) * (1.0D0 - 2.0D0 * ENU))
@@ -262,6 +316,8 @@ C
         WRITE(*,*) 'beta_Rayleigh =', BETA_RAYLEIGH
         WRITE(*,*) 'b1_bulk =', B1_BULK, ' b2_bulk =', B2_BULK
         WRITE(*,*) 'EPS_FAIL (engineering strain) =', EPS_FAIL
+        WRITE(*,*) 'SIGY0 =', SIGY0, ' HMOD =', HMOD,
+     *             ' IPLAST =', IPLAST
         WRITE(*,*) 'lambda =', ALAMBDA, ' mu =', AMU
         WRITE(*,*) 'nblock =', nblock, ' nnode =', nnode
         WRITE(*,*) 'ndofel =', ndofel, ' nsvars =', nsvars
@@ -357,6 +413,7 @@ C
           ELVOL = 0.0D0
           DAMP_DISSIP = 0.0D0
           BV_DISSIP = 0.0D0
+          PLASTIC_DISSIP = 0.0D0
 C
 C         Wave speed (dilatational) - reference configuration
           CWAVE = DSQRT((ALAMBDA + 2.0D0 * AMU) / DENS)
@@ -437,14 +494,124 @@ C           ----------------------------------------------------------
             CALL BUILD_BL_MATRIX(DN_DX, DN_DY, DN_DZ, DEFGRAD, BL_MAT)
 C
 C           ----------------------------------------------------------
-C           Step 6: Compute PK2 STRESS (St. Venant-Kirchhoff)
-C           S = C : E
+C           Step 6: ELASTIC-PLASTIC PK2 STRESS
+C           Additive Green-Lagrange decomposition E = Ee + Ep applied to
+C           the existing (S,E) pair -- see the file header and
+C           docs/VUEL_PLASTIC_FAILURE_STAGE0_PLAN.md. IPLAST<=0
+C           reproduces the original "STRESS_PK2 = CMAT*STRAIN_VEC"
+C           exactly (EP_VEC/PEEQ never move off zero in that case). Once
+C           the element has latched failed, this whole update is skipped
+C           and the plastic state already in svars is left untouched.
 C           ----------------------------------------------------------
+            IGPBASE = 49 + (IGAUSS-1)*7
             DO I = 1, 6
-              STRESS_PK2(I) = 0.0D0
-              DO J = 1, 6
-                STRESS_PK2(I) = STRESS_PK2(I) + CMAT(I,J) * STRAIN_VEC(J)
+              EP_VEC(I) = svars(KBLOCK, IGPBASE+I)
+            END DO
+            PEEQ_OLD = svars(KBLOCK, IGPBASE+7)
+            DGAMMA = 0.0D0
+            SIGY_OLD = SIGY0 + HMOD*PEEQ_OLD
+            SIGY_NEW = SIGY_OLD
+C
+            IF (ELEM_ALREADY_FAILED) THEN
+C
+              DO I = 1, 6
+                STRESS_PK2(I) = 0.0D0
               END DO
+C
+            ELSE
+C
+C             Elastic trial strain/stress (identical to the file's
+C             original formula whenever EP_VEC is zero)
+              DO I = 1, 6
+                EE_TRIAL_VEC(I) = STRAIN_VEC(I) - EP_VEC(I)
+              END DO
+              DO I = 1, 6
+                S_TRIAL_VEC(I) = 0.0D0
+                DO J = 1, 6
+                  S_TRIAL_VEC(I) = S_TRIAL_VEC(I)
+     *                             + CMAT(I,J) * EE_TRIAL_VEC(J)
+                END DO
+              END DO
+C
+              DO I = 1, 6
+                DEP_VEC(I) = 0.0D0
+              END DO
+C
+              IF (IPLAST .GT. 0.5D0) THEN
+C               Deviatoric trial stress (true-tensor components; shear
+C               is already deviatoric for an isotropic material)
+                P_HYDRO = (S_TRIAL_VEC(1)+S_TRIAL_VEC(2)+S_TRIAL_VEC(3))
+     *                    / 3.0D0
+                SDEV(1) = S_TRIAL_VEC(1) - P_HYDRO
+                SDEV(2) = S_TRIAL_VEC(2) - P_HYDRO
+                SDEV(3) = S_TRIAL_VEC(3) - P_HYDRO
+                SDEV(4) = S_TRIAL_VEC(4)
+                SDEV(5) = S_TRIAL_VEC(5)
+                SDEV(6) = S_TRIAL_VEC(6)
+C
+C               Von Mises equivalent trial stress -- true-tensor double
+C               contraction, so shear terms count twice (SDEV(4:6) are
+C               true shear stress, NOT the engineering/doubled strain
+C               convention used for STRAIN_VEC -- see file header)
+                SIGMA_TRIAL = DSQRT(DMAX1(1.5D0*(
+     *              SDEV(1)*SDEV(1) + SDEV(2)*SDEV(2)
+     *              + SDEV(3)*SDEV(3)
+     *              + 2.0D0*(SDEV(4)*SDEV(4) + SDEV(5)*SDEV(5)
+     *                       + SDEV(6)*SDEV(6))), 0.0D0))
+C
+                IF ((SIGMA_TRIAL .GT. SIGY_OLD) .AND.
+     *              ((3.0D0*AMU + HMOD) .GT. SMALL)) THEN
+C                 Closed-form radial return -- exact for linear
+C                 isotropic hardening + J2, no local Newton iteration
+                  DGAMMA = (SIGMA_TRIAL - SIGY_OLD)
+     *                     / (3.0D0*AMU + HMOD)
+                  SIGY_NEW = SIGY_OLD + HMOD*DGAMMA
+                  PEEQ_OLD = PEEQ_OLD + DGAMMA
+C
+                  IF (SIGMA_TRIAL .GT. SMALL) THEN
+                    FACTOR = 1.5D0 * DGAMMA / SIGMA_TRIAL
+                  ELSE
+                    FACTOR = 0.0D0
+                  END IF
+C                 DEP_VEC(4:6) carries an extra factor of 2 to convert
+C                 the true-tensor shear increment back to the
+C                 engineering-Voigt convention EP_VEC/STRAIN_VEC use
+                  DEP_VEC(1) = FACTOR*SDEV(1)
+                  DEP_VEC(2) = FACTOR*SDEV(2)
+                  DEP_VEC(3) = FACTOR*SDEV(3)
+                  DEP_VEC(4) = 2.0D0*FACTOR*SDEV(4)
+                  DEP_VEC(5) = 2.0D0*FACTOR*SDEV(5)
+                  DEP_VEC(6) = 2.0D0*FACTOR*SDEV(6)
+C
+                  DO I = 1, 6
+                    EP_VEC(I) = EP_VEC(I) + DEP_VEC(I)
+                  END DO
+                END IF
+              END IF
+C
+C             S = C:(Ee_trial - DEp) = S_trial - C:DEp -- reusing CMAT
+C             again automatically leaves the hydrostatic part untouched
+C             since DEp is traceless (pressure-independent J2 flow)
+              DO I = 1, 6
+                STRESS_PK2(I) = S_TRIAL_VEC(I)
+                DO J = 1, 6
+                  STRESS_PK2(I) = STRESS_PK2(I) - CMAT(I,J)*DEP_VEC(J)
+                END DO
+              END DO
+C
+C             Write this Gauss point's updated plastic state back
+              DO I = 1, 6
+                svars(KBLOCK, IGPBASE+I) = EP_VEC(I)
+              END DO
+              svars(KBLOCK, IGPBASE+7) = PEEQ_OLD
+C
+            END IF
+C
+C           Elastic strain after the plastic update, for the elastic
+C           strain-energy calculation below (ELIE uses this, not the
+C           total strain, once plasticity is active)
+            DO I = 1, 6
+              EE_NEW_VEC(I) = STRAIN_VEC(I) - EP_VEC(I)
             END DO
 C
 C           ----------------------------------------------------------
@@ -519,12 +686,19 @@ C
 C           ----------------------------------------------------------
 C           Energy calculations
 C           ----------------------------------------------------------
-C           Internal energy: U = 0.5 * integral(S : E * dV_0)
-C           (skipped once failed, consistent with the zeroed stress)
+C           Internal (elastic) strain energy: U = 0.5 * integral(S : Ee * dV_0)
+C           (skipped once failed, consistent with the zeroed stress; uses
+C           the ELASTIC strain Ee = E - Ep, not total E, once plasticity
+C           is active -- with IPLAST<=0, EE_NEW_VEC == STRAIN_VEC exactly)
             IF (.NOT. ELEM_ALREADY_FAILED) THEN
               DO I = 1, 6
-                ELIE = ELIE + 0.5D0*STRESS_PK2(I)*STRAIN_VEC(I)*DVOL
+                ELIE = ELIE + 0.5D0*STRESS_PK2(I)*EE_NEW_VEC(I)*DVOL
               END DO
+C             Plastic dissipation: exact trapezoidal integral of the
+C             LINEAR sigma_y(PEEQ) curve over this increment's DGAMMA
+C             (zero when the step was elastic, DGAMMA=0)
+              PLASTIC_DISSIP = PLASTIC_DISSIP
+     *            + 0.5D0*(SIGY_OLD+SIGY_NEW)*DGAMMA*DVOL
             END IF
 C
 C           Rayleigh dissipation
@@ -580,6 +754,7 @@ C         Update energy array
           energy(KBLOCK, iElKe) = ELKE
           energy(KBLOCK, iElDd) = energy(KBLOCK, iElDd) + DAMP_DISSIP
           energy(KBLOCK, iElBv) = energy(KBLOCK, iElBv) + BV_DISSIP
+          energy(KBLOCK, iElPd) = energy(KBLOCK, iElPd) + PLASTIC_DISSIP
 C
 C         ----------------------------------------------------------
 C         Stable time increment

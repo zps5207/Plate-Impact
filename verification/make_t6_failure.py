@@ -133,10 +133,10 @@ def main():
     names = []
     user_src = (ROOT / "uel" / "VUEL_failure.for").read_text()
     for name, eps_fail in decks.items():
-        (OUT / f"{name}.inp").write_text(build_inp(eps_fail))
-        (OUT / f"{name}_user.for").write_text(user_src)
+        (OUT / f"{name}.inp").write_text(build_inp(eps_fail), newline='')
+        (OUT / f"{name}_user.for").write_text(user_src, newline='')
         names.append(name)
-    (OUT / "decks_t6.txt").write_text("\n".join(names) + "\n")
+    (OUT / "decks_t6.txt").write_text("\n".join(names) + "\n", newline='')
     print(f"wrote {len(names)} decks to {OUT}")
 
 
