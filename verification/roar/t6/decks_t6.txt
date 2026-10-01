@@ -1,0 +1,2 @@
+t6_compress_nofail
+t6_compress_trip
