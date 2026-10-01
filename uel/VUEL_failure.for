@@ -66,6 +66,24 @@ C       That inability is itself part of what this branch is testing.
 C       Once latched, the plastic state (below) is frozen -- the whole
 C       elastic-plastic update is skipped for a failed element.
 C
+C     JACOBIAN (COLLAPSE) TRIGGER (new in this branch, Stage 3): handles
+C     the compression/shear-collapse case the engineering-strain trigger
+C     structurally cannot reach -- a 1-D engineering strain is bounded at
+C     -1 under compression (zero volume), so a large |EPS_FAIL| like the
+C     goal's suggested ~1.0 is a TENSION-side trigger only. At each Gauss
+C     point, DETF (det(F), already computed every call by
+C     COMPUTE_DEFGRAD) is the current/reference VOLUME RATIO at that
+C     point -- DETJ0 is the reference-configuration Jacobian from
+C     SHAPE8H_TL and never changes, so DETF alone (not DETJ0*DETF or any
+C     other combination) is the right "has this point collapsed" measure.
+C     If min(DETF) over all 8 Gauss points meets/falls below props(11)
+C     (JAC_FAIL) OR goes non-positive, the element fails via the SAME
+C     latch as the engineering-strain trigger (svars(49), checked and
+C     applied together, first condition found wins the log message).
+C     DETF<=0 is always an immediate trip regardless of JAC_FAIL's value,
+C     so an inverted element cannot be missed even if JAC_FAIL were set to
+C     0 or negative by mistake.
+C
 C     Props array:
 C       props(1)  = Young's modulus E [Pa]
 C       props(2)  = Poisson's ratio nu [-]
@@ -81,6 +99,10 @@ C       props(8)  = SIGY0: initial J2 yield stress [Pa]
 C       props(9)  = HMOD: linear isotropic hardening modulus [Pa]
 C       props(10) = IPLAST: 0 = pure elastic (original behavior),
 C                   nonzero = elastic-plastic path active
+C       props(11) = JAC_FAIL: collapse-failure threshold on
+C                   min(det(F)) over all 8 Gauss points [-] (goal
+C                   suggested ~0.05 as a tunable starting point, not a
+C                   validated number). DETF<=0 always trips regardless.
 C
 C     State variables (nsvars = 105):
 C       svars(1:6)    = PK2 stress at GP 1 (S11, S22, S33, S12, S13, S23)
@@ -233,6 +255,9 @@ C     Plasticity variables (new in this branch, Stage 1): additive
 C     Green-Lagrange J2 return mapping with linear isotropic hardening.
 C     See docs/VUEL_PLASTIC_FAILURE_STAGE0_PLAN.md for the derivation.
       REAL*8 SIGY0, HMOD, IPLAST
+C
+C     Jacobian (collapse) trigger variables (new in this branch, Stage 3)
+      REAL*8 JAC_FAIL, ELEM_MIN_DETF
       REAL*8 EP_VEC(6), PEEQ_OLD
       REAL*8 EE_TRIAL_VEC(6), S_TRIAL_VEC(6), EE_NEW_VEC(6)
       REAL*8 DEP_VEC(6), SDEV(6)
@@ -275,6 +300,7 @@ C----------------------------------------------------------------------
       SIGY0 = props(8)
       HMOD = props(9)
       IPLAST = props(10)
+      JAC_FAIL = props(11)
 C
 C     Lame parameters (same as small strain)
       ALAMBDA = EMOD * ENU / ((1.0D0 + ENU) * (1.0D0 - 2.0D0 * ENU))
@@ -423,6 +449,7 @@ C         defaults to 0.0 (intact) on a fresh analysis, so "> 0.5" is the
 C         "failed" branch and leaves the common case (never failed) alone.
           ELEM_ALREADY_FAILED = (svars(KBLOCK,49) .GT. 0.5D0)
           ELEM_MAXABS_ENG = 0.0D0
+          ELEM_MIN_DETF = 1.0D30
 C
 C         Loop over Gauss points
           DO IGAUSS = 1, 8
@@ -453,6 +480,12 @@ C           F_iJ = delta_iJ + du_i/dX_J
 C           ----------------------------------------------------------
             CALL COMPUTE_DEFGRAD(ULOC, DN_DX, DN_DY, DN_DZ,
      *                           DEFGRAD, DETF)
+C
+C           Track the worst (smallest) current/reference volume ratio
+C           over this element's 8 Gauss points, for the Jacobian
+C           (collapse) failure trigger checked at the end of the
+C           increment, below.
+            ELEM_MIN_DETF = DMIN1(ELEM_MIN_DETF, DETF)
 C
 C           ----------------------------------------------------------
 C           Step 3: Compute GREEN-LAGRANGE STRAIN E
@@ -723,13 +756,21 @@ C         actually removed starting the NEXT increment). This element's
 C         forces for the CURRENT increment (computed above, before the
 C         flag flips) are still passed through.
 C         ----------------------------------------------------------
-          IF ((.NOT. ELEM_ALREADY_FAILED) .AND.
-     *        (ELEM_MAXABS_ENG .GE. EPS_FAIL)) THEN
-            svars(KBLOCK, 49) = 1.0D0
-            WRITE(*,*) '*** VUEL_FAILURE: ELEMENT FAILED, elem =',
-     *                 jElem(KBLOCK), ' time =', time(iTotalTime),
-     *                 ' max|eng strain| =', ELEM_MAXABS_ENG,
-     *                 ' threshold =', EPS_FAIL
+          IF (.NOT. ELEM_ALREADY_FAILED) THEN
+            IF (ELEM_MAXABS_ENG .GE. EPS_FAIL) THEN
+              svars(KBLOCK, 49) = 1.0D0
+              WRITE(*,*) '*** VUEL_FAILURE (ENG STRAIN): elem =',
+     *                   jElem(KBLOCK), ' time =', time(iTotalTime),
+     *                   ' max|eng strain| =', ELEM_MAXABS_ENG,
+     *                   ' threshold =', EPS_FAIL
+            ELSE IF ((ELEM_MIN_DETF .LE. JAC_FAIL) .OR.
+     *               (ELEM_MIN_DETF .LE. 0.0D0)) THEN
+              svars(KBLOCK, 49) = 1.0D0
+              WRITE(*,*) '*** VUEL_FAILURE (JACOBIAN): elem =',
+     *                   jElem(KBLOCK), ' time =', time(iTotalTime),
+     *                   ' min(detF) =', ELEM_MIN_DETF,
+     *                   ' threshold =', JAC_FAIL
+            END IF
           END IF
 C         (svars(KBLOCK,49) now holds 1.0 whenever the element is failed,
 C         whether that happened this increment or an earlier one, so it
