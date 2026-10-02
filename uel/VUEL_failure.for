@@ -1,15 +1,13 @@
 C======================================================================
 C     VUEL_FAILURE: 8-Node Hexahedral Element - TOTAL LAGRANGIAN
-C     FORMULATION, branched from uel/VUEL.for to add a simple
-C     engineering-strain element-failure/erosion criterion.
+C     FORMULATION, branched from uel/VUEL.for for elastic-plastic,
+C     homegrown failure and post-failure response development.
 C
-C     See docs/TODO.md / memory "vuel-failure-criterion-test" for the
-C     purpose of this branch: it exists ONLY to test empirically whether
-C     Abaqus/Explicit's native element-deletion / conversion-to-particles
-C     machinery can be triggered from inside a *User Element, since that
-C     machinery is documented (and, per BUG-020, independently confirmed)
-C     to assume a native element + material STATUS variable. This file is
-C     NOT the production VUEL -- uel/VUEL.for is untouched.
+C     The original branch established that Abaqus/Explicit cannot apply
+C     native deletion or FE-to-SPH conversion to a *User Element (see
+C     docs/VUEL_FAILURE_CRITERION_REPORT_2026-10-01.md and BUG-021).
+C     Failure behavior here is therefore entirely homegrown. This file is
+C     NOT the production elastic VUEL -- uel/VUEL.for stays untouched.
 C
 C     Formulation: Total Lagrangian, St. Venant-Kirchhoff Hyperelastic
 C     Strain: Green-Lagrange E = 0.5*(F^T*F - I)
@@ -63,8 +61,11 @@ C       removed from amass/the mesh -- VUEL mass is only ever computed
 C       once (jMassCalc is called once up front), so a UEL has no hook to
 C       shed nodal mass the way native *Element Progressive Failure does.
 C       That inability is itself part of what this branch is testing.
-C       Once latched, the plastic state (below) is frozen -- the whole
-C       elastic-plastic update is skipped for a failed element.
+C       Once latched, Stage 5 may optionally ramp the intact response to
+C       zero over props(12)=DEGRADE_TIME. Plasticity continues only while
+C       that ramp retains nonzero intact stiffness; it freezes once the
+C       ramp reaches zero. DEGRADE_TIME<=0 retains the original
+C       immediate-zero behavior exactly.
 C
 C     JACOBIAN (COLLAPSE) TRIGGER (new in this branch, Stage 3): handles
 C     the compression/shear-collapse case the engineering-strain trigger
@@ -110,6 +111,28 @@ C       - Mass itself is never touched (still true, repeated from above):
 C         a UEL's amass is set once at jMassCalc and this file has no
 C         hook to revisit it afterward.
 C
+C     POST-FAILURE DEGRADATION (new in this branch, Stage 5):
+C       svars(106) is an element damage fraction D. It is zero when the
+C       failure latch first trips, then grows linearly to one over
+C       props(12)=DEGRADE_TIME. The intact elastic-plastic plus numerical
+C       damping stress is multiplied by (1-D). A separate optional
+C       compression-only residual response is blended in as D grows:
+C
+C         S = (1-D) S_full + D r K min(tr(Ee),0) I
+C
+C       where r=props(13), K is the elastic bulk modulus, and Ee is the
+C       elastic Green-Lagrange strain. The residual carries no tension,
+C       shear, Rayleigh stress, or bulk-viscosity stress. With r=0 it
+C       vanishes at D=1; with DEGRADE_TIME<=0, D jumps to one on the first
+C       post-failure call, reproducing the Stage 4 instant-zero baseline.
+C       Damage reduces stored elastic energy and numerical dissipation
+C       consistently with the force scale. Released energy is not moved
+C       into a fracture-energy bucket: as in Stage 4, it leaves ALLIE,
+C       but now over DEGRADE_TIME instead of in one increment.
+C       dtimeStable remains at the conservative intact-material value
+C       while either part retains stiffness. The 1D30 dead sentinel is
+C       used only after D=1 with r=0.
+C
 C     Props array:
 C       props(1)  = Young's modulus E [Pa]
 C       props(2)  = Poisson's ratio nu [-]
@@ -129,8 +152,12 @@ C       props(11) = JAC_FAIL: collapse-failure threshold on
 C                   min(det(F)) over all 8 Gauss points [-] (goal
 C                   suggested ~0.05 as a tunable starting point, not a
 C                   validated number). DETF<=0 always trips regardless.
+C       props(12) = DEGRADE_TIME: linear post-failure ramp duration [s].
+C                   <=0 selects the Stage 4 instant-zero behavior.
+C       props(13) = COMP_RESIDUAL_BULK_FRAC: compression-only residual
+C                   bulk-stiffness fraction r [-], clamped to [0,1].
 C
-C     State variables (nsvars = 105):
+C     State variables (nsvars = 106):
 C       svars(1:6)    = PK2 stress at GP 1 (S11, S22, S33, S12, S13, S23)
 C       svars(7:12)   = PK2 stress at GP 2
 C       ...
@@ -147,6 +174,8 @@ C       svars(99:105) = plastic state at GP 8
 C       (general: GP k's plastic state occupies
 C       svars(49 + (k-1)*7 + 1 : 49 + (k-1)*7 + 7), last of the 7 being
 C       PEEQ)
+C       svars(106)    = element damage fraction D: 0.0 at failure onset,
+C                       1.0 when the degradation ramp is complete
 C
 C======================================================================
       SUBROUTINE VUEL(nblock,rhs,amass,dtimeStable,svars,nsvars,
@@ -291,6 +320,13 @@ C     Jacobian (collapse) trigger variables (new in this branch, Stage 3)
       REAL*8 PLASTIC_DISSIP
       INTEGER IGPBASE
 C
+C     Stage 5 post-failure degradation and unilateral residual response
+      REAL*8 DEGRADE_TIME, COMP_RESIDUAL_FRAC
+      REAL*8 DAMAGE, DAMAGE_OLD, STRESS_SCALE
+      REAL*8 BULK_MODULUS, VOL_ELASTIC_STRAIN, P_RESIDUAL
+      REAL*8 STRESS_RESIDUAL(6)
+      LOGICAL CONSTITUTIVE_ACTIVE
+C
 C     Debug output control
       INTEGER NCALLS
       DATA NCALLS / 0 /
@@ -327,10 +363,18 @@ C----------------------------------------------------------------------
       HMOD = props(9)
       IPLAST = props(10)
       JAC_FAIL = props(11)
+C     Missing Stage 5 props preserve the Stage 4 instant-zero behavior.
+      DEGRADE_TIME = 0.0D0
+      COMP_RESIDUAL_FRAC = 0.0D0
+      IF (nprops .GE. 12) DEGRADE_TIME = DMAX1(props(12), 0.0D0)
+      IF (nprops .GE. 13) THEN
+        COMP_RESIDUAL_FRAC = DMAX1(0.0D0, DMIN1(props(13), 1.0D0))
+      END IF
 C
 C     Lame parameters (same as small strain)
       ALAMBDA = EMOD * ENU / ((1.0D0 + ENU) * (1.0D0 - 2.0D0 * ENU))
       AMU     = EMOD / (2.0D0 * (1.0D0 + ENU))
+      BULK_MODULUS = ALAMBDA + 2.0D0*AMU/3.0D0
 C
 C----------------------------------------------------------------------
 C     Build 3D isotropic elasticity matrix (same for St. Venant-Kirchhoff)
@@ -370,6 +414,8 @@ C
         WRITE(*,*) 'EPS_FAIL (engineering strain) =', EPS_FAIL
         WRITE(*,*) 'SIGY0 =', SIGY0, ' HMOD =', HMOD,
      *             ' IPLAST =', IPLAST
+        WRITE(*,*) 'DEGRADE_TIME =', DEGRADE_TIME,
+     *             ' COMP_RESIDUAL_BULK_FRAC =', COMP_RESIDUAL_FRAC
         WRITE(*,*) 'lambda =', ALAMBDA, ' mu =', AMU
         WRITE(*,*) 'nblock =', nblock, ' nnode =', nnode
         WRITE(*,*) 'ndofel =', ndofel, ' nsvars =', nsvars
@@ -474,6 +520,30 @@ C         Failure state carried over from the previous increment. svars
 C         defaults to 0.0 (intact) on a fresh analysis, so "> 0.5" is the
 C         "failed" branch and leaves the common case (never failed) alone.
           ELEM_ALREADY_FAILED = (svars(KBLOCK,49) .GT. 0.5D0)
+          DAMAGE_OLD = 0.0D0
+          DAMAGE = 0.0D0
+          IF (ELEM_ALREADY_FAILED) THEN
+            IF ((DEGRADE_TIME .GT. SMALL) .AND.
+     *          (nsvars .GE. 106)) THEN
+              DAMAGE_OLD = DMAX1(0.0D0,
+     *                     DMIN1(svars(KBLOCK,106), 1.0D0))
+              DAMAGE = DMIN1(1.0D0,
+     *                 DAMAGE_OLD + dtimeCur/DEGRADE_TIME)
+            ELSE
+              DAMAGE_OLD = 1.0D0
+              DAMAGE = 1.0D0
+            END IF
+            IF (nsvars .GE. 106) svars(KBLOCK,106) = DAMAGE
+            IF ((DAMAGE_OLD .LT. 1.0D0) .AND.
+     *          (DAMAGE .GE. 1.0D0)) THEN
+              WRITE(*,*) '*** VUEL_DEGRADATION_COMPLETE: elem =',
+     *                   jElem(KBLOCK), ' time =', time(iTotalTime),
+     *                   ' degrade_time =', DEGRADE_TIME
+            END IF
+          END IF
+          STRESS_SCALE = DMAX1(0.0D0, 1.0D0-DAMAGE)
+          CONSTITUTIVE_ACTIVE = ((.NOT. ELEM_ALREADY_FAILED) .OR.
+     *                           (STRESS_SCALE .GT. SMALL))
           ELEM_MAXABS_ENG = 0.0D0
           ELEM_MIN_DETF = 1.0D30
 C
@@ -571,7 +641,7 @@ C           ----------------------------------------------------------
             SIGY_OLD = SIGY0 + HMOD*PEEQ_OLD
             SIGY_NEW = SIGY_OLD
 C
-            IF (ELEM_ALREADY_FAILED) THEN
+            IF (.NOT. CONSTITUTIVE_ACTIVE) THEN
 C
               DO I = 1, 6
                 STRESS_PK2(I) = 0.0D0
@@ -711,20 +781,30 @@ C
 C           ----------------------------------------------------------
 C           Step 9: Total PK2 stress
 C           ----------------------------------------------------------
+C           Compression-only residual response. J2 plastic flow is
+C           deviatoric, so tr(Ee) is the volumetric elastic strain.
+            VOL_ELASTIC_STRAIN = EE_NEW_VEC(1) + EE_NEW_VEC(2)
+     *                           + EE_NEW_VEC(3)
             DO I = 1, 6
-              STRESS_TOTAL(I) = STRESS_PK2(I) + STRESS_VISC(I)
-     *                          + STRESS_BULK(I)
+              STRESS_RESIDUAL(I) = 0.0D0
             END DO
-C
-C           If this element already failed on a previous increment, it
-C           carries zero stress from here on -- numerically inert, but
-C           still present in the mesh/amass (see header note: a UEL has
-C           no hook to shed mass once jMassCalc has run).
-            IF (ELEM_ALREADY_FAILED) THEN
-              DO I = 1, 6
-                STRESS_TOTAL(I) = 0.0D0
-              END DO
+            P_RESIDUAL = 0.0D0
+            IF (ELEM_ALREADY_FAILED .AND.
+     *          (COMP_RESIDUAL_FRAC .GT. 0.0D0) .AND.
+     *          (VOL_ELASTIC_STRAIN .LT. 0.0D0)) THEN
+              P_RESIDUAL = COMP_RESIDUAL_FRAC * BULK_MODULUS
+     *                     * VOL_ELASTIC_STRAIN
+              STRESS_RESIDUAL(1) = P_RESIDUAL
+              STRESS_RESIDUAL(2) = P_RESIDUAL
+              STRESS_RESIDUAL(3) = P_RESIDUAL
             END IF
+C
+            DO I = 1, 6
+              STRESS_TOTAL(I) = STRESS_SCALE *
+     *                         (STRESS_PK2(I) + STRESS_VISC(I)
+     *                          + STRESS_BULK(I))
+     *                         + DAMAGE*STRESS_RESIDUAL(I)
+            END DO
 C
 C           Store stress in state variables
             DO I = 1, 6
@@ -745,40 +825,44 @@ C
 C           ----------------------------------------------------------
 C           Energy calculations
 C           ----------------------------------------------------------
-C           Internal (elastic) strain energy: U = 0.5 * integral(S : Ee * dV_0)
-C           (skipped once failed, consistent with the zeroed stress; uses
-C           the ELASTIC strain Ee = E - Ep, not total E, once plasticity
-C           is active -- with IPLAST<=0, EE_NEW_VEC == STRAIN_VEC exactly)
-            IF (.NOT. ELEM_ALREADY_FAILED) THEN
+C           Internal elastic energy. The intact component is scaled by
+C           (1-D); the unilateral residual stores
+C           0.5*r*K*min(tr(Ee),0)^2, blended by D.
+            IF (CONSTITUTIVE_ACTIVE) THEN
               DO I = 1, 6
-                ELIE = ELIE + 0.5D0*STRESS_PK2(I)*EE_NEW_VEC(I)*DVOL
+                ELIE = ELIE + 0.5D0*STRESS_SCALE*STRESS_PK2(I)
+     *                         *EE_NEW_VEC(I)*DVOL
               END DO
 C             Plastic dissipation: exact trapezoidal integral of the
 C             LINEAR sigma_y(PEEQ) curve over this increment's DGAMMA
 C             (zero when the step was elastic, DGAMMA=0)
               PLASTIC_DISSIP = PLASTIC_DISSIP
-     *            + 0.5D0*(SIGY_OLD+SIGY_NEW)*DGAMMA*DVOL
+     *            + STRESS_SCALE*0.5D0*(SIGY_OLD+SIGY_NEW)
+     *              *DGAMMA*DVOL
+            END IF
+            IF (ELEM_ALREADY_FAILED .AND.
+     *          (VOL_ELASTIC_STRAIN .LT. 0.0D0) .AND.
+     *          (COMP_RESIDUAL_FRAC .GT. 0.0D0)) THEN
+              ELIE = ELIE + 0.5D0*DAMAGE*COMP_RESIDUAL_FRAC
+     *             * BULK_MODULUS*VOL_ELASTIC_STRAIN
+     *             * VOL_ELASTIC_STRAIN*DVOL
             END IF
 C
-C           Rayleigh and bulk-viscosity dissipation -- skipped once failed,
-C           same as ELIE/PLASTIC_DISSIP above. STRESS_VISC/STRESS_BULK are
-C           computed from this increment's strain rate regardless of
-C           failed state (the dead element's nodes keep moving under
-C           their own inertia), but STRESS_TOTAL is zeroed for a failed
-C           element before it reaches FINT, so it does zero actual work;
-C           without this guard these two energy quantities would silently
-C           keep accumulating for an element contributing no force,
-C           exactly the "energy bookkeeping error" dead-state hygiene is
-C           meant to avoid (Stage 4).
-            IF (.NOT. ELEM_ALREADY_FAILED) THEN
+C           Rayleigh and bulk-viscosity dissipation use the same (1-D)
+C           scale as their stress contribution. They therefore taper
+C           during degradation and stop exactly when intact stress does;
+C           the compression-only residual has no numerical damping.
+            IF (STRESS_SCALE .GT. SMALL) THEN
               DO I = 1, 6
                 DAMP_DISSIP = DAMP_DISSIP
-     *                      + STRESS_VISC(I) * STRAINRATE_VEC(I) * DVOL * dtimeCur
+     *                      + STRESS_SCALE*STRESS_VISC(I)
+     *                      * STRAINRATE_VEC(I)*DVOL*dtimeCur
               END DO
 C
               IF (EVDOT .LT. 0.0D0) THEN
                 BV_DISSIP = BV_DISSIP
-     *                      + QBULK * DABS(EVDOT) * DVOL * dtimeCur
+     *                      + STRESS_SCALE*QBULK*DABS(EVDOT)
+     *                      * DVOL*dtimeCur
               END IF
             END IF
 C
@@ -795,6 +879,7 @@ C         ----------------------------------------------------------
           IF (.NOT. ELEM_ALREADY_FAILED) THEN
             IF (ELEM_MAXABS_ENG .GE. EPS_FAIL) THEN
               svars(KBLOCK, 49) = 1.0D0
+              IF (nsvars .GE. 106) svars(KBLOCK,106) = 0.0D0
               WRITE(*,*) '*** VUEL_FAILURE (ENG STRAIN): elem =',
      *                   jElem(KBLOCK), ' time =', time(iTotalTime),
      *                   ' max|eng strain| =', ELEM_MAXABS_ENG,
@@ -802,6 +887,7 @@ C         ----------------------------------------------------------
             ELSE IF ((ELEM_MIN_DETF .LE. JAC_FAIL) .OR.
      *               (ELEM_MIN_DETF .LE. 0.0D0)) THEN
               svars(KBLOCK, 49) = 1.0D0
+              IF (nsvars .GE. 106) svars(KBLOCK,106) = 0.0D0
               WRITE(*,*) '*** VUEL_FAILURE (JACOBIAN): elem =',
      *                   jElem(KBLOCK), ' time =', time(iTotalTime),
      *                   ' min(detF) =', ELEM_MIN_DETF,
@@ -847,7 +933,9 @@ C         over all active elements; without this, a failed element would
 C         keep enforcing the same small dt as before it died, for the
 C         rest of the analysis, purely because it still has mass).
 C         ----------------------------------------------------------
-          IF (ELEM_ALREADY_FAILED) THEN
+          IF (ELEM_ALREADY_FAILED .AND.
+     *        (STRESS_SCALE .LE. SMALL) .AND.
+     *        (COMP_RESIDUAL_FRAC .LE. SMALL)) THEN
             dtimeStable(KBLOCK) = 1.0D30
           ELSE
             CHARLEN = ELVOL ** (1.0D0 / 3.0D0)
