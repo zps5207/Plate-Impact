@@ -176,10 +176,11 @@ C       svars(49 + (k-1)*7 + 1 : 49 + (k-1)*7 + 7), last of the 7 being
 C       PEEQ)
 C       svars(106)    = element damage fraction D: 0.0 at failure onset,
 C                       1.0 when the degradation ramp is complete
-C       svars(107)    = per-element fiber volume fraction initialized by
-C                       the mesher via *Initial Conditions, TYPE=SOLUTION.
-C                       Observation/bookkeeping only in Stage 6; it does
-C                       not alter the constitutive response.
+C       svars(107)    = per-element fiber volume fraction initialized
+C                       via *Initial Conditions,
+C                       TYPE=SOLUTION.
+C                       Stage 7 scales this element's host stiffness,
+C                       yield and hardening by eta=max(1-Vf,1e-6).
 C
 C======================================================================
       SUBROUTINE VUEL(nblock,rhs,amass,dtimeStable,svars,nsvars,
@@ -283,6 +284,7 @@ C     Element matrices and vectors
       REAL*8 UVEC(24), VVEC(24)
       REAL*8 BL_MAT(6,24)
       REAL*8 CMAT(6,6)
+      REAL*8 CMAT_K(6,6)
       REAL*8 STRAIN_VEC(6), STRAINRATE_VEC(6)
       REAL*8 STRESS_PK2(6)
       REAL*8 STRESS_VISC(6)
@@ -326,7 +328,9 @@ C     Jacobian (collapse) trigger variables (new in this branch, Stage 3)
 C
 C     Stage 5 post-failure degradation and unilateral residual response
       REAL*8 DEGRADE_TIME, COMP_RESIDUAL_FRAC
-      REAL*8 FIBER_VOL_FRAC
+      REAL*8 FIBER_VOL_FRAC, ETA_VF_RAW, ETA_VF
+      REAL*8 EMOD_K, ALAMBDA_K, AMU_K, BULK_MODULUS_K
+      REAL*8 SIGY0_K, HMOD_K
       REAL*8 DAMAGE, DAMAGE_OLD, STRESS_SCALE
       REAL*8 BULK_MODULUS, VOL_ELASTIC_STRAIN, P_RESIDUAL
       REAL*8 STRESS_RESIDUAL(6)
@@ -427,12 +431,51 @@ C
       END IF
 C
       DO KBLOCK = 1, nblock
-C       Stage 6 observation channel. Preserve the initial value exactly;
-C       merely reading it here documents and exercises the VUEL plumbing.
+C       Stage 7 host-volume correction.  The floor prevents zero or
+C       negative constitutive stiffness if a bad Vf reaches the VUEL.
+C       Call-level constants remain intact for mass/stable-dt behavior.
         FIBER_VOL_FRAC = 0.0D0
         IF (nsvars .GE. 107) FIBER_VOL_FRAC = svars(KBLOCK,107)
+        ETA_VF_RAW = 1.0D0 - FIBER_VOL_FRAC
+        ETA_VF = DMAX1(ETA_VF_RAW, 1.0D-6)
+        IF ((ETA_VF_RAW .LT. 1.0D-6) .AND.
+     *      (NCALLS .LE. 5)) THEN
+          WRITE(*,*) '*** VUEL VF CLAMP: elem =', jElem(KBLOCK),
+     *               ' Vf =', FIBER_VOL_FRAC,
+     *               ' eta_raw =', ETA_VF_RAW,
+     *               ' eta_used =', ETA_VF
+        END IF
+C
+        EMOD_K = ETA_VF * EMOD
+        ALAMBDA_K = EMOD_K * ENU /
+     *    ((1.0D0 + ENU) * (1.0D0 - 2.0D0 * ENU))
+        AMU_K = EMOD_K / (2.0D0 * (1.0D0 + ENU))
+        BULK_MODULUS_K = ALAMBDA_K + 2.0D0*AMU_K/3.0D0
+        SIGY0_K = ETA_VF * SIGY0
+        HMOD_K = ETA_VF * HMOD
+C
+        DO I = 1, 6
+          DO J = 1, 6
+            CMAT_K(I,J) = 0.0D0
+          END DO
+        END DO
+        CMAT_K(1,1) = ALAMBDA_K + 2.0D0 * AMU_K
+        CMAT_K(2,2) = ALAMBDA_K + 2.0D0 * AMU_K
+        CMAT_K(3,3) = ALAMBDA_K + 2.0D0 * AMU_K
+        CMAT_K(4,4) = AMU_K
+        CMAT_K(5,5) = AMU_K
+        CMAT_K(6,6) = AMU_K
+        CMAT_K(1,2) = ALAMBDA_K
+        CMAT_K(1,3) = ALAMBDA_K
+        CMAT_K(2,1) = ALAMBDA_K
+        CMAT_K(2,3) = ALAMBDA_K
+        CMAT_K(3,1) = ALAMBDA_K
+        CMAT_K(3,2) = ALAMBDA_K
+C
         IF ((NCALLS .EQ. 1) .AND. (KBLOCK .EQ. 1)) THEN
           WRITE(*,*) 'FIBER_VOL_FRAC (SVAR107) =', FIBER_VOL_FRAC
+          WRITE(*,*) 'VF SCALE: eta =', ETA_VF,
+     *               ' E_k =', EMOD_K, ' SIGY0_k =', SIGY0_K
         END IF
 C
 C----------------------------------------------------------------------
@@ -650,7 +693,7 @@ C           ----------------------------------------------------------
             END DO
             PEEQ_OLD = svars(KBLOCK, IGPBASE+7)
             DGAMMA = 0.0D0
-            SIGY_OLD = SIGY0 + HMOD*PEEQ_OLD
+            SIGY_OLD = SIGY0_K + HMOD_K*PEEQ_OLD
             SIGY_NEW = SIGY_OLD
 C
             IF (.NOT. CONSTITUTIVE_ACTIVE) THEN
@@ -670,7 +713,7 @@ C             original formula whenever EP_VEC is zero)
                 S_TRIAL_VEC(I) = 0.0D0
                 DO J = 1, 6
                   S_TRIAL_VEC(I) = S_TRIAL_VEC(I)
-     *                             + CMAT(I,J) * EE_TRIAL_VEC(J)
+     *                             + CMAT_K(I,J) * EE_TRIAL_VEC(J)
                 END DO
               END DO
 C
@@ -701,12 +744,12 @@ C               convention used for STRAIN_VEC -- see file header)
      *                       + SDEV(6)*SDEV(6))), 0.0D0))
 C
                 IF ((SIGMA_TRIAL .GT. SIGY_OLD) .AND.
-     *              ((3.0D0*AMU + HMOD) .GT. SMALL)) THEN
+     *              ((3.0D0*AMU_K + HMOD_K) .GT. SMALL)) THEN
 C                 Closed-form radial return -- exact for linear
 C                 isotropic hardening + J2, no local Newton iteration
                   DGAMMA = (SIGMA_TRIAL - SIGY_OLD)
-     *                     / (3.0D0*AMU + HMOD)
-                  SIGY_NEW = SIGY_OLD + HMOD*DGAMMA
+     *                     / (3.0D0*AMU_K + HMOD_K)
+                  SIGY_NEW = SIGY_OLD + HMOD_K*DGAMMA
                   PEEQ_OLD = PEEQ_OLD + DGAMMA
 C
                   IF (SIGMA_TRIAL .GT. SMALL) THEN
@@ -736,7 +779,8 @@ C             since DEp is traceless (pressure-independent J2 flow)
               DO I = 1, 6
                 STRESS_PK2(I) = S_TRIAL_VEC(I)
                 DO J = 1, 6
-                  STRESS_PK2(I) = STRESS_PK2(I) - CMAT(I,J)*DEP_VEC(J)
+                  STRESS_PK2(I) = STRESS_PK2(I)
+     *                           - CMAT_K(I,J)*DEP_VEC(J)
                 END DO
               END DO
 C
@@ -763,7 +807,8 @@ C           ----------------------------------------------------------
               STRESS_VISC(I) = 0.0D0
               DO J = 1, 6
                 STRESS_VISC(I) = STRESS_VISC(I) 
-     *                           + BETA_RAYLEIGH * CMAT(I,J) * STRAINRATE_VEC(J)
+     *                           + BETA_RAYLEIGH * CMAT_K(I,J)
+     *                           * STRAINRATE_VEC(J)
               END DO
             END DO
 C
@@ -804,7 +849,7 @@ C           deviatoric, so tr(Ee) is the volumetric elastic strain.
             IF (ELEM_ALREADY_FAILED .AND.
      *          (COMP_RESIDUAL_FRAC .GT. 0.0D0) .AND.
      *          (VOL_ELASTIC_STRAIN .LT. 0.0D0)) THEN
-              P_RESIDUAL = COMP_RESIDUAL_FRAC * BULK_MODULUS
+              P_RESIDUAL = COMP_RESIDUAL_FRAC * BULK_MODULUS_K
      *                     * VOL_ELASTIC_STRAIN
               STRESS_RESIDUAL(1) = P_RESIDUAL
               STRESS_RESIDUAL(2) = P_RESIDUAL
@@ -856,7 +901,7 @@ C             (zero when the step was elastic, DGAMMA=0)
      *          (VOL_ELASTIC_STRAIN .LT. 0.0D0) .AND.
      *          (COMP_RESIDUAL_FRAC .GT. 0.0D0)) THEN
               ELIE = ELIE + 0.5D0*DAMAGE*COMP_RESIDUAL_FRAC
-     *             * BULK_MODULUS*VOL_ELASTIC_STRAIN
+     *             * BULK_MODULUS_K*VOL_ELASTIC_STRAIN
      *             * VOL_ELASTIC_STRAIN*DVOL
             END IF
 C
