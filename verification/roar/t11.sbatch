@@ -1,4 +1,5 @@
 #!/bin/bash
+#SBATCH --account=rhk12_cr_default
 #SBATCH --job-name=verif_t11
 #SBATCH --nodes=1
 #SBATCH --ntasks=1

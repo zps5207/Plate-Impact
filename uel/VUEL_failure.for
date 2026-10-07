@@ -157,7 +157,7 @@ C                   <=0 selects the Stage 4 instant-zero behavior.
 C       props(13) = COMP_RESIDUAL_BULK_FRAC: compression-only residual
 C                   bulk-stiffness fraction r [-], clamped to [0,1].
 C
-C     State variables (nsvars = 106):
+C     State variables (nsvars = 107):
 C       svars(1:6)    = PK2 stress at GP 1 (S11, S22, S33, S12, S13, S23)
 C       svars(7:12)   = PK2 stress at GP 2
 C       ...
@@ -176,6 +176,10 @@ C       svars(49 + (k-1)*7 + 1 : 49 + (k-1)*7 + 7), last of the 7 being
 C       PEEQ)
 C       svars(106)    = element damage fraction D: 0.0 at failure onset,
 C                       1.0 when the degradation ramp is complete
+C       svars(107)    = per-element fiber volume fraction initialized by
+C                       the mesher via *Initial Conditions, TYPE=SOLUTION.
+C                       Observation/bookkeeping only in Stage 6; it does
+C                       not alter the constitutive response.
 C
 C======================================================================
       SUBROUTINE VUEL(nblock,rhs,amass,dtimeStable,svars,nsvars,
@@ -322,6 +326,7 @@ C     Jacobian (collapse) trigger variables (new in this branch, Stage 3)
 C
 C     Stage 5 post-failure degradation and unilateral residual response
       REAL*8 DEGRADE_TIME, COMP_RESIDUAL_FRAC
+      REAL*8 FIBER_VOL_FRAC
       REAL*8 DAMAGE, DAMAGE_OLD, STRESS_SCALE
       REAL*8 BULK_MODULUS, VOL_ELASTIC_STRAIN, P_RESIDUAL
       REAL*8 STRESS_RESIDUAL(6)
@@ -422,6 +427,13 @@ C
       END IF
 C
       DO KBLOCK = 1, nblock
+C       Stage 6 observation channel. Preserve the initial value exactly;
+C       merely reading it here documents and exercises the VUEL plumbing.
+        FIBER_VOL_FRAC = 0.0D0
+        IF (nsvars .GE. 107) FIBER_VOL_FRAC = svars(KBLOCK,107)
+        IF ((NCALLS .EQ. 1) .AND. (KBLOCK .EQ. 1)) THEN
+          WRITE(*,*) 'FIBER_VOL_FRAC (SVAR107) =', FIBER_VOL_FRAC
+        END IF
 C
 C----------------------------------------------------------------------
 C       Extract REFERENCE nodal coordinates (undeformed)

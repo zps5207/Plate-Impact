@@ -4,6 +4,7 @@ import sys
 from .parser import parse_deck
 from .generate import mesh
 from .errors import HexOnlyError, MesherInputError
+from .vuelghost import VuelGhostOptions
 
 
 def _vec3(s):
@@ -43,6 +44,24 @@ def build_parser():
                          "cylinder/hex intersection volume instead of the default centerline-length "
                          "x area approximation (slower; most useful near host boundaries or when the "
                          "host size approaches the fiber pitch)")
+    v.add_argument("--host-mode", choices=("native", "vuel-ghost"), default="native",
+                   help="retain native C3D8R hosts (default), or emit VU1 real hosts plus node-coincident C3D8R ghosts")
+    v.add_argument("--ghost-scale", type=float, default=1e-4,
+                   help="scale ghost density, modulus, and plastic stresses together (default: 1e-4)")
+    v.add_argument("--ghost-ductile-failure-strain", type=float,
+                   help="strictly positive override for the ghost's cloned ductile initiation strain (default: retain host value)")
+    v.add_argument("--vuel-eps-fail", type=float,
+                   help="VU1 engineering-strain failure threshold (default: host ductile initiation strain)")
+    v.add_argument("--vuel-yield-stress", type=float,
+                   help="VU1 initial yield stress (default: first host *Plastic stress)")
+    v.add_argument("--vuel-hardening-modulus", type=float,
+                   help="VU1 linear hardening modulus (default: slope of the first two host *Plastic points)")
+    v.add_argument("--vuel-jac-fail", type=float, default=0.05,
+                   help="VU1 det(F) collapse threshold (default: 0.05)")
+    v.add_argument("--vuel-degrade-time", type=float, default=0.0,
+                   help="VU1 post-trigger linear degradation time (default: immediate)")
+    v.add_argument("--vuel-compression-residual", type=float, default=0.0,
+                   help="VU1 residual compression-only bulk fraction, 0..1 (default: 0)")
     return p
 
 
@@ -64,12 +83,20 @@ def main(argv=None):
             def progress(percent, message):
                 print(f"PROGRESS {percent} {message}", flush=True)
 
+            vuel_options = VuelGhostOptions(
+                ghost_scale=a.ghost_scale,
+                ghost_ductile_failure_strain=a.ghost_ductile_failure_strain,
+                eps_fail=a.vuel_eps_fail,
+                sigy0=a.vuel_yield_stress, hardening_modulus=a.vuel_hardening_modulus,
+                jac_fail=a.vuel_jac_fail, degrade_time=a.vuel_degrade_time,
+                compression_residual_bulk_fraction=a.vuel_compression_residual)
             fibers, rows = mesh(a.deck, a.instance, a.diameter, a.output, elset=a.elset, gap=a.gap,
                                  fiber_type=a.fiber_type, preview=a.preview, thickness_axis=a.thickness_axis,
                                  curved=a.curved, curve_axis_point=a.curve_axis_point, curve_axis_dir=a.curve_axis_dir,
                                  curve_center=a.curve_center, curve_pole_axis=a.curve_pole_axis,
                                  node_offset=a.node_offset, element_offset=a.element_offset,
                                  fiber_material=a.fiber_material, precise_volume=a.precise_volume,
+                                 host_mode=a.host_mode, vuel_ghost_options=vuel_options,
                                  progress=progress)
             print(f"patched deck: {a.output}/output.inp")
             print(f"host/fiber VTK: {a.output}/host_fibers.vtk")

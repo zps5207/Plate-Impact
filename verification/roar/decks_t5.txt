@@ -1,2 +1,3 @@
 c3d8_host
 vuel_host
+ghost_embed
