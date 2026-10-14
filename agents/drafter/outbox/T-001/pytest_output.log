@@ -1,0 +1,20 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\salas\OneDrive - The Pennsylvania State University\Plate Impact
+configfile: pyproject.toml
+collected 24 items
+
+..\tests\test_acceptance.py ..                                           [  8%]
+..\tests\test_cli.py .                                                   [ 12%]
+..\tests\test_core.py ..........                                         [ 54%]
+..\tests\test_curved.py ...                                              [ 66%]
+..\tests\test_desktop.py .                                               [ 70%]
+..\tests\test_visualization.py .                                         [ 75%]
+..\tests\test_vuelghost.py ...                                           [ 87%]
+..\tests\test_vumat_fibers.py ..                                         [ 95%]
+..\tests\test_writers.py .                                               [100%]
+
+============================== warnings summary ===============================
+PytestCacheWarning: could not create cache path
+
+======================== 24 passed, 1 warning in 0.53s ========================

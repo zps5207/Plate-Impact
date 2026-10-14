@@ -322,17 +322,28 @@ def set_motion_display(viewport, variable):
 
 
 def set_fiber_display(viewport):
-    """Show translucent ghost hosts, opaque fibers, and the impactor."""
+    """Show only the fibers and the impactor, opaque-shaded -- the host is
+    excluded from the display group entirely (not just rendered as
+    wireframe), per the user's stated preference: the host only ever
+    obscured the fiber grid, and dropping it outright gives a clearer view
+    than any host render style could.
+
+    Earlier rounds tried to keep the host visible as a wireframe silhouette
+    (two independent attempts to give the host and the fiber/ball content
+    different render styles via separate simultaneous display groups both
+    failed on real Abaqus 2024: DGCommonOptions has no .setValues, and the
+    DisplayGroupInstance attribute involved is read-only post-construction;
+    a single-shared-group global WIREFRAME render style worked but still
+    required drawing the host). Simply never adding the host leaf to the
+    display group sidesteps all of that.
+    """
     fiber_sets = tuple(
         "{0}.{1}".format(FIBER_INSTANCE, name) for name in FIBER_ELSETS)
-    ghost_leaf = display_group.LeafFromElementSets(
-        elementSets=(GHOST_ELSET,))
     fiber_leaf = display_group.LeafFromElementSets(
         elementSets=fiber_sets)
     ball_leaf = display_group.LeafFromPartInstance(
         partInstanceName=(BALL_INSTANCE,))
-    viewport.odbDisplay.displayGroup.replace(leaf=ghost_leaf)
-    viewport.odbDisplay.displayGroup.add(leaf=fiber_leaf)
+    viewport.odbDisplay.displayGroup.replace(leaf=fiber_leaf)
     viewport.odbDisplay.displayGroup.add(leaf=ball_leaf)
     viewport.odbDisplay.display.setValues(plotState=(DEFORMED,))
     viewport.odbDisplay.commonOptions.setValues(
@@ -341,14 +352,6 @@ def set_fiber_display(viewport):
     )
     viewport.viewportAnnotationOptions.setValues(legend=OFF)
 
-    # Abaqus 2024 Viewport.setColor has separate overloads for an initial
-    # color/translucency and for explicit leaf colors. Translucency applies
-    # only to objects using initialColor, so the leaf overrides keep fibers
-    # and Ball-1 fully opaque without unsupported mapping-dictionary keywords.
-    viewport.setColor(
-        initialColor=HOST_COLOR,
-        translucency=FIBER_HOST_TRANSLUCENCY,
-    )
     viewport.setColor(
         leaf=fiber_leaf,
         edgeColorWireHide=FIBER_COLOR,

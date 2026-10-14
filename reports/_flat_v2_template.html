@@ -1,0 +1,199 @@
+<title>Flat v2 Contact Run</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Fraunces:opsz,wght@9..144,600&display=swap">
+<style>
+/* Layout: single reading column, lab-notebook register; findings carry the one amber accent. */
+:root{
+  --bg:#f5f7f9; --panel:#ffffff; --ink:#18232d; --ink2:#46535f; --mute:#6d7a86; --rule:#d9e0e6;
+  --accent:#2a6f97; --accent-soft:#e3eef5; --flag:#b4540a; --flag-soft:#fbeedf; --ok:#2f7d4f;
+  --grid:#e4e9ee; --code:#eef2f5;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-disp:"Fraunces",Georgia,"Times New Roman",serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12181e; --panel:#1a232b; --ink:#e6edf2; --ink2:#b1bec9; --mute:#8896a3; --rule:#2c3944;
+  --accent:#6fb1d6; --accent-soft:#1b2f3c; --flag:#f0a15c; --flag-soft:#3a2a1a; --ok:#6fc08f;
+  --grid:#27333d; --code:#202b34; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12181e; --panel:#1a232b; --ink:#e6edf2; --ink2:#b1bec9; --mute:#8896a3; --rule:#2c3944;
+  --accent:#6fb1d6; --accent-soft:#1b2f3c; --flag:#f0a15c; --flag-soft:#3a2a1a; --ok:#6fc08f;
+  --grid:#27333d; --code:#202b34; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.6;
+  padding-inline:16px;padding-block:32px 64px}
+main{max-width:860px;margin-inline:auto}
+h1{font-family:var(--f-disp);font-weight:600;font-size:clamp(28px,5vw,40px);line-height:1.15;margin:0 0 6px;text-wrap:balance}
+h2{font-family:var(--f-disp);font-weight:600;font-size:22px;margin:44px 0 10px;text-wrap:balance}
+h3{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin:26px 0 8px;font-weight:600}
+p{margin:0 0 12px;max-width:68ch}
+.meta{color:var(--mute);font-family:var(--f-mono);font-size:12.5px;margin-bottom:22px}
+code{font-family:var(--f-mono);font-size:.88em;background:var(--code);padding:1px 5px;border-radius:3px}
+.verdict{background:var(--flag-soft);border:1px solid var(--flag);border-radius:6px;padding:14px 18px;margin:18px 0 8px}
+.verdict p{margin:0 0 8px;max-width:none}.verdict p:last-child{margin:0}
+.verdict strong{color:var(--flag)}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+.kv div{background:var(--panel);border:1px solid var(--rule);border-radius:6px;padding:10px 12px;min-width:0}
+.kv b{display:block;font-family:var(--f-mono);font-size:20px;font-weight:500;font-variant-numeric:tabular-nums}
+.kv span{font-size:12px;color:var(--mute)}
+.tbl{overflow-x:auto;margin:8px 0 16px;background:var(--panel);border:1px solid var(--rule);border-radius:6px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:7px 12px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-size:12px;color:var(--mute);font-weight:600;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.n,th.n{text-align:right;font-family:var(--f-mono)}
+.fig{background:var(--panel);border:1px solid var(--rule);border-radius:6px;padding:14px 14px 8px;margin:10px 0 16px}
+.fig figcaption{font-size:13px;color:var(--ink2);margin:0 0 6px}
+.fig figcaption b{color:var(--ink)}
+.fig .note{font-size:12.5px;color:var(--mute);margin:6px 0 4px}
+.chart{width:100%;height:auto;display:block}
+.chart .grid{stroke:var(--grid);stroke-width:1}
+.chart .tick,.chart .axis{fill:var(--mute);font-family:var(--f-mono);font-size:10.5px}
+.chart .axis{font-size:11px}
+.chart .val{fill:var(--ink);font-family:var(--f-mono);font-size:10.5px}
+.chart .bar{fill:var(--accent)}
+.chart .bar:hover{fill:var(--flag)}
+.chart .bar2{fill:var(--flag)}
+.chart .ln2{fill:none;stroke:var(--flag);stroke-width:2}
+.chart .ln{fill:none;stroke:var(--accent);stroke-width:2}
+.chart .pt{fill:var(--panel);stroke:var(--accent);stroke-width:2}
+.vids{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.vids figure{margin:0;background:var(--panel);border:1px solid var(--rule);border-radius:6px;padding:10px;min-width:0}
+video{width:100%;display:block;border-radius:3px;background:#fff}
+.vids figcaption{font-size:12.5px;color:var(--ink2);margin-top:6px}
+ul,ol{margin:0 0 12px;padding-left:22px;max-width:68ch}li{margin-bottom:6px}
+.caveat{border-left:3px solid var(--rule);padding:2px 0 2px 14px;color:var(--ink2);margin:12px 0}
+.ok{color:var(--ok);font-weight:600}.warn{color:var(--flag);font-weight:600}
+@media (prefers-reduced-motion:no-preference){video{transition:opacity .2s}}
+</style>
+
+<main>
+<h1>Flat v2 Contact Run</h1>
+<div class="meta">ROAR job 56286114 · branch vuel-plastic-failure · 12 Oct 2026 · deck <code>Meshing/Flatv2.inp</code></div>
+
+<div class="verdict">
+<p><strong>Result.</strong> The new deck runs to completion with 0 solver errors, and the central core of the plate is fully deleted. The rim problem is unchanged: <b>{{N_ISL}} ghost elements survive</b> near the hole with most of their neighbours deleted, against 48 and 52 in the two earlier runs.</p>
+<p><strong>New finding.</strong> Of the {{N_ALIVE_NEAR}} ghosts still alive within 10 mm of the axis, <b>{{N_PEEQ_ZERO}} have a peak equivalent plastic strain of exactly zero</b>. They never yielded, so the ghost's plastic-strain failure criterion could not have fired on them.</p>
+</div>
+
+<h2>Run summary</h2>
+<div class="kv">
+<div><b>33 m 45 s</b><span>wall time, exit 0</span></div>
+<div><b>7.0e-5 s</b><span>step time reached</span></div>
+<div><b>0</b><span>errors in the .dat file</span></div>
+<div><b>1364</b><span>VUEL failure messages</span></div>
+<div><b>1357</b><span>ghosts deleted (22,643 of 24,000 alive)</span></div>
+</div>
+<div class="tbl"><table>
+<tr><th>Item</th><th>Setting</th></tr>
+<tr><td>Host</td><td>24,000 VU1 user elements, each with a native C3D8R ghost on the same nodes (labels 24001 to 48000)</td></tr>
+<tr><td>Fibers</td><td>Same strategy as run 007: 328 fibers, diameter 0.001, gap 0.0002, T3D2 segments</td></tr>
+<tr><td>VUEL calibration</td><td>EPS_FAIL 0.1138, ghost ductile strain 1e-6, ghost scale 1e-4 (unchanged from 007)</td></tr>
+<tr><td>Contact</td><td>General contact, hard, friction 0.01, between two element-based surfaces: <code>Surf-1</code> (plate) and <code>Surf-2</code> (ball)</td></tr>
+<tr><td>Ball</td><td>Mild Steel with Johnson-Cook damage, 1 mm above the plate, 1000 m/s</td></tr>
+<tr><td>Step</td><td>7e-5 s explicit, nlgeom on</td></tr>
+</table></div>
+
+<h2>What had to change in the mesher</h2>
+<ol>
+<li><b>Parser.</b> <code>embmesh/parser.py</code> crashed on <code>*Surface, type=ELEMENT</code> lines because it expected an element number. It now accepts an element-set name too.</li>
+<li><b>Surface remap.</b> <code>Surf-1</code> pointed at elements 1 to 22400. In vuel-ghost mode those are user elements, which have no contact faces. <code>embmesh/vuelghost.py</code> now moves the members of any element-based surface set onto the matching ghost labels (24001 and up). After the fix the sets span 24001 to 48000.</li>
+</ol>
+<p>The 46 existing tests pass. The mesher output for this deck is in <code>Flat-vuel-ghost-v2/</code>.</p>
+
+<h3>Deck points to know about</h3>
+<ul>
+<li>The deck has no node-based surfaces. The <code>ball</code> and <code>plate</code> node sets exist but contact does not use them.</li>
+<li>The ball starts 1 mm from the plate, down from 10 mm in the earlier decks, so impact begins almost immediately.</li>
+<li>Contact is no longer <code>ALL EXTERIOR</code>. Whether faces exposed by deletion join a fixed element-based surface is not confirmed. It is what this run is testing.</li>
+</ul>
+
+<h2>Results</h2>
+
+<h3>Core region</h3>
+<p>Every ghost within 4 mm of the impact axis is deleted, in all ten depth layers. The core was also clean in the earlier runs, so this does not show that the contact change helped.</p>
+<div class="tbl"><table>
+<tr><th>Layer depth z (mm)</th><th class="n">Alive</th><th class="n">Deleted</th></tr>
+{{CORE_ROWS}}
+</table></div>
+
+<h3>Ball path</h3>
+<figure class="fig">
+<figcaption><b>Ball tip height over time.</b> It falls from +1 mm to about -68 mm at nearly constant speed (about 985 m/s). The ball goes through the 10 mm plate and barely slows.</figcaption>
+{{CHART_TIP}}
+<p class="note">Peak contact pressure at the last frame: 4.3e10 Pa, so contact was active.</p>
+</figure>
+
+<h3>Surviving islands</h3>
+<p>An island is a ghost that is still alive at the end, within 10 mm of the axis, and has at least 60% of its neighbours deleted (3 or more neighbours within 1.6 element pitches). There are {{N_ISL}}. They sit in the middle of the thickness and the outer part of the crater, none in the top or bottom two layers.</p>
+<div class="vids" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">
+<figure class="fig"><figcaption><b>Islands by depth.</b></figcaption>{{CHART_DEPTH}}</figure>
+<figure class="fig"><figcaption><b>Islands by radius.</b> Most are at 8 to 10 mm, the edge of the region checked.</figcaption>{{CHART_RAD}}</figure>
+</div>
+<p class="caveat">The 10 mm limit is a property of the check, not of the plate. The radius distribution may continue outwards, and I have not looked beyond 10 mm.</p>
+
+<figure class="fig">
+<figcaption><b>When the ghosts near the axis were deleted.</b> {{N_DEAD_NEAR}} of {{N_NEAR}} ghosts within 10 mm were deleted. Most go in the first 25 µs.</figcaption>
+{{CHART_DEATH}}
+</figure>
+
+<h3>Plastic strain of the survivors</h3>
+<p>The ghosts delete when their equivalent plastic strain (PEEQ) reaches the ductile-initiation value, 1e-6. PEEQ never decreases, so a value of zero at the end means it was zero throughout. All {{N_PEEQ_ZERO}} of the {{N_ALIVE_NEAR}} living near-axis ghosts read exactly zero, including the islands.</p>
+<div class="verdict">
+<p><strong>What that means.</strong> The island ghosts did not fail because they never yielded in the ghost's own J2 plasticity. Their neighbours were deleted, so these elements were not strained enough to trip the ghost criterion, whatever happened to the VUEL elements sharing their nodes.</p>
+</div>
+<p><b>Possible explanations, none yet tested:</b></p>
+<ul>
+<li>The VUEL fails on a normal-strain measure that responds to compression, while the ghost's J2 plasticity ignores pure hydrostatic compression. An element squeezed almost isotropically would fail the VUEL test but never yield in the ghost.</li>
+<li>The elements move with the debris as a nearly rigid body once their neighbours are gone, so they carry no strain.</li>
+</ul>
+<p class="caveat">Two limits on this result. The PEEQ values were sampled every 10th output frame plus the last, so a short transient between samples would be missed (it cannot explain a final value of zero). And the deleted elements read zero PEEQ after deletion, so I cannot compare the survivors with the elements that failed.</p>
+
+<h2>Do the survivors move? Island history</h2>
+<p>To see what the island ghosts were doing, I extracted per-frame histories (every 10th frame, 101 samples from 0 to 70 µs) for the {{N_ISL}} islands and for {{N_ADJ}} deleted ghosts next to them. The quantity is the displacement of the element centroid.</p>
+<div class="verdict">
+<p><strong>The islands barely moved.</strong> Their peak centroid displacement has a median of <b>{{ISL_MED}} mm</b> (largest {{ISL_MAX}} mm). The deleted ghosts beside them have a median of <b>{{DEAD_MED}} mm</b> (largest {{DEAD_MAX}} mm). That is about {{RATIO}} times less motion.</p>
+<p>The islands stayed elastic: the largest Mises stress seen in any island ghost is {{ISL_MISES}}, below the ghost yield of about 61.1 (same deck units), which is why PEEQ stayed at zero.</p>
+</div>
+<div class="vids" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">
+<figure class="fig"><figcaption><b>Peak centroid displacement.</b> Islands (orange) against neighbouring deleted ghosts (blue), log-spaced bins in mm. The two groups barely overlap.</figcaption>{{CHART_DISP}}</figure>
+<figure class="fig"><figcaption><b>Median depth-direction displacement over time.</b> Deleted neighbours (blue) are carried down with the ball. Islands (orange) hardly leave the start.</figcaption>{{CHART_TRACE}}</figure>
+</div>
+<h3>Where the ball goes</h3>
+<p>The ball is a sphere of radius about 10 mm (its mesh reaches r = 9.99 mm and spans 20 mm in z). It passes the whole plate thickness, so anything within r of about 10 mm of the axis should be inside its swept volume. Of the {{N_ISL}} islands, <b>{{N_R9}} sit at r below 9 mm and {{N_R8}} below 8 mm</b>. The ball went through them without moving them.</p>
+<div class="verdict">
+<p><strong>Reading.</strong> This points at contact rather than at the failure criteria. If the island ghosts had carried contact pressure, the ball would have pushed them, they would have yielded or been carried down, and the ghost criterion would have fired. They show no sign of being touched.</p>
+</div>
+<p class="caveat">This is a hypothesis, not a test. The earlier runs with <code>ALL EXTERIOR</code> contact also left islands, so the surface-pair change did not cure it. I have not yet looked at contact pressure at the island nodes, or at how far ball nodes pass into live plate material. The VU1 elements under the islands could be alive or failed, which is still unknown.</p>
+<p><b>Checks that would settle it:</b></p>
+<ul>
+<li><b>Contact output at the islands.</b> CPRESS at the island nodes. Zero throughout means they were never in contact.</li>
+<li><b>Ball-node penetration.</b> Distance ball nodes travel inside live plate material at the last frame.</li>
+<li><b>Node-based surface.</b> Put the plate nodes in a node-based contact surface so interior nodes exposed by deletion stay in contact.</li>
+</ul>
+<p>Two independent investigations of this run are running (a physics angle and a code-and-Abaqus-rules angle). Their results are not in this report.</p>
+
+<h2>Renders</h2>
+<p>240 frames per pass, from 4.5e-5 s to 7.0e-5 s, made with the same render script as the earlier runs. The plate appears as a quarter model.</p>
+<div class="vids">
+<figure><video controls loop muted playsinline preload="metadata" src="data:video/mp4;base64,{{VID_STATUS}}"></video><figcaption>Ghost STATUS. Red is alive, blue is deleted.</figcaption></figure>
+<figure><video controls loop muted playsinline preload="metadata" src="data:video/mp4;base64,{{VID_DISP}}"></video><figcaption>Displacement pass.</figcaption></figure>
+<figure><video controls loop muted playsinline preload="metadata" src="data:video/mp4;base64,{{VID_FIB}}"></video><figcaption>Fiber pass. The fibers draw as circle markers at their nodes in this render, which looks different from the earlier wireframe version. I have not looked into why.</figcaption></figure>
+</div>
+
+<h2>Open items</h2>
+<ol>
+<li><b>VU1 failure flag.</b> The ODB has no SDV fields. The request for SDV49, SDV106 and SDV107 was accepted by Abaqus but nothing was written, so a user element's state variables cannot be read this way. Whether the island VU1 elements are alive or dead is still unknown. Candidates: reading the VUEL's stdout (its element labels are scrambled by concurrent writes) or a different way of exporting the state.</li>
+<li><b>Contact method.</b> The island motion data points at contact (see above). This run does not say whether the surface-pair contact fixed anything. A node-based surface on the plate nodes is the next option if you want to try nodal contact.</li>
+<li><b>Criterion mismatch.</b> If the VU1 elements around the islands are dead, the VUEL and ghost criteria disagree on compressive loading. Changing either criterion changes the physics and needs your decision first.</li>
+<li><b>Housekeeping.</b> T-004, T-006, the diagnostic patch and the two code changes above are still uncommitted.</li>
+</ol>
+
+<h3>Files</h3>
+<div class="tbl"><table>
+<tr><td>Deck and solver</td><td><code>/storage/home/zps5207/scratch/flat_v2/</code> (ODB 6 GB, stays on ROAR)</td></tr>
+<tr><td>Mesher output</td><td><code>Flat-vuel-ghost-v2/output.inp</code></td></tr>
+<tr><td>Analysis</td><td><code>verification/roar/t_v2/</code> (island data, diagnostics, frames, videos)</td></tr>
+<tr><td>Scripts</td><td><code>verification/roar/diagnose_v2.py</code>, <code>island_peeq_v2.py</code>, <code>list_fields_v2.py</code></td></tr>
+<tr><td>Render job</td><td>56289438</td></tr>
+</table></div>
+</main>

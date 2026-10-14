@@ -1,0 +1,4 @@
+*Beam Section, elset=EMBMESH_FIBERS_T0, material=EMBMESH_FIBER, section=CIRC
+0.125, 0, 0, 1
+*Beam Section, elset=EMBMESH_FIBERS_T90, material=EMBMESH_FIBER, section=CIRC
+0.125, 0, 0, 1

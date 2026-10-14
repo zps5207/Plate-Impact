@@ -1,0 +1,2246 @@
+{
+  "background": "#FFFFFF",
+  "camera": {
+    "cameraPosition": [
+      0.1269988715648651,
+      0.1240006685256958,
+      0.0799364224076271
+    ],
+    "cameraTarget": [
+      0.026159152388572693,
+      0.02316094934940338,
+      -0.020903296768665314
+    ],
+    "cameraUpVector": [
+      -0.5773502588272095,
+      0.5773502588272095,
+      -0.5773502588272095
+    ],
+    "farPlane": 0.24560348689556122,
+    "height": 0.06095040962100029,
+    "nearPlane": 0.12823985517024994,
+    "width": 0.11304718255996704
+  },
+  "deformation_scale": 1.0,
+  "eligible_odb_frame_count": 358,
+  "ffmpeg_examples": [
+    "ffmpeg -framerate 30 -i status/status_%04d.png -c:v libx264 -pix_fmt yuv420p status.mp4",
+    "ffmpeg -framerate 30 -i displacement/displacement_%04d.png -c:v libx264 -pix_fmt yuv420p displacement.mp4",
+    "ffmpeg -framerate 30 -i fibers/fibers_%04d.png -c:v libx264 -pix_fmt yuv420p fibers.mp4"
+  ],
+  "fiber_render": {
+    "ball_color": "#606060",
+    "element_sets": [
+      "EMBMESH_FIBERS_T0",
+      "EMBMESH_FIBERS_T90"
+    ],
+    "fiber_color": "#D00000",
+    "host_color": "#9EADBA",
+    "host_element_set": "EMBMESH_GHOST_DIAGNOSTICS",
+    "host_translucency": 0.65,
+    "instance": "EMBFIB-1",
+    "plot_state": "DEFORMED"
+  },
+  "fit_view_frame_index": 643,
+  "fit_view_step_time": 4.5013661292614415e-05,
+  "frame_records": [
+    {
+      "odb_frame_index": 643,
+      "pass": "fibers",
+      "png": "fibers/fibers_0000.png",
+      "sequence": 0,
+      "step_time": 4.5013661292614415e-05
+    },
+    {
+      "odb_frame_index": 644,
+      "pass": "fibers",
+      "png": "fibers/fibers_0001.png",
+      "sequence": 1,
+      "step_time": 4.508153142523952e-05
+    },
+    {
+      "odb_frame_index": 646,
+      "pass": "fibers",
+      "png": "fibers/fibers_0002.png",
+      "sequence": 2,
+      "step_time": 4.522369636106305e-05
+    },
+    {
+      "odb_frame_index": 647,
+      "pass": "fibers",
+      "png": "fibers/fibers_0003.png",
+      "sequence": 3,
+      "step_time": 4.529172656475566e-05
+    },
+    {
+      "odb_frame_index": 649,
+      "pass": "fibers",
+      "png": "fibers/fibers_0004.png",
+      "sequence": 4,
+      "step_time": 4.5433713239617646e-05
+    },
+    {
+      "odb_frame_index": 650,
+      "pass": "fibers",
+      "png": "fibers/fibers_0005.png",
+      "sequence": 5,
+      "step_time": 4.550161975203082e-05
+    },
+    {
+      "odb_frame_index": 652,
+      "pass": "fibers",
+      "png": "fibers/fibers_0006.png",
+      "sequence": 6,
+      "step_time": 4.564354458125308e-05
+    },
+    {
+      "odb_frame_index": 653,
+      "pass": "fibers",
+      "png": "fibers/fibers_0007.png",
+      "sequence": 7,
+      "step_time": 4.571140743792057e-05
+    },
+    {
+      "odb_frame_index": 655,
+      "pass": "fibers",
+      "png": "fibers/fibers_0008.png",
+      "sequence": 8,
+      "step_time": 4.5853379560867324e-05
+    },
+    {
+      "odb_frame_index": 656,
+      "pass": "fibers",
+      "png": "fibers/fibers_0009.png",
+      "sequence": 9,
+      "step_time": 4.592120967572555e-05
+    },
+    {
+      "odb_frame_index": 658,
+      "pass": "fibers",
+      "png": "fibers/fibers_0010.png",
+      "sequence": 10,
+      "step_time": 4.606308357324451e-05
+    },
+    {
+      "odb_frame_index": 659,
+      "pass": "fibers",
+      "png": "fibers/fibers_0011.png",
+      "sequence": 11,
+      "step_time": 4.613091368810274e-05
+    },
+    {
+      "odb_frame_index": 661,
+      "pass": "fibers",
+      "png": "fibers/fibers_0012.png",
+      "sequence": 12,
+      "step_time": 4.627282760338858e-05
+    },
+    {
+      "odb_frame_index": 662,
+      "pass": "fibers",
+      "png": "fibers/fibers_0013.png",
+      "sequence": 13,
+      "step_time": 4.63406577182468e-05
+    },
+    {
+      "odb_frame_index": 664,
+      "pass": "fibers",
+      "png": "fibers/fibers_0014.png",
+      "sequence": 14,
+      "step_time": 4.648248432204127e-05
+    },
+    {
+      "odb_frame_index": 665,
+      "pass": "fibers",
+      "png": "fibers/fibers_0015.png",
+      "sequence": 15,
+      "step_time": 4.65503144368995e-05
+    },
+    {
+      "odb_frame_index": 667,
+      "pass": "fibers",
+      "png": "fibers/fibers_0016.png",
+      "sequence": 16,
+      "step_time": 4.669214104069397e-05
+    },
+    {
+      "odb_frame_index": 668,
+      "pass": "fibers",
+      "png": "fibers/fibers_0017.png",
+      "sequence": 17,
+      "step_time": 4.6766137529630214e-05
+    },
+    {
+      "odb_frame_index": 670,
+      "pass": "fibers",
+      "png": "fibers/fibers_0018.png",
+      "sequence": 18,
+      "step_time": 4.6901797759346664e-05
+    },
+    {
+      "odb_frame_index": 671,
+      "pass": "fibers",
+      "png": "fibers/fibers_0019.png",
+      "sequence": 19,
+      "step_time": 4.697579424828291e-05
+    },
+    {
+      "odb_frame_index": 673,
+      "pass": "fibers",
+      "png": "fibers/fibers_0020.png",
+      "sequence": 20,
+      "step_time": 4.711149085778743e-05
+    },
+    {
+      "odb_frame_index": 674,
+      "pass": "fibers",
+      "png": "fibers/fibers_0021.png",
+      "sequence": 21,
+      "step_time": 4.718576019513421e-05
+    },
+    {
+      "odb_frame_index": 676,
+      "pass": "fibers",
+      "png": "fibers/fibers_0022.png",
+      "sequence": 22,
+      "step_time": 4.732270463136956e-05
+    },
+    {
+      "odb_frame_index": 677,
+      "pass": "fibers",
+      "png": "fibers/fibers_0023.png",
+      "sequence": 23,
+      "step_time": 4.7390534746227786e-05
+    },
+    {
+      "odb_frame_index": 679,
+      "pass": "fibers",
+      "png": "fibers/fibers_0024.png",
+      "sequence": 24,
+      "step_time": 4.753267057822086e-05
+    },
+    {
+      "odb_frame_index": 680,
+      "pass": "fibers",
+      "png": "fibers/fibers_0025.png",
+      "sequence": 25,
+      "step_time": 4.760104638990015e-05
+    },
+    {
+      "odb_frame_index": 682,
+      "pass": "fibers",
+      "png": "fibers/fibers_0026.png",
+      "sequence": 26,
+      "step_time": 4.774366243509576e-05
+    },
+    {
+      "odb_frame_index": 683,
+      "pass": "fibers",
+      "png": "fibers/fibers_0027.png",
+      "sequence": 27,
+      "step_time": 4.781149254995398e-05
+    },
+    {
+      "odb_frame_index": 685,
+      "pass": "fibers",
+      "png": "fibers/fibers_0028.png",
+      "sequence": 28,
+      "step_time": 4.7953555622370914e-05
+    },
+    {
+      "odb_frame_index": 686,
+      "pass": "fibers",
+      "png": "fibers/fibers_0029.png",
+      "sequence": 29,
+      "step_time": 4.802144394489005e-05
+    },
+    {
+      "odb_frame_index": 688,
+      "pass": "fibers",
+      "png": "fibers/fibers_0030.png",
+      "sequence": 30,
+      "step_time": 4.816327054868452e-05
+    },
+    {
+      "odb_frame_index": 689,
+      "pass": "fibers",
+      "png": "fibers/fibers_0031.png",
+      "sequence": 31,
+      "step_time": 4.823110066354275e-05
+    },
+    {
+      "odb_frame_index": 691,
+      "pass": "fibers",
+      "png": "fibers/fibers_0032.png",
+      "sequence": 32,
+      "step_time": 4.837311644223519e-05
+    },
+    {
+      "odb_frame_index": 692,
+      "pass": "fibers",
+      "png": "fibers/fibers_0033.png",
+      "sequence": 33,
+      "step_time": 4.8440968384966254e-05
+    },
+    {
+      "odb_frame_index": 694,
+      "pass": "fibers",
+      "png": "fibers/fibers_0034.png",
+      "sequence": 34,
+      "step_time": 4.858284228248522e-05
+    },
+    {
+      "odb_frame_index": 695,
+      "pass": "fibers",
+      "png": "fibers/fibers_0035.png",
+      "sequence": 35,
+      "step_time": 4.865067603532225e-05
+    },
+    {
+      "odb_frame_index": 697,
+      "pass": "fibers",
+      "png": "fibers/fibers_0036.png",
+      "sequence": 36,
+      "step_time": 4.879250263911672e-05
+    },
+    {
+      "odb_frame_index": 698,
+      "pass": "fibers",
+      "png": "fibers/fibers_0037.png",
+      "sequence": 37,
+      "step_time": 4.8860332753974944e-05
+    },
+    {
+      "odb_frame_index": 700,
+      "pass": "fibers",
+      "png": "fibers/fibers_0038.png",
+      "sequence": 38,
+      "step_time": 4.900233034277335e-05
+    },
+    {
+      "odb_frame_index": 701,
+      "pass": "fibers",
+      "png": "fibers/fibers_0039.png",
+      "sequence": 39,
+      "step_time": 4.907026595901698e-05
+    },
+    {
+      "odb_frame_index": 703,
+      "pass": "fibers",
+      "png": "fibers/fibers_0040.png",
+      "sequence": 40,
+      "step_time": 4.921284198644571e-05
+    },
+    {
+      "odb_frame_index": 704,
+      "pass": "fibers",
+      "png": "fibers/fibers_0041.png",
+      "sequence": 41,
+      "step_time": 4.9280672101303935e-05
+    },
+    {
+      "odb_frame_index": 706,
+      "pass": "fibers",
+      "png": "fibers/fibers_0042.png",
+      "sequence": 42,
+      "step_time": 4.942319355905056e-05
+    },
+    {
+      "odb_frame_index": 707,
+      "pass": "fibers",
+      "png": "fibers/fibers_0043.png",
+      "sequence": 43,
+      "step_time": 4.949167123413645e-05
+    },
+    {
+      "odb_frame_index": 709,
+      "pass": "fibers",
+      "png": "fibers/fibers_0044.png",
+      "sequence": 44,
+      "step_time": 4.963488754583523e-05
+    },
+    {
+      "odb_frame_index": 710,
+      "pass": "fibers",
+      "png": "fibers/fibers_0045.png",
+      "sequence": 45,
+      "step_time": 4.9703365220921114e-05
+    },
+    {
+      "odb_frame_index": 712,
+      "pass": "fibers",
+      "png": "fibers/fibers_0046.png",
+      "sequence": 46,
+      "step_time": 4.9840477004181594e-05
+    },
+    {
+      "odb_frame_index": 713,
+      "pass": "fibers",
+      "png": "fibers/fibers_0047.png",
+      "sequence": 47,
+      "step_time": 4.9915041017811745e-05
+    },
+    {
+      "odb_frame_index": 715,
+      "pass": "fibers",
+      "png": "fibers/fibers_0048.png",
+      "sequence": 48,
+      "step_time": 5.005186903872527e-05
+    },
+    {
+      "odb_frame_index": 716,
+      "pass": "fibers",
+      "png": "fibers/fibers_0049.png",
+      "sequence": 49,
+      "step_time": 5.012022302253172e-05
+    },
+    {
+      "odb_frame_index": 718,
+      "pass": "fibers",
+      "png": "fibers/fibers_0050.png",
+      "sequence": 50,
+      "step_time": 5.026313738198951e-05
+    },
+    {
+      "odb_frame_index": 719,
+      "pass": "fibers",
+      "png": "fibers/fibers_0051.png",
+      "sequence": 51,
+      "step_time": 5.033148772781715e-05
+    },
+    {
+      "odb_frame_index": 721,
+      "pass": "fibers",
+      "png": "fibers/fibers_0052.png",
+      "sequence": 52,
+      "step_time": 5.047476224717684e-05
+    },
+    {
+      "odb_frame_index": 722,
+      "pass": "fibers",
+      "png": "fibers/fibers_0053.png",
+      "sequence": 53,
+      "step_time": 5.0543145334813744e-05
+    },
+    {
+      "odb_frame_index": 724,
+      "pass": "fibers",
+      "png": "fibers/fibers_0054.png",
+      "sequence": 54,
+      "step_time": 5.0680180720519274e-05
+    },
+    {
+      "odb_frame_index": 725,
+      "pass": "fibers",
+      "png": "fibers/fibers_0055.png",
+      "sequence": 55,
+      "step_time": 5.0754759286064655e-05
+    },
+    {
+      "odb_frame_index": 727,
+      "pass": "fibers",
+      "png": "fibers/fibers_0056.png",
+      "sequence": 56,
+      "step_time": 5.089160185889341e-05
+    },
+    {
+      "odb_frame_index": 728,
+      "pass": "fibers",
+      "png": "fibers/fibers_0057.png",
+      "sequence": 57,
+      "step_time": 5.0966209528269246e-05
+    },
+    {
+      "odb_frame_index": 730,
+      "pass": "fibers",
+      "png": "fibers/fibers_0058.png",
+      "sequence": 58,
+      "step_time": 5.1103070290992036e-05
+    },
+    {
+      "odb_frame_index": 731,
+      "pass": "fibers",
+      "png": "fibers/fibers_0059.png",
+      "sequence": 59,
+      "step_time": 5.1171420636819676e-05
+    },
+    {
+      "odb_frame_index": 733,
+      "pass": "fibers",
+      "png": "fibers/fibers_0060.png",
+      "sequence": 60,
+      "step_time": 5.131496436661109e-05
+    },
+    {
+      "odb_frame_index": 734,
+      "pass": "fibers",
+      "png": "fibers/fibers_0061.png",
+      "sequence": 61,
+      "step_time": 5.13836057507433e-05
+    },
+    {
+      "odb_frame_index": 736,
+      "pass": "fibers",
+      "png": "fibers/fibers_0062.png",
+      "sequence": 62,
+      "step_time": 5.1520459237508476e-05
+    },
+    {
+      "odb_frame_index": 737,
+      "pass": "fibers",
+      "png": "fibers/fibers_0063.png",
+      "sequence": 63,
+      "step_time": 5.1595739932963625e-05
+    },
+    {
+      "odb_frame_index": 739,
+      "pass": "fibers",
+      "png": "fibers/fibers_0064.png",
+      "sequence": 64,
+      "step_time": 5.173534736968577e-05
+    },
+    {
+      "odb_frame_index": 740,
+      "pass": "fibers",
+      "png": "fibers/fibers_0065.png",
+      "sequence": 65,
+      "step_time": 5.180522202863358e-05
+    },
+    {
+      "odb_frame_index": 742,
+      "pass": "fibers",
+      "png": "fibers/fibers_0066.png",
+      "sequence": 66,
+      "step_time": 5.194486220716499e-05
+    },
+    {
+      "odb_frame_index": 743,
+      "pass": "fibers",
+      "png": "fibers/fibers_0067.png",
+      "sequence": 67,
+      "step_time": 5.2014729590155184e-05
+    },
+    {
+      "odb_frame_index": 745,
+      "pass": "fibers",
+      "png": "fibers/fibers_0068.png",
+      "sequence": 68,
+      "step_time": 5.215433338889852e-05
+    },
+    {
+      "odb_frame_index": 746,
+      "pass": "fibers",
+      "png": "fibers/fibers_0069.png",
+      "sequence": 69,
+      "step_time": 5.2224215323803946e-05
+    },
+    {
+      "odb_frame_index": 748,
+      "pass": "fibers",
+      "png": "fibers/fibers_0070.png",
+      "sequence": 70,
+      "step_time": 5.2363840950420126e-05
+    },
+    {
+      "odb_frame_index": 749,
+      "pass": "fibers",
+      "png": "fibers/fibers_0071.png",
+      "sequence": 71,
+      "step_time": 5.2433591918088496e-05
+    },
+    {
+      "odb_frame_index": 751,
+      "pass": "fibers",
+      "png": "fibers/fibers_0072.png",
+      "sequence": 72,
+      "step_time": 5.2573181164916605e-05
+    },
+    {
+      "odb_frame_index": 752,
+      "pass": "fibers",
+      "png": "fibers/fibers_0073.png",
+      "sequence": 73,
+      "step_time": 5.264299034024589e-05
+    },
+    {
+      "odb_frame_index": 754,
+      "pass": "fibers",
+      "png": "fibers/fibers_0074.png",
+      "sequence": 74,
+      "step_time": 5.278271419228986e-05
+    },
+    {
+      "odb_frame_index": 755,
+      "pass": "fibers",
+      "png": "fibers/fibers_0075.png",
+      "sequence": 75,
+      "step_time": 5.2852505177725106e-05
+    },
+    {
+      "odb_frame_index": 757,
+      "pass": "fibers",
+      "png": "fibers/fibers_0076.png",
+      "sequence": 76,
+      "step_time": 5.2992632845416665e-05
+    },
+    {
+      "odb_frame_index": 758,
+      "pass": "fibers",
+      "png": "fibers/fibers_0077.png",
+      "sequence": 77,
+      "step_time": 5.306247840053402e-05
+    },
+    {
+      "odb_frame_index": 760,
+      "pass": "fibers",
+      "png": "fibers/fibers_0078.png",
+      "sequence": 78,
+      "step_time": 5.3202122217044234e-05
+    },
+    {
+      "odb_frame_index": 761,
+      "pass": "fibers",
+      "png": "fibers/fibers_0079.png",
+      "sequence": 79,
+      "step_time": 5.3271873184712604e-05
+    },
+    {
+      "odb_frame_index": 762,
+      "pass": "fibers",
+      "png": "fibers/fibers_0080.png",
+      "sequence": 80,
+      "step_time": 5.334162415238097e-05
+    },
+    {
+      "odb_frame_index": 764,
+      "pass": "fibers",
+      "png": "fibers/fibers_0081.png",
+      "sequence": 81,
+      "step_time": 5.348116610548459e-05
+    },
+    {
+      "odb_frame_index": 765,
+      "pass": "fibers",
+      "png": "fibers/fibers_0082.png",
+      "sequence": 82,
+      "step_time": 5.355092798708938e-05
+    },
+    {
+      "odb_frame_index": 767,
+      "pass": "fibers",
+      "png": "fibers/fibers_0083.png",
+      "sequence": 83,
+      "step_time": 5.369056816562079e-05
+    },
+    {
+      "odb_frame_index": 768,
+      "pass": "fibers",
+      "png": "fibers/fibers_0084.png",
+      "sequence": 84,
+      "step_time": 5.376033004722558e-05
+    },
+    {
+      "odb_frame_index": 770,
+      "pass": "fibers",
+      "png": "fibers/fibers_0085.png",
+      "sequence": 85,
+      "step_time": 5.3906176617601886e-05
+    },
+    {
+      "odb_frame_index": 771,
+      "pass": "fibers",
+      "png": "fibers/fibers_0086.png",
+      "sequence": 86,
+      "step_time": 5.3975927585270256e-05
+    },
+    {
+      "odb_frame_index": 773,
+      "pass": "fibers",
+      "png": "fibers/fibers_0087.png",
+      "sequence": 87,
+      "step_time": 5.411547317635268e-05
+    },
+    {
+      "odb_frame_index": 774,
+      "pass": "fibers",
+      "png": "fibers/fibers_0088.png",
+      "sequence": 88,
+      "step_time": 5.418526416178793e-05
+    },
+    {
+      "odb_frame_index": 776,
+      "pass": "fibers",
+      "png": "fibers/fibers_0089.png",
+      "sequence": 89,
+      "step_time": 5.432480975287035e-05
+    },
+    {
+      "odb_frame_index": 777,
+      "pass": "fibers",
+      "png": "fibers/fibers_0090.png",
+      "sequence": 90,
+      "step_time": 5.43946007383056e-05
+    },
+    {
+      "odb_frame_index": 779,
+      "pass": "fibers",
+      "png": "fibers/fibers_0091.png",
+      "sequence": 91,
+      "step_time": 5.4534844821318984e-05
+    },
+    {
+      "odb_frame_index": 780,
+      "pass": "fibers",
+      "png": "fibers/fibers_0092.png",
+      "sequence": 92,
+      "step_time": 5.4604632168775424e-05
+    },
+    {
+      "odb_frame_index": 782,
+      "pass": "fibers",
+      "png": "fibers/fibers_0093.png",
+      "sequence": 93,
+      "step_time": 5.474419958773069e-05
+    },
+    {
+      "odb_frame_index": 783,
+      "pass": "fibers",
+      "png": "fibers/fibers_0094.png",
+      "sequence": 94,
+      "step_time": 5.481399057316594e-05
+    },
+    {
+      "odb_frame_index": 785,
+      "pass": "fibers",
+      "png": "fibers/fibers_0095.png",
+      "sequence": 95,
+      "step_time": 5.4953863582341e-05
+    },
+    {
+      "odb_frame_index": 786,
+      "pass": "fibers",
+      "png": "fibers/fibers_0096.png",
+      "sequence": 96,
+      "step_time": 5.502365456777625e-05
+    },
+    {
+      "odb_frame_index": 788,
+      "pass": "fibers",
+      "png": "fibers/fibers_0097.png",
+      "sequence": 97,
+      "step_time": 5.516321107279509e-05
+    },
+    {
+      "odb_frame_index": 789,
+      "pass": "fibers",
+      "png": "fibers/fibers_0098.png",
+      "sequence": 98,
+      "step_time": 5.523296204046346e-05
+    },
+    {
+      "odb_frame_index": 791,
+      "pass": "fibers",
+      "png": "fibers/fibers_0099.png",
+      "sequence": 99,
+      "step_time": 5.53724639758002e-05
+    },
+    {
+      "odb_frame_index": 792,
+      "pass": "fibers",
+      "png": "fibers/fibers_0100.png",
+      "sequence": 100,
+      "step_time": 5.544221494346857e-05
+    },
+    {
+      "odb_frame_index": 794,
+      "pass": "fibers",
+      "png": "fibers/fibers_0101.png",
+      "sequence": 101,
+      "step_time": 5.558175325859338e-05
+    },
+    {
+      "odb_frame_index": 795,
+      "pass": "fibers",
+      "png": "fibers/fibers_0102.png",
+      "sequence": 102,
+      "step_time": 5.565150422626175e-05
+    },
+    {
+      "odb_frame_index": 797,
+      "pass": "fibers",
+      "png": "fibers/fibers_0103.png",
+      "sequence": 103,
+      "step_time": 5.579100616159849e-05
+    },
+    {
+      "odb_frame_index": 798,
+      "pass": "fibers",
+      "png": "fibers/fibers_0104.png",
+      "sequence": 104,
+      "step_time": 5.586089537246153e-05
+    },
+    {
+      "odb_frame_index": 800,
+      "pass": "fibers",
+      "png": "fibers/fibers_0105.png",
+      "sequence": 105,
+      "step_time": 5.6000437325565144e-05
+    },
+    {
+      "odb_frame_index": 801,
+      "pass": "fibers",
+      "png": "fibers/fibers_0106.png",
+      "sequence": 106,
+      "step_time": 5.6070624850690365e-05
+    },
+    {
+      "odb_frame_index": 803,
+      "pass": "fibers",
+      "png": "fibers/fibers_0107.png",
+      "sequence": 107,
+      "step_time": 5.6210676120826975e-05
+    },
+    {
+      "odb_frame_index": 804,
+      "pass": "fibers",
+      "png": "fibers/fibers_0108.png",
+      "sequence": 108,
+      "step_time": 5.628081999020651e-05
+    },
+    {
+      "odb_frame_index": 806,
+      "pass": "fibers",
+      "png": "fibers/fibers_0109.png",
+      "sequence": 109,
+      "step_time": 5.642085670842789e-05
+    },
+    {
+      "odb_frame_index": 807,
+      "pass": "fibers",
+      "png": "fibers/fibers_0110.png",
+      "sequence": 110,
+      "step_time": 5.649060767609626e-05
+    },
+    {
+      "odb_frame_index": 809,
+      "pass": "fibers",
+      "png": "fibers/fibers_0111.png",
+      "sequence": 111,
+      "step_time": 5.6630113249411806e-05
+    },
+    {
+      "odb_frame_index": 810,
+      "pass": "fibers",
+      "png": "fibers/fibers_0112.png",
+      "sequence": 112,
+      "step_time": 5.670018799719401e-05
+    },
+    {
+      "odb_frame_index": 812,
+      "pass": "fibers",
+      "png": "fibers/fibers_0113.png",
+      "sequence": 113,
+      "step_time": 5.684131247107871e-05
+    },
+    {
+      "odb_frame_index": 813,
+      "pass": "fibers",
+      "png": "fibers/fibers_0114.png",
+      "sequence": 114,
+      "step_time": 5.691109618055634e-05
+    },
+    {
+      "odb_frame_index": 815,
+      "pass": "fibers",
+      "png": "fibers/fibers_0115.png",
+      "sequence": 115,
+      "step_time": 5.7050867326324806e-05
+    },
+    {
+      "odb_frame_index": 816,
+      "pass": "fibers",
+      "png": "fibers/fibers_0116.png",
+      "sequence": 116,
+      "step_time": 5.712065831176005e-05
+    },
+    {
+      "odb_frame_index": 818,
+      "pass": "fibers",
+      "png": "fibers/fibers_0117.png",
+      "sequence": 117,
+      "step_time": 5.726035305997357e-05
+    },
+    {
+      "odb_frame_index": 819,
+      "pass": "fibers",
+      "png": "fibers/fibers_0118.png",
+      "sequence": 118,
+      "step_time": 5.733026046073064e-05
+    },
+    {
+      "odb_frame_index": 821,
+      "pass": "fibers",
+      "png": "fibers/fibers_0119.png",
+      "sequence": 119,
+      "step_time": 5.747040995629504e-05
+    },
+    {
+      "odb_frame_index": 822,
+      "pass": "fibers",
+      "png": "fibers/fibers_0120.png",
+      "sequence": 120,
+      "step_time": 5.7540306443115696e-05
+    },
+    {
+      "odb_frame_index": 824,
+      "pass": "fibers",
+      "png": "fibers/fibers_0121.png",
+      "sequence": 121,
+      "step_time": 5.7686211221152917e-05
+    },
+    {
+      "odb_frame_index": 825,
+      "pass": "fibers",
+      "png": "fibers/fibers_0122.png",
+      "sequence": 122,
+      "step_time": 5.77559694647789e-05
+    },
+    {
+      "odb_frame_index": 827,
+      "pass": "fibers",
+      "png": "fibers/fibers_0123.png",
+      "sequence": 123,
+      "step_time": 5.789560964331031e-05
+    },
+    {
+      "odb_frame_index": 828,
+      "pass": "fibers",
+      "png": "fibers/fibers_0124.png",
+      "sequence": 124,
+      "step_time": 5.7965487940236926e-05
+    },
+    {
+      "odb_frame_index": 830,
+      "pass": "fibers",
+      "png": "fibers/fibers_0125.png",
+      "sequence": 125,
+      "step_time": 5.8105302741751075e-05
+    },
+    {
+      "odb_frame_index": 831,
+      "pass": "fibers",
+      "png": "fibers/fibers_0126.png",
+      "sequence": 126,
+      "step_time": 5.8175428421236575e-05
+    },
+    {
+      "odb_frame_index": 833,
+      "pass": "fibers",
+      "png": "fibers/fibers_0127.png",
+      "sequence": 127,
+      "step_time": 5.831494854646735e-05
+    },
+    {
+      "odb_frame_index": 834,
+      "pass": "fibers",
+      "png": "fibers/fibers_0128.png",
+      "sequence": 128,
+      "step_time": 5.8384739531902596e-05
+    },
+    {
+      "odb_frame_index": 836,
+      "pass": "fibers",
+      "png": "fibers/fibers_0129.png",
+      "sequence": 129,
+      "step_time": 5.8525216445559636e-05
+    },
+    {
+      "odb_frame_index": 837,
+      "pass": "fibers",
+      "png": "fibers/fibers_0130.png",
+      "sequence": 130,
+      "step_time": 5.859510929440148e-05
+    },
+    {
+      "odb_frame_index": 839,
+      "pass": "fibers",
+      "png": "fibers/fibers_0131.png",
+      "sequence": 131,
+      "step_time": 5.873477857676335e-05
+    },
+    {
+      "odb_frame_index": 840,
+      "pass": "fibers",
+      "png": "fibers/fibers_0132.png",
+      "sequence": 132,
+      "step_time": 5.8804675063584e-05
+    },
+    {
+      "odb_frame_index": 842,
+      "pass": "fibers",
+      "png": "fibers/fibers_0133.png",
+      "sequence": 133,
+      "step_time": 5.894460264244117e-05
+    },
+    {
+      "odb_frame_index": 843,
+      "pass": "fibers",
+      "png": "fibers/fibers_0134.png",
+      "sequence": 134,
+      "step_time": 5.9014393627876416e-05
+    },
+    {
+      "odb_frame_index": 845,
+      "pass": "fibers",
+      "png": "fibers/fibers_0135.png",
+      "sequence": 135,
+      "step_time": 5.915408837608993e-05
+    },
+    {
+      "odb_frame_index": 846,
+      "pass": "fibers",
+      "png": "fibers/fibers_0136.png",
+      "sequence": 136,
+      "step_time": 5.9223872085567564e-05
+    },
+    {
+      "odb_frame_index": 848,
+      "pass": "fibers",
+      "png": "fibers/fibers_0137.png",
+      "sequence": 137,
+      "step_time": 5.9364210756029934e-05
+    },
+    {
+      "odb_frame_index": 849,
+      "pass": "fibers",
+      "png": "fibers/fibers_0138.png",
+      "sequence": 138,
+      "step_time": 5.943400174146518e-05
+    },
+    {
+      "odb_frame_index": 851,
+      "pass": "fibers",
+      "png": "fibers/fibers_0139.png",
+      "sequence": 139,
+      "step_time": 5.9573583712335676e-05
+    },
+    {
+      "odb_frame_index": 852,
+      "pass": "fibers",
+      "png": "fibers/fibers_0140.png",
+      "sequence": 140,
+      "step_time": 5.964337469777092e-05
+    },
+    {
+      "odb_frame_index": 854,
+      "pass": "fibers",
+      "png": "fibers/fibers_0141.png",
+      "sequence": 141,
+      "step_time": 5.978318949928507e-05
+    },
+    {
+      "odb_frame_index": 855,
+      "pass": "fibers",
+      "png": "fibers/fibers_0142.png",
+      "sequence": 142,
+      "step_time": 5.985298048472032e-05
+    },
+    {
+      "odb_frame_index": 857,
+      "pass": "fibers",
+      "png": "fibers/fibers_0143.png",
+      "sequence": 143,
+      "step_time": 5.999323184369132e-05
+    },
+    {
+      "odb_frame_index": 858,
+      "pass": "fibers",
+      "png": "fibers/fibers_0144.png",
+      "sequence": 144,
+      "step_time": 6.0063452110625803e-05
+    },
+    {
+      "odb_frame_index": 860,
+      "pass": "fibers",
+      "png": "fibers/fibers_0145.png",
+      "sequence": 145,
+      "step_time": 6.020324872224592e-05
+    },
+    {
+      "odb_frame_index": 861,
+      "pass": "fibers",
+      "png": "fibers/fibers_0146.png",
+      "sequence": 146,
+      "step_time": 6.0273039707681164e-05
+    },
+    {
+      "odb_frame_index": 863,
+      "pass": "fibers",
+      "png": "fibers/fibers_0147.png",
+      "sequence": 147,
+      "step_time": 6.041303277015686e-05
+    },
+    {
+      "odb_frame_index": 864,
+      "pass": "fibers",
+      "png": "fibers/fibers_0148.png",
+      "sequence": 148,
+      "step_time": 6.048282375559211e-05
+    },
+    {
+      "odb_frame_index": 866,
+      "pass": "fibers",
+      "png": "fibers/fibers_0149.png",
+      "sequence": 149,
+      "step_time": 6.062252577976324e-05
+    },
+    {
+      "odb_frame_index": 867,
+      "pass": "fibers",
+      "png": "fibers/fibers_0150.png",
+      "sequence": 150,
+      "step_time": 6.069292430765927e-05
+    },
+    {
+      "odb_frame_index": 869,
+      "pass": "fibers",
+      "png": "fibers/fibers_0151.png",
+      "sequence": 151,
+      "step_time": 6.083266271161847e-05
+    },
+    {
+      "odb_frame_index": 870,
+      "pass": "fibers",
+      "png": "fibers/fibers_0152.png",
+      "sequence": 152,
+      "step_time": 6.0902606492163613e-05
+    },
+    {
+      "odb_frame_index": 872,
+      "pass": "fibers",
+      "png": "fibers/fibers_0153.png",
+      "sequence": 153,
+      "step_time": 6.10423885518685e-05
+    },
+    {
+      "odb_frame_index": 873,
+      "pass": "fibers",
+      "png": "fibers/fibers_0154.png",
+      "sequence": 154,
+      "step_time": 6.111217953730375e-05
+    },
+    {
+      "odb_frame_index": 875,
+      "pass": "fibers",
+      "png": "fibers/fibers_0155.png",
+      "sequence": 155,
+      "step_time": 6.12519943388179e-05
+    },
+    {
+      "odb_frame_index": 876,
+      "pass": "fibers",
+      "png": "fibers/fibers_0156.png",
+      "sequence": 156,
+      "step_time": 6.132178532425314e-05
+    },
+    {
+      "odb_frame_index": 878,
+      "pass": "fibers",
+      "png": "fibers/fibers_0157.png",
+      "sequence": 157,
+      "step_time": 6.146136729512364e-05
+    },
+    {
+      "odb_frame_index": 879,
+      "pass": "fibers",
+      "png": "fibers/fibers_0158.png",
+      "sequence": 158,
+      "step_time": 6.153127469588071e-05
+    },
+    {
+      "odb_frame_index": 881,
+      "pass": "fibers",
+      "png": "fibers/fibers_0159.png",
+      "sequence": 159,
+      "step_time": 6.167137325974181e-05
+    },
+    {
+      "odb_frame_index": 882,
+      "pass": "fibers",
+      "png": "fibers/fibers_0160.png",
+      "sequence": 160,
+      "step_time": 6.174128066049889e-05
+    },
+    {
+      "odb_frame_index": 883,
+      "pass": "fibers",
+      "png": "fibers/fibers_0161.png",
+      "sequence": 161,
+      "step_time": 6.181147182360291e-05
+    },
+    {
+      "odb_frame_index": 885,
+      "pass": "fibers",
+      "png": "fibers/fibers_0162.png",
+      "sequence": 162,
+      "step_time": 6.195117020979524e-05
+    },
+    {
+      "odb_frame_index": 886,
+      "pass": "fibers",
+      "png": "fibers/fibers_0163.png",
+      "sequence": 163,
+      "step_time": 6.202107761055231e-05
+    },
+    {
+      "odb_frame_index": 888,
+      "pass": "fibers",
+      "png": "fibers/fibers_0164.png",
+      "sequence": 164,
+      "step_time": 6.216077599674463e-05
+    },
+    {
+      "odb_frame_index": 889,
+      "pass": "fibers",
+      "png": "fibers/fibers_0165.png",
+      "sequence": 165,
+      "step_time": 6.223091622814536e-05
+    },
+    {
+      "odb_frame_index": 891,
+      "pass": "fibers",
+      "png": "fibers/fibers_0166.png",
+      "sequence": 166,
+      "step_time": 6.237032357603312e-05
+    },
+    {
+      "odb_frame_index": 892,
+      "pass": "fibers",
+      "png": "fibers/fibers_0167.png",
+      "sequence": 167,
+      "step_time": 6.244523683562875e-05
+    },
+    {
+      "odb_frame_index": 894,
+      "pass": "fibers",
+      "png": "fibers/fibers_0168.png",
+      "sequence": 168,
+      "step_time": 6.258328357944265e-05
+    },
+    {
+      "odb_frame_index": 895,
+      "pass": "fibers",
+      "png": "fibers/fibers_0169.png",
+      "sequence": 169,
+      "step_time": 6.265217234613374e-05
+    },
+    {
+      "odb_frame_index": 897,
+      "pass": "fibers",
+      "png": "fibers/fibers_0170.png",
+      "sequence": 170,
+      "step_time": 6.279575609369203e-05
+    },
+    {
+      "odb_frame_index": 898,
+      "pass": "fibers",
+      "png": "fibers/fibers_0171.png",
+      "sequence": 171,
+      "step_time": 6.286539428401738e-05
+    },
+    {
+      "odb_frame_index": 900,
+      "pass": "fibers",
+      "png": "fibers/fibers_0172.png",
+      "sequence": 172,
+      "step_time": 6.300339009612799e-05
+    },
+    {
+      "odb_frame_index": 901,
+      "pass": "fibers",
+      "png": "fibers/fibers_0173.png",
+      "sequence": 173,
+      "step_time": 6.307206058409065e-05
+    },
+    {
+      "odb_frame_index": 903,
+      "pass": "fibers",
+      "png": "fibers/fibers_0174.png",
+      "sequence": 174,
+      "step_time": 6.321005639620125e-05
+    },
+    {
+      "odb_frame_index": 904,
+      "pass": "fibers",
+      "png": "fibers/fibers_0175.png",
+      "sequence": 175,
+      "step_time": 6.328496965579689e-05
+    },
+    {
+      "odb_frame_index": 906,
+      "pass": "fibers",
+      "png": "fibers/fibers_0176.png",
+      "sequence": 176,
+      "step_time": 6.342274718917906e-05
+    },
+    {
+      "odb_frame_index": 907,
+      "pass": "fibers",
+      "png": "fibers/fibers_0177.png",
+      "sequence": 177,
+      "step_time": 6.3492072513327e-05
+    },
+    {
+      "odb_frame_index": 909,
+      "pass": "fibers",
+      "png": "fibers/fibers_0178.png",
+      "sequence": 178,
+      "step_time": 6.363609281834215e-05
+    },
+    {
+      "odb_frame_index": 910,
+      "pass": "fibers",
+      "png": "fibers/fibers_0179.png",
+      "sequence": 179,
+      "step_time": 6.370476330630481e-05
+    },
+    {
+      "odb_frame_index": 912,
+      "pass": "fibers",
+      "png": "fibers/fibers_0180.png",
+      "sequence": 180,
+      "step_time": 6.384232256095856e-05
+    },
+    {
+      "odb_frame_index": 913,
+      "pass": "fibers",
+      "png": "fibers/fibers_0181.png",
+      "sequence": 181,
+      "step_time": 6.391099304892123e-05
+    },
+    {
+      "odb_frame_index": 915,
+      "pass": "fibers",
+      "png": "fibers/fibers_0182.png",
+      "sequence": 182,
+      "step_time": 6.405457679647952e-05
+    },
+    {
+      "odb_frame_index": 916,
+      "pass": "fibers",
+      "png": "fibers/fibers_0183.png",
+      "sequence": 183,
+      "step_time": 6.412324728444219e-05
+    },
+    {
+      "odb_frame_index": 918,
+      "pass": "fibers",
+      "png": "fibers/fibers_0184.png",
+      "sequence": 184,
+      "step_time": 6.426080653909594e-05
+    },
+    {
+      "odb_frame_index": 919,
+      "pass": "fibers",
+      "png": "fibers/fibers_0185.png",
+      "sequence": 185,
+      "step_time": 6.433571979869157e-05
+    },
+    {
+      "odb_frame_index": 921,
+      "pass": "fibers",
+      "png": "fibers/fibers_0186.png",
+      "sequence": 186,
+      "step_time": 6.44730607746169e-05
+    },
+    {
+      "odb_frame_index": 922,
+      "pass": "fibers",
+      "png": "fibers/fibers_0187.png",
+      "sequence": 187,
+      "step_time": 6.454194954130799e-05
+    },
+    {
+      "odb_frame_index": 924,
+      "pass": "fibers",
+      "png": "fibers/fibers_0188.png",
+      "sequence": 188,
+      "step_time": 6.468575156759471e-05
+    },
+    {
+      "odb_frame_index": 925,
+      "pass": "fibers",
+      "png": "fibers/fibers_0189.png",
+      "sequence": 189,
+      "step_time": 6.475442205555737e-05
+    },
+    {
+      "odb_frame_index": 927,
+      "pass": "fibers",
+      "png": "fibers/fibers_0190.png",
+      "sequence": 190,
+      "step_time": 6.489219958893955e-05
+    },
+    {
+      "odb_frame_index": 928,
+      "pass": "fibers",
+      "png": "fibers/fibers_0191.png",
+      "sequence": 191,
+      "step_time": 6.496087007690221e-05
+    },
+    {
+      "odb_frame_index": 930,
+      "pass": "fibers",
+      "png": "fibers/fibers_0192.png",
+      "sequence": 192,
+      "step_time": 6.510467210318893e-05
+    },
+    {
+      "odb_frame_index": 931,
+      "pass": "fibers",
+      "png": "fibers/fibers_0193.png",
+      "sequence": 193,
+      "step_time": 6.51733425911516e-05
+    },
+    {
+      "odb_frame_index": 933,
+      "pass": "fibers",
+      "png": "fibers/fibers_0194.png",
+      "sequence": 194,
+      "step_time": 6.531090184580535e-05
+    },
+    {
+      "odb_frame_index": 934,
+      "pass": "fibers",
+      "png": "fibers/fibers_0195.png",
+      "sequence": 195,
+      "step_time": 6.538581510540098e-05
+    },
+    {
+      "odb_frame_index": 936,
+      "pass": "fibers",
+      "png": "fibers/fibers_0196.png",
+      "sequence": 196,
+      "step_time": 6.55231560813263e-05
+    },
+    {
+      "odb_frame_index": 937,
+      "pass": "fibers",
+      "png": "fibers/fibers_0197.png",
+      "sequence": 197,
+      "step_time": 6.559182656928897e-05
+    },
+    {
+      "odb_frame_index": 939,
+      "pass": "fibers",
+      "png": "fibers/fibers_0198.png",
+      "sequence": 198,
+      "step_time": 6.573541031684726e-05
+    },
+    {
+      "odb_frame_index": 940,
+      "pass": "fibers",
+      "png": "fibers/fibers_0199.png",
+      "sequence": 199,
+      "step_time": 6.580429908353835e-05
+    },
+    {
+      "odb_frame_index": 942,
+      "pass": "fibers",
+      "png": "fibers/fibers_0200.png",
+      "sequence": 200,
+      "step_time": 6.59418583381921e-05
+    },
+    {
+      "odb_frame_index": 943,
+      "pass": "fibers",
+      "png": "fibers/fibers_0201.png",
+      "sequence": 201,
+      "step_time": 6.60107471048832e-05
+    },
+    {
+      "odb_frame_index": 945,
+      "pass": "fibers",
+      "png": "fibers/fibers_0202.png",
+      "sequence": 202,
+      "step_time": 6.615433085244149e-05
+    },
+    {
+      "odb_frame_index": 946,
+      "pass": "fibers",
+      "png": "fibers/fibers_0203.png",
+      "sequence": 203,
+      "step_time": 6.622300134040415e-05
+    },
+    {
+      "odb_frame_index": 948,
+      "pass": "fibers",
+      "png": "fibers/fibers_0204.png",
+      "sequence": 204,
+      "step_time": 6.63605605950579e-05
+    },
+    {
+      "odb_frame_index": 949,
+      "pass": "fibers",
+      "png": "fibers/fibers_0205.png",
+      "sequence": 205,
+      "step_time": 6.643547385465354e-05
+    },
+    {
+      "odb_frame_index": 951,
+      "pass": "fibers",
+      "png": "fibers/fibers_0206.png",
+      "sequence": 206,
+      "step_time": 6.657325138803571e-05
+    },
+    {
+      "odb_frame_index": 952,
+      "pass": "fibers",
+      "png": "fibers/fibers_0207.png",
+      "sequence": 207,
+      "step_time": 6.664192187599838e-05
+    },
+    {
+      "odb_frame_index": 954,
+      "pass": "fibers",
+      "png": "fibers/fibers_0208.png",
+      "sequence": 208,
+      "step_time": 6.67857239022851e-05
+    },
+    {
+      "odb_frame_index": 955,
+      "pass": "fibers",
+      "png": "fibers/fibers_0209.png",
+      "sequence": 209,
+      "step_time": 6.685461266897619e-05
+    },
+    {
+      "odb_frame_index": 957,
+      "pass": "fibers",
+      "png": "fibers/fibers_0210.png",
+      "sequence": 210,
+      "step_time": 6.699198274873197e-05
+    },
+    {
+      "odb_frame_index": 958,
+      "pass": "fibers",
+      "png": "fibers/fibers_0211.png",
+      "sequence": 211,
+      "step_time": 6.706065323669463e-05
+    },
+    {
+      "odb_frame_index": 960,
+      "pass": "fibers",
+      "png": "fibers/fibers_0212.png",
+      "sequence": 212,
+      "step_time": 6.720445526298136e-05
+    },
+    {
+      "odb_frame_index": 961,
+      "pass": "fibers",
+      "png": "fibers/fibers_0213.png",
+      "sequence": 213,
+      "step_time": 6.727312575094402e-05
+    },
+    {
+      "odb_frame_index": 963,
+      "pass": "fibers",
+      "png": "fibers/fibers_0214.png",
+      "sequence": 214,
+      "step_time": 6.741046672686934e-05
+    },
+    {
+      "odb_frame_index": 964,
+      "pass": "fibers",
+      "png": "fibers/fibers_0215.png",
+      "sequence": 215,
+      "step_time": 6.748537998646498e-05
+    },
+    {
+      "odb_frame_index": 966,
+      "pass": "fibers",
+      "png": "fibers/fibers_0216.png",
+      "sequence": 216,
+      "step_time": 6.762293924111873e-05
+    },
+    {
+      "odb_frame_index": 967,
+      "pass": "fibers",
+      "png": "fibers/fibers_0217.png",
+      "sequence": 217,
+      "step_time": 6.769160972908139e-05
+    },
+    {
+      "odb_frame_index": 969,
+      "pass": "fibers",
+      "png": "fibers/fibers_0218.png",
+      "sequence": 218,
+      "step_time": 6.783541175536811e-05
+    },
+    {
+      "odb_frame_index": 970,
+      "pass": "fibers",
+      "png": "fibers/fibers_0219.png",
+      "sequence": 219,
+      "step_time": 6.79043005220592e-05
+    },
+    {
+      "odb_frame_index": 972,
+      "pass": "fibers",
+      "png": "fibers/fibers_0220.png",
+      "sequence": 220,
+      "step_time": 6.804164149798453e-05
+    },
+    {
+      "odb_frame_index": 973,
+      "pass": "fibers",
+      "png": "fibers/fibers_0221.png",
+      "sequence": 221,
+      "step_time": 6.811031198594719e-05
+    },
+    {
+      "odb_frame_index": 975,
+      "pass": "fibers",
+      "png": "fibers/fibers_0222.png",
+      "sequence": 222,
+      "step_time": 6.825389573350549e-05
+    },
+    {
+      "odb_frame_index": 976,
+      "pass": "fibers",
+      "png": "fibers/fibers_0223.png",
+      "sequence": 223,
+      "step_time": 6.832256622146815e-05
+    },
+    {
+      "odb_frame_index": 978,
+      "pass": "fibers",
+      "png": "fibers/fibers_0224.png",
+      "sequence": 224,
+      "step_time": 6.846614996902645e-05
+    },
+    {
+      "odb_frame_index": 979,
+      "pass": "fibers",
+      "png": "fibers/fibers_0225.png",
+      "sequence": 225,
+      "step_time": 6.853482045698911e-05
+    },
+    {
+      "odb_frame_index": 981,
+      "pass": "fibers",
+      "png": "fibers/fibers_0226.png",
+      "sequence": 226,
+      "step_time": 6.867216143291444e-05
+    },
+    {
+      "odb_frame_index": 982,
+      "pass": "fibers",
+      "png": "fibers/fibers_0227.png",
+      "sequence": 227,
+      "step_time": 6.874105019960552e-05
+    },
+    {
+      "odb_frame_index": 984,
+      "pass": "fibers",
+      "png": "fibers/fibers_0228.png",
+      "sequence": 228,
+      "step_time": 6.888463394716382e-05
+    },
+    {
+      "odb_frame_index": 985,
+      "pass": "fibers",
+      "png": "fibers/fibers_0229.png",
+      "sequence": 229,
+      "step_time": 6.895330443512648e-05
+    },
+    {
+      "odb_frame_index": 987,
+      "pass": "fibers",
+      "png": "fibers/fibers_0230.png",
+      "sequence": 230,
+      "step_time": 6.909086368978024e-05
+    },
+    {
+      "odb_frame_index": 988,
+      "pass": "fibers",
+      "png": "fibers/fibers_0231.png",
+      "sequence": 231,
+      "step_time": 6.916577694937587e-05
+    },
+    {
+      "odb_frame_index": 990,
+      "pass": "fibers",
+      "png": "fibers/fibers_0232.png",
+      "sequence": 232,
+      "step_time": 6.930355448275805e-05
+    },
+    {
+      "odb_frame_index": 991,
+      "pass": "fibers",
+      "png": "fibers/fibers_0233.png",
+      "sequence": 233,
+      "step_time": 6.937244324944913e-05
+    },
+    {
+      "odb_frame_index": 993,
+      "pass": "fibers",
+      "png": "fibers/fibers_0234.png",
+      "sequence": 234,
+      "step_time": 6.951065734028816e-05
+    },
+    {
+      "odb_frame_index": 994,
+      "pass": "fibers",
+      "png": "fibers/fibers_0235.png",
+      "sequence": 235,
+      "step_time": 6.958578887861222e-05
+    },
+    {
+      "odb_frame_index": 996,
+      "pass": "fibers",
+      "png": "fibers/fibers_0236.png",
+      "sequence": 236,
+      "step_time": 6.972334813326597e-05
+    },
+    {
+      "odb_frame_index": 997,
+      "pass": "fibers",
+      "png": "fibers/fibers_0237.png",
+      "sequence": 237,
+      "step_time": 6.979201862122864e-05
+    },
+    {
+      "odb_frame_index": 999,
+      "pass": "fibers",
+      "png": "fibers/fibers_0238.png",
+      "sequence": 238,
+      "step_time": 6.993560236878693e-05
+    },
+    {
+      "odb_frame_index": 1000,
+      "pass": "fibers",
+      "png": "fibers/fibers_0239.png",
+      "sequence": 239,
+      "step_time": 7.000000186963007e-05
+    }
+  ],
+  "image_size": [
+    1920,
+    1080
+  ],
+  "intended_duration_seconds": 8.0,
+  "intended_fps": 30.0,
+  "motion_fields": {
+    "displacement": "U magnitude",
+    "velocity": "V magnitude"
+  },
+  "odb": "/scratch/zps5207/flat_v2/flat_v2.odb",
+  "render_passes": [
+    "fibers"
+  ],
+  "selected_odb_frame_indices": [
+    643,
+    644,
+    646,
+    647,
+    649,
+    650,
+    652,
+    653,
+    655,
+    656,
+    658,
+    659,
+    661,
+    662,
+    664,
+    665,
+    667,
+    668,
+    670,
+    671,
+    673,
+    674,
+    676,
+    677,
+    679,
+    680,
+    682,
+    683,
+    685,
+    686,
+    688,
+    689,
+    691,
+    692,
+    694,
+    695,
+    697,
+    698,
+    700,
+    701,
+    703,
+    704,
+    706,
+    707,
+    709,
+    710,
+    712,
+    713,
+    715,
+    716,
+    718,
+    719,
+    721,
+    722,
+    724,
+    725,
+    727,
+    728,
+    730,
+    731,
+    733,
+    734,
+    736,
+    737,
+    739,
+    740,
+    742,
+    743,
+    745,
+    746,
+    748,
+    749,
+    751,
+    752,
+    754,
+    755,
+    757,
+    758,
+    760,
+    761,
+    762,
+    764,
+    765,
+    767,
+    768,
+    770,
+    771,
+    773,
+    774,
+    776,
+    777,
+    779,
+    780,
+    782,
+    783,
+    785,
+    786,
+    788,
+    789,
+    791,
+    792,
+    794,
+    795,
+    797,
+    798,
+    800,
+    801,
+    803,
+    804,
+    806,
+    807,
+    809,
+    810,
+    812,
+    813,
+    815,
+    816,
+    818,
+    819,
+    821,
+    822,
+    824,
+    825,
+    827,
+    828,
+    830,
+    831,
+    833,
+    834,
+    836,
+    837,
+    839,
+    840,
+    842,
+    843,
+    845,
+    846,
+    848,
+    849,
+    851,
+    852,
+    854,
+    855,
+    857,
+    858,
+    860,
+    861,
+    863,
+    864,
+    866,
+    867,
+    869,
+    870,
+    872,
+    873,
+    875,
+    876,
+    878,
+    879,
+    881,
+    882,
+    883,
+    885,
+    886,
+    888,
+    889,
+    891,
+    892,
+    894,
+    895,
+    897,
+    898,
+    900,
+    901,
+    903,
+    904,
+    906,
+    907,
+    909,
+    910,
+    912,
+    913,
+    915,
+    916,
+    918,
+    919,
+    921,
+    922,
+    924,
+    925,
+    927,
+    928,
+    930,
+    931,
+    933,
+    934,
+    936,
+    937,
+    939,
+    940,
+    942,
+    943,
+    945,
+    946,
+    948,
+    949,
+    951,
+    952,
+    954,
+    955,
+    957,
+    958,
+    960,
+    961,
+    963,
+    964,
+    966,
+    967,
+    969,
+    970,
+    972,
+    973,
+    975,
+    976,
+    978,
+    979,
+    981,
+    982,
+    984,
+    985,
+    987,
+    988,
+    990,
+    991,
+    993,
+    994,
+    996,
+    997,
+    999,
+    1000
+  ],
+  "selected_step_times": [
+    4.5013661292614415e-05,
+    4.508153142523952e-05,
+    4.522369636106305e-05,
+    4.529172656475566e-05,
+    4.5433713239617646e-05,
+    4.550161975203082e-05,
+    4.564354458125308e-05,
+    4.571140743792057e-05,
+    4.5853379560867324e-05,
+    4.592120967572555e-05,
+    4.606308357324451e-05,
+    4.613091368810274e-05,
+    4.627282760338858e-05,
+    4.63406577182468e-05,
+    4.648248432204127e-05,
+    4.65503144368995e-05,
+    4.669214104069397e-05,
+    4.6766137529630214e-05,
+    4.6901797759346664e-05,
+    4.697579424828291e-05,
+    4.711149085778743e-05,
+    4.718576019513421e-05,
+    4.732270463136956e-05,
+    4.7390534746227786e-05,
+    4.753267057822086e-05,
+    4.760104638990015e-05,
+    4.774366243509576e-05,
+    4.781149254995398e-05,
+    4.7953555622370914e-05,
+    4.802144394489005e-05,
+    4.816327054868452e-05,
+    4.823110066354275e-05,
+    4.837311644223519e-05,
+    4.8440968384966254e-05,
+    4.858284228248522e-05,
+    4.865067603532225e-05,
+    4.879250263911672e-05,
+    4.8860332753974944e-05,
+    4.900233034277335e-05,
+    4.907026595901698e-05,
+    4.921284198644571e-05,
+    4.9280672101303935e-05,
+    4.942319355905056e-05,
+    4.949167123413645e-05,
+    4.963488754583523e-05,
+    4.9703365220921114e-05,
+    4.9840477004181594e-05,
+    4.9915041017811745e-05,
+    5.005186903872527e-05,
+    5.012022302253172e-05,
+    5.026313738198951e-05,
+    5.033148772781715e-05,
+    5.047476224717684e-05,
+    5.0543145334813744e-05,
+    5.0680180720519274e-05,
+    5.0754759286064655e-05,
+    5.089160185889341e-05,
+    5.0966209528269246e-05,
+    5.1103070290992036e-05,
+    5.1171420636819676e-05,
+    5.131496436661109e-05,
+    5.13836057507433e-05,
+    5.1520459237508476e-05,
+    5.1595739932963625e-05,
+    5.173534736968577e-05,
+    5.180522202863358e-05,
+    5.194486220716499e-05,
+    5.2014729590155184e-05,
+    5.215433338889852e-05,
+    5.2224215323803946e-05,
+    5.2363840950420126e-05,
+    5.2433591918088496e-05,
+    5.2573181164916605e-05,
+    5.264299034024589e-05,
+    5.278271419228986e-05,
+    5.2852505177725106e-05,
+    5.2992632845416665e-05,
+    5.306247840053402e-05,
+    5.3202122217044234e-05,
+    5.3271873184712604e-05,
+    5.334162415238097e-05,
+    5.348116610548459e-05,
+    5.355092798708938e-05,
+    5.369056816562079e-05,
+    5.376033004722558e-05,
+    5.3906176617601886e-05,
+    5.3975927585270256e-05,
+    5.411547317635268e-05,
+    5.418526416178793e-05,
+    5.432480975287035e-05,
+    5.43946007383056e-05,
+    5.4534844821318984e-05,
+    5.4604632168775424e-05,
+    5.474419958773069e-05,
+    5.481399057316594e-05,
+    5.4953863582341e-05,
+    5.502365456777625e-05,
+    5.516321107279509e-05,
+    5.523296204046346e-05,
+    5.53724639758002e-05,
+    5.544221494346857e-05,
+    5.558175325859338e-05,
+    5.565150422626175e-05,
+    5.579100616159849e-05,
+    5.586089537246153e-05,
+    5.6000437325565144e-05,
+    5.6070624850690365e-05,
+    5.6210676120826975e-05,
+    5.628081999020651e-05,
+    5.642085670842789e-05,
+    5.649060767609626e-05,
+    5.6630113249411806e-05,
+    5.670018799719401e-05,
+    5.684131247107871e-05,
+    5.691109618055634e-05,
+    5.7050867326324806e-05,
+    5.712065831176005e-05,
+    5.726035305997357e-05,
+    5.733026046073064e-05,
+    5.747040995629504e-05,
+    5.7540306443115696e-05,
+    5.7686211221152917e-05,
+    5.77559694647789e-05,
+    5.789560964331031e-05,
+    5.7965487940236926e-05,
+    5.8105302741751075e-05,
+    5.8175428421236575e-05,
+    5.831494854646735e-05,
+    5.8384739531902596e-05,
+    5.8525216445559636e-05,
+    5.859510929440148e-05,
+    5.873477857676335e-05,
+    5.8804675063584e-05,
+    5.894460264244117e-05,
+    5.9014393627876416e-05,
+    5.915408837608993e-05,
+    5.9223872085567564e-05,
+    5.9364210756029934e-05,
+    5.943400174146518e-05,
+    5.9573583712335676e-05,
+    5.964337469777092e-05,
+    5.978318949928507e-05,
+    5.985298048472032e-05,
+    5.999323184369132e-05,
+    6.0063452110625803e-05,
+    6.020324872224592e-05,
+    6.0273039707681164e-05,
+    6.041303277015686e-05,
+    6.048282375559211e-05,
+    6.062252577976324e-05,
+    6.069292430765927e-05,
+    6.083266271161847e-05,
+    6.0902606492163613e-05,
+    6.10423885518685e-05,
+    6.111217953730375e-05,
+    6.12519943388179e-05,
+    6.132178532425314e-05,
+    6.146136729512364e-05,
+    6.153127469588071e-05,
+    6.167137325974181e-05,
+    6.174128066049889e-05,
+    6.181147182360291e-05,
+    6.195117020979524e-05,
+    6.202107761055231e-05,
+    6.216077599674463e-05,
+    6.223091622814536e-05,
+    6.237032357603312e-05,
+    6.244523683562875e-05,
+    6.258328357944265e-05,
+    6.265217234613374e-05,
+    6.279575609369203e-05,
+    6.286539428401738e-05,
+    6.300339009612799e-05,
+    6.307206058409065e-05,
+    6.321005639620125e-05,
+    6.328496965579689e-05,
+    6.342274718917906e-05,
+    6.3492072513327e-05,
+    6.363609281834215e-05,
+    6.370476330630481e-05,
+    6.384232256095856e-05,
+    6.391099304892123e-05,
+    6.405457679647952e-05,
+    6.412324728444219e-05,
+    6.426080653909594e-05,
+    6.433571979869157e-05,
+    6.44730607746169e-05,
+    6.454194954130799e-05,
+    6.468575156759471e-05,
+    6.475442205555737e-05,
+    6.489219958893955e-05,
+    6.496087007690221e-05,
+    6.510467210318893e-05,
+    6.51733425911516e-05,
+    6.531090184580535e-05,
+    6.538581510540098e-05,
+    6.55231560813263e-05,
+    6.559182656928897e-05,
+    6.573541031684726e-05,
+    6.580429908353835e-05,
+    6.59418583381921e-05,
+    6.60107471048832e-05,
+    6.615433085244149e-05,
+    6.622300134040415e-05,
+    6.63605605950579e-05,
+    6.643547385465354e-05,
+    6.657325138803571e-05,
+    6.664192187599838e-05,
+    6.67857239022851e-05,
+    6.685461266897619e-05,
+    6.699198274873197e-05,
+    6.706065323669463e-05,
+    6.720445526298136e-05,
+    6.727312575094402e-05,
+    6.741046672686934e-05,
+    6.748537998646498e-05,
+    6.762293924111873e-05,
+    6.769160972908139e-05,
+    6.783541175536811e-05,
+    6.79043005220592e-05,
+    6.804164149798453e-05,
+    6.811031198594719e-05,
+    6.825389573350549e-05,
+    6.832256622146815e-05,
+    6.846614996902645e-05,
+    6.853482045698911e-05,
+    6.867216143291444e-05,
+    6.874105019960552e-05,
+    6.888463394716382e-05,
+    6.895330443512648e-05,
+    6.909086368978024e-05,
+    6.916577694937587e-05,
+    6.930355448275805e-05,
+    6.937244324944913e-05,
+    6.951065734028816e-05,
+    6.958578887861222e-05,
+    6.972334813326597e-05,
+    6.979201862122864e-05,
+    6.993560236878693e-05,
+    7.000000186963007e-05
+  ],
+  "status_common_output_positions": [
+    "WHOLE_ELEMENT"
+  ],
+  "status_contour_intervals": 2,
+  "status_contour_range": [
+    0.0,
+    1.0
+  ],
+  "status_field": "STATUS on EMBMESH_GHOST_DIAGNOSTICS",
+  "status_observed_output_positions": [
+    "WHOLE_ELEMENT"
+  ],
+  "status_output_position": "WHOLE_ELEMENT",
+  "step": "Step-1",
+  "time_window": [
+    4.5e-05,
+    0.0001
+  ],
+  "view_preset": "Iso",
+  "visible_edges": "FEATURE"
+}

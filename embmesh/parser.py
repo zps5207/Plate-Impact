@@ -110,7 +110,10 @@ def parse_deck(path_or_text: str | Path) -> Deck:
             else:
                 target[name].update(int(x) for x in vals if x.lstrip("+-").isdigit())
         elif section == "surface" and part is not None:
-            name = str(opts.get("name", "SURFACE")); part.surfaces.setdefault(name, []).append((int(vals[0]), vals[1] if len(vals)>1 else ""))
+            name = str(opts.get("name", "SURFACE"))
+            try: entry = (int(vals[0]), vals[1] if len(vals)>1 else "")
+            except ValueError: entry = (0, ",".join(v for v in vals if v))  # element-set based surface: "elset, Sn"
+            part.surfaces.setdefault(name, []).append(entry)
         elif current_instance is not None and section == "instance":
             try:
                 nums = [float(x) for x in vals]

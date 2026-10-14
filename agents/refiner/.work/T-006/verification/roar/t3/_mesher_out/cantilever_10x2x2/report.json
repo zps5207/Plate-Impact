@@ -1,0 +1,12 @@
+{
+  "embedded_endpoint_total": 230,
+  "embedded_endpoints_inside": 230,
+  "estimated_stable_time_increment": 10.0,
+  "fiber_count": 115,
+  "host_count": 40,
+  "propagated_symmetry_nodes": {},
+  "symmetry_constraints": {},
+  "total_fiber_volume": 10681.415030561904,
+  "volume_fraction_max": 1.0681415031315895,
+  "volume_fraction_min": 1.0681415027545977
+}

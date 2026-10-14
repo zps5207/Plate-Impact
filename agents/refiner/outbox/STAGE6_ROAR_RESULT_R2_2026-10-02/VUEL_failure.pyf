@@ -1,0 +1,86 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+subroutine vuel(nblock,rhs,amass,dtimestable,svars,nsvars,energy,nnode,ndofel,props,nprops,jprops,njprops,coords,mcrd,u,du,v,a,jtype,jelem,time,period,dtimecur,dtimeprev,kstep,kinc,lflags,dmassscalefactor,predef,npredef,jdltyp,adlmag) ! in uel\VUEL_failure.for
+    integer, optional,check(shape(rhs, 0) == nblock),depend(rhs) :: nblock=shape(rhs, 0)
+    real dimension(nblock,ndofel) :: rhs
+    real dimension(nblock,ndofel,ndofel),depend(ndofel,nblock) :: amass
+    real dimension(nblock),depend(nblock) :: dtimestable
+    real dimension(nblock,nsvars),depend(nblock) :: svars
+    integer, optional,check(shape(svars, 1) == nsvars),depend(svars) :: nsvars=shape(svars, 1)
+    real dimension(nblock,12),depend(nblock) :: energy
+    integer, optional,check(shape(coords, 1) == nnode),depend(coords) :: nnode=shape(coords, 1)
+    integer, optional,check(shape(rhs, 1) == ndofel),depend(rhs) :: ndofel=shape(rhs, 1)
+    real dimension(nprops) :: props
+    integer, optional,check(shape(props, 0) == nprops),depend(props) :: nprops=shape(props, 0)
+    integer dimension(njprops) :: jprops
+    integer, optional,check(shape(jprops, 0) == njprops),depend(jprops) :: njprops=shape(jprops, 0)
+    real dimension(nblock,nnode,mcrd),depend(nblock) :: coords
+    integer, optional,check(shape(coords, 2) == mcrd),depend(coords) :: mcrd=shape(coords, 2)
+    real dimension(nblock,ndofel),depend(ndofel,nblock) :: u
+    real dimension(nblock,ndofel),depend(ndofel,nblock) :: du
+    real dimension(nblock,ndofel),depend(ndofel,nblock) :: v
+    real dimension(nblock,ndofel),depend(ndofel,nblock) :: a
+    integer :: jtype
+    integer dimension(nblock),depend(nblock) :: jelem
+    real dimension(2) :: time
+    real :: period
+    real :: dtimecur
+    real :: dtimeprev
+    integer :: kstep
+    integer :: kinc
+    integer dimension(3) :: lflags
+    real dimension(nblock),depend(nblock) :: dmassscalefactor
+    real dimension(nblock,nnode,npredef,2),depend(nnode,nblock) :: predef
+    integer, optional,check(shape(predef, 2) == npredef),depend(predef) :: npredef=shape(predef, 2)
+    integer :: jdltyp
+    real dimension(nblock),depend(nblock) :: adlmag
+end subroutine vuel
+subroutine shape8h_tl(xi,eta,zeta,xl,xi_node,eta_node,zeta_node,shp,dn_dx,dn_dy,dn_dz,xj,xjinv,detj) ! in uel\VUEL_failure.for
+    real*8 :: xi
+    real*8 :: eta
+    real*8 :: zeta
+    real*8 dimension(3,8) :: xl
+    real*8 dimension(8) :: xi_node
+    real*8 dimension(8) :: eta_node
+    real*8 dimension(8) :: zeta_node
+    real*8 dimension(4,8) :: shp
+    real*8 dimension(8) :: dn_dx
+    real*8 dimension(8) :: dn_dy
+    real*8 dimension(8) :: dn_dz
+    real*8 dimension(3,3) :: xj
+    real*8 dimension(3,3) :: xjinv
+    real*8 :: detj
+end subroutine shape8h_tl
+subroutine compute_defgrad(uloc,dn_dx,dn_dy,dn_dz,defgrad,detf) ! in uel\VUEL_failure.for
+    real*8 dimension(3,8) :: uloc
+    real*8 dimension(8) :: dn_dx
+    real*8 dimension(8) :: dn_dy
+    real*8 dimension(8) :: dn_dz
+    real*8 dimension(3,3) :: defgrad
+    real*8 :: detf
+end subroutine compute_defgrad
+subroutine compute_green_lagrange(defgrad,glstrain,strain_vec) ! in uel\VUEL_failure.for
+    real*8 dimension(3,3) :: defgrad
+    real*8 dimension(3,3) :: glstrain
+    real*8 dimension(6) :: strain_vec
+end subroutine compute_green_lagrange
+subroutine compute_strainrate_tl(vloc,dn_dx,dn_dy,dn_dz,defgrad,strainrate_vec) ! in uel\VUEL_failure.for
+    real*8 dimension(3,8) :: vloc
+    real*8 dimension(8) :: dn_dx
+    real*8 dimension(8) :: dn_dy
+    real*8 dimension(8) :: dn_dz
+    real*8 dimension(3,3) :: defgrad
+    real*8 dimension(6) :: strainrate_vec
+end subroutine compute_strainrate_tl
+subroutine build_bl_matrix(dn_dx,dn_dy,dn_dz,defgrad,bl_mat) ! in uel\VUEL_failure.for
+    real*8 dimension(8) :: dn_dx
+    real*8 dimension(8) :: dn_dy
+    real*8 dimension(8) :: dn_dz
+    real*8 dimension(3,3) :: defgrad
+    real*8 dimension(6,24) :: bl_mat
+end subroutine build_bl_matrix
+
+! This file was auto-generated with f2py (version:2.5.3).
+! See:
+! https://web.archive.org/web/20140822061353/http://cens.ioc.ee/projects/f2py2e

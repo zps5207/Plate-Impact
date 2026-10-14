@@ -1,0 +1,286 @@
+"""Windows desktop wrapper for the embmesh command-line executable.
+
+This intentionally keeps the mesher package unchanged.  It collects common
+options and invokes the packaged ``embmesh.exe`` in a background process.
+"""
+from __future__ import annotations
+
+import os
+import subprocess
+import sys
+import threading
+from pathlib import Path
+import tkinter as tk
+from tkinter import filedialog, messagebox, ttk
+
+
+def engine_path() -> Path:
+    """Find embmesh.exe both beside source and inside a PyInstaller bundle."""
+    bundled = getattr(sys, "_MEIPASS", None)
+    if bundled:
+        candidate = Path(bundled) / "embmesh.exe"
+    else:
+        candidate = Path(__file__).resolve().parent / "dist" / "embmesh.exe"
+    if not candidate.is_file():
+        raise FileNotFoundError(f"Could not find the mesher executable: {candidate}")
+    return candidate
+
+
+def instance_names(list_output: str) -> list[str]:
+    """Extract assembly-instance names from ``embmesh list`` output."""
+    names = []
+    for line in list_output.splitlines():
+        if line.startswith("instance "):
+            name = line[len("instance "):].split(":", 1)[0].strip()
+            if name:
+                names.append(name)
+    return names
+
+
+class DesktopApp(ttk.Frame):
+    def __init__(self, master: tk.Tk) -> None:
+        super().__init__(master, padding=14)
+        self.master = master
+        self.grid(sticky="nsew")
+        master.title("Embedded Element Mesher")
+        master.minsize(800, 680)
+        master.columnconfigure(0, weight=1)
+        master.rowconfigure(0, weight=1)
+        self.deck = tk.StringVar()
+        self.instance = tk.StringVar()
+        self.diameter = tk.StringVar(value="0.25")
+        self.output = tk.StringVar()
+        self.gap = tk.StringVar(value="0")
+        self.fiber_type = tk.StringVar(value="truss")
+        self.thickness_axis = tk.StringVar()
+        self.precise_volume = tk.BooleanVar(value=False)
+        self.plate_node_contact = tk.BooleanVar(value=False)
+        self.fiber_node_contact = tk.BooleanVar(value=False)
+        self.ball_instance = tk.StringVar()
+        self.contact_thickness = tk.StringVar(value="auto")
+        self._instance_names: list[str] = []
+        self.status = tk.StringVar(value="Choose an Abaqus input deck to begin.")
+        self.progress_value = tk.DoubleVar(value=0)
+        self._build()
+
+    def _build(self) -> None:
+        self.columnconfigure(1, weight=1)
+        ttk.Label(self, text="Embedded Element Mesher", font=("Segoe UI", 16, "bold")).grid(
+            row=0, column=0, columnspan=3, sticky="w")
+        ttk.Label(self, text="Creates an embedded-fiber Abaqus deck using the bundled mesher.").grid(
+            row=1, column=0, columnspan=3, sticky="w", pady=(0, 12))
+        self._path_row(2, "Input deck (.inp)", self.deck, self.choose_deck, "Browse…")
+        self._path_row(3, "Output folder", self.output, self.choose_output, "Browse…")
+        ttk.Label(self, text="Instance name").grid(row=4, column=0, sticky="w", pady=4)
+        self.instance_combo = ttk.Combobox(self, textvariable=self.instance, state="disabled")
+        self.instance_combo.grid(row=4, column=1, sticky="ew", pady=4)
+        ttk.Label(self, text="Select an assembly instance found in the input deck").grid(
+            row=4, column=2, sticky="w", padx=(8, 0))
+        self._entry_row(5, "Fiber diameter", self.diameter, "Positive length in the deck's units")
+        self._entry_row(6, "In-plane gap", self.gap, "Optional; default 0")
+        ttk.Label(self, text="Fiber type").grid(row=7, column=0, sticky="w", pady=4)
+        ttk.Combobox(self, textvariable=self.fiber_type, values=("truss", "beam"), state="readonly", width=18).grid(
+            row=7, column=1, sticky="w", pady=4)
+        ttk.Label(self, text="Thickness axis").grid(row=8, column=0, sticky="w", pady=4)
+        ttk.Entry(self, textvariable=self.thickness_axis).grid(row=8, column=1, sticky="ew", pady=4)
+        ttk.Label(self, text="Optional: x, y, z, or dx,dy,dz (normally auto-detected)").grid(row=8, column=2, sticky="w", padx=(8, 0))
+        ttk.Checkbutton(self, text="Calculate precise per-host fiber volume (slower)", variable=self.precise_volume).grid(
+            row=9, column=0, columnspan=3, sticky="w", pady=(6, 10))
+        contact = ttk.LabelFrame(self, text="Ball contact", padding=8)
+        contact.grid(row=10, column=0, columnspan=3, sticky="ew", pady=(0, 10))
+        ttk.Checkbutton(contact, text="Plate", variable=self.plate_node_contact,
+                        command=self._update_contact_controls).grid(row=0, column=0, sticky="w")
+        ttk.Checkbutton(contact, text="Fibers", variable=self.fiber_node_contact,
+                        command=self._update_contact_controls).grid(row=0, column=1, sticky="w", padx=(12, 20))
+        ttk.Label(contact, text="Ball instance").grid(row=0, column=2, sticky="e")
+        self.ball_instance_combo = ttk.Combobox(contact, textvariable=self.ball_instance, state="disabled", width=22)
+        self.ball_instance_combo.grid(row=0, column=3, sticky="ew", padx=(6, 16))
+        ttk.Label(contact, text="Thickness").grid(row=0, column=4, sticky="e")
+        self.contact_thickness_entry = ttk.Entry(contact, textvariable=self.contact_thickness, state="disabled", width=10)
+        self.contact_thickness_entry.grid(row=0, column=5, sticky="w", padx=(6, 0))
+        contact.columnconfigure(3, weight=1)
+        controls = ttk.Frame(self)
+        controls.grid(row=11, column=0, columnspan=3, sticky="ew")
+        self.run_button = ttk.Button(controls, text="Generate embedded mesh", command=self.run_mesh)
+        self.run_button.pack(side="left")
+        ttk.Button(controls, text="Open output folder", command=self.open_output).pack(side="left", padx=8)
+        self.preview_button = ttk.Button(controls, text="View fiber embedding", command=self.open_preview, state="disabled")
+        self.preview_button.pack(side="left")
+        self.progress = ttk.Progressbar(self, variable=self.progress_value, maximum=100, mode="determinate")
+        self.progress.grid(row=12, column=0, columnspan=3, sticky="ew", pady=(10, 4))
+        ttk.Label(self, textvariable=self.status).grid(row=13, column=0, columnspan=3, sticky="w", pady=(0, 4))
+        self.log = tk.Text(self, height=14, wrap="word", state="disabled", font=("Cascadia Mono", 9))
+        self.log.grid(row=14, column=0, columnspan=3, sticky="nsew")
+        self.rowconfigure(14, weight=1)
+
+    def _update_contact_controls(self) -> None:
+        enabled = self.plate_node_contact.get() or self.fiber_node_contact.get()
+        self.ball_instance_combo.configure(state="readonly" if enabled and self._instance_names else "disabled")
+        self.contact_thickness_entry.configure(state="normal" if enabled else "disabled")
+        if enabled and not self.ball_instance.get() and self._instance_names:
+            candidates = [n for n in self._instance_names if n != self.instance.get()]
+            self.ball_instance.set(candidates[0] if candidates else self._instance_names[0])
+
+    def _path_row(self, row: int, label: str, value: tk.StringVar, command, button: str) -> None:
+        ttk.Label(self, text=label).grid(row=row, column=0, sticky="w", pady=4)
+        ttk.Entry(self, textvariable=value).grid(row=row, column=1, sticky="ew", pady=4)
+        ttk.Button(self, text=button, command=command).grid(row=row, column=2, sticky="w", padx=(8, 0), pady=4)
+
+    def _entry_row(self, row: int, label: str, value: tk.StringVar, hint: str) -> None:
+        ttk.Label(self, text=label).grid(row=row, column=0, sticky="w", pady=4)
+        ttk.Entry(self, textvariable=value).grid(row=row, column=1, sticky="ew", pady=4)
+        ttk.Label(self, text=hint).grid(row=row, column=2, sticky="w", padx=(8, 0))
+
+    def choose_deck(self) -> None:
+        name = filedialog.askopenfilename(title="Select Abaqus input deck", filetypes=[("Abaqus input decks", "*.inp"), ("All files", "*.*")])
+        if name:
+            self.deck.set(name)
+            if not self.output.get():
+                self.output.set(str(Path(name).with_suffix("")) + "-embmesh")
+            self.load_instances(Path(name))
+
+    def load_instances(self, deck: Path) -> None:
+        """Run the lightweight parser without blocking the desktop interface."""
+        self.instance.set("")
+        self.instance_combo.configure(values=(), state="disabled")
+        self._instance_names = []
+        self.ball_instance.set("")
+        self._update_contact_controls()
+        self.status.set("Reading assembly instances from input deck…")
+        try:
+            command = [str(engine_path()), "list", str(deck)]
+        except FileNotFoundError as exc:
+            self.status.set("Could not find the bundled mesher executable.")
+            self.append_log(f"{exc}\n")
+            return
+        threading.Thread(target=self._instance_worker, args=(deck, command), daemon=True).start()
+
+    def _instance_worker(self, deck: Path, command: list[str]) -> None:
+        result = subprocess.run(command, capture_output=True, text=True, errors="replace")
+        self.master.after(0, self._instances_loaded, deck, result.returncode,
+                          (result.stdout or "") + (result.stderr or ""))
+
+    def _instances_loaded(self, deck: Path, returncode: int, output: str) -> None:
+        # A user may select a different deck while this parse is running.
+        if Path(self.deck.get()).expanduser() != deck:
+            return
+        names = instance_names(output) if returncode == 0 else []
+        self._instance_names = names
+        if names:
+            self.instance_combo.configure(values=names, state="readonly")
+            self.instance.set(names[0])
+            self._update_contact_controls()
+            self.status.set(f"Found {len(names)} assembly instance(s).")
+        else:
+            self.instance_combo.configure(values=(), state="disabled")
+            self.status.set("No assembly instances found in the selected deck.")
+            if output:
+                self.append_log(output + ("\n" if not output.endswith("\n") else ""))
+
+    def choose_output(self) -> None:
+        name = filedialog.askdirectory(title="Select output folder")
+        if name:
+            self.output.set(name)
+
+    def append_log(self, text: str) -> None:
+        self.log.configure(state="normal")
+        self.log.insert("end", text)
+        self.log.see("end")
+        self.log.configure(state="disabled")
+
+    def run_mesh(self) -> None:
+        try:
+            deck = Path(self.deck.get()).expanduser()
+            if not deck.is_file():
+                raise ValueError("Choose an existing .inp deck.")
+            if not self.instance.get().strip():
+                raise ValueError("Select an assembly instance from the input deck.")
+            if float(self.diameter.get()) <= 0:
+                raise ValueError("Fiber diameter must be positive.")
+            if float(self.gap.get()) < 0:
+                raise ValueError("In-plane gap cannot be negative.")
+            if not self.output.get().strip():
+                raise ValueError("Choose an output folder.")
+            output = Path(self.output.get()).expanduser()
+            command = [str(engine_path()), "visualize", str(deck), "--instance", self.instance.get().strip(),
+                       "--diameter", self.diameter.get(), "--output", str(output), "--gap", self.gap.get(),
+                       "--fiber-type", self.fiber_type.get(), "--preview"]
+            if self.thickness_axis.get().strip():
+                command += ["--thickness-axis", self.thickness_axis.get().strip()]
+            if self.precise_volume.get():
+                command.append("--precise-volume")
+            if self.plate_node_contact.get() or self.fiber_node_contact.get():
+                if not self.ball_instance.get().strip():
+                    raise ValueError("Select a ball instance when ball contact is enabled.")
+                thickness = self.contact_thickness.get().strip()
+                if thickness.lower() != "auto":
+                    if float(thickness) < 0:
+                        raise ValueError("Contact thickness must be non-negative or 'auto'.")
+                if self.plate_node_contact.get():
+                    command.append("--plate-node-contact")
+                if self.fiber_node_contact.get():
+                    command.append("--fiber-node-contact")
+                command += ["--ball-instance", self.ball_instance.get().strip(),
+                            "--contact-thickness", thickness]
+        except (ValueError, FileNotFoundError) as exc:
+            messagebox.showerror("Cannot generate mesh", str(exc), parent=self.master)
+            return
+        self.run_button.configure(state="disabled")
+        self.preview_button.configure(state="disabled")
+        self.progress_value.set(0)
+        self.status.set("Generating embedded mesh…")
+        self.append_log("\n> " + subprocess.list2cmdline(command) + "\n")
+        threading.Thread(target=self._worker, args=(command,), daemon=True).start()
+
+    def _worker(self, command: list[str]) -> None:
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                   text=True, errors="replace")
+        output = []
+        assert process.stdout is not None
+        for line in process.stdout:
+            output.append(line)
+            self.master.after(0, self._output_line, line)
+        self.master.after(0, self._finished, process.wait(), "".join(output))
+
+    def _output_line(self, line: str) -> None:
+        if line.startswith("PROGRESS "):
+            _, percent, message = line.rstrip("\r\n").split(" ", 2)
+            self.progress_value.set(float(percent))
+            self.status.set(message)
+        else:
+            self.append_log(line)
+
+    def _finished(self, returncode: int, text: str) -> None:
+        self.run_button.configure(state="normal")
+        if returncode == 0:
+            self.progress_value.set(100)
+            self.preview_button.configure(state="normal")
+            self.status.set("Done. View fiber embedding or open the output folder.")
+            messagebox.showinfo("Embedded mesh created", "Meshing completed successfully.", parent=self.master)
+        else:
+            self.status.set(f"Meshing failed (exit code {returncode}). See the log below.")
+            messagebox.showerror("Meshing failed", "The mesher reported an error. See the log below.", parent=self.master)
+
+    def open_output(self) -> None:
+        folder = Path(self.output.get()).expanduser()
+        if not folder.is_dir():
+            messagebox.showwarning("Output folder unavailable", "Generate a mesh first, or choose an existing output folder.", parent=self.master)
+            return
+        os.startfile(folder)  # Windows desktop app
+
+    def open_preview(self) -> None:
+        preview = Path(self.output.get()).expanduser() / "preview.html"
+        if not preview.is_file():
+            messagebox.showwarning("Preview unavailable", "Generate a mesh before opening its embedding preview.", parent=self.master)
+            return
+        os.startfile(preview)  # opens in the default browser; drag to rotate, scroll to zoom
+
+
+def main() -> None:
+    root = tk.Tk()
+    DesktopApp(root)
+    root.mainloop()
+
+
+if __name__ == "__main__":
+    main()

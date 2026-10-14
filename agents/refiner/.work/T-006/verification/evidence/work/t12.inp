@@ -1,0 +1,17 @@
+*Part, name=P
+*Node
+1,0,0,0
+2,1,0,0
+3,1,1,0
+4,0,1,0
+5,0,0,1
+6,1,0,1
+7,1,1,1
+8,0,1,1
+*Element, type=C3D8, elset=HOST
+1,1,2,3,3,5,6,7,7
+*End Part
+*Assembly, name=A
+*Instance, name=I, part=P
+*End Instance
+*End Assembly

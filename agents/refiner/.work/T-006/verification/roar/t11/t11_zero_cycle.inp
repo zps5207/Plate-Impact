@@ -1,0 +1,51 @@
+*Heading
+** T11 Stage 5 failed tension-to-compression cycle: zero RHS
+*Preprint, echo=NO, model=YES, history=NO, contact=NO
+*Part, name=CELL
+*Node
+1, 0, 0, 0
+2, 1, 0, 0
+3, 1, 1, 0
+4, 0, 1, 0
+5, 0, 0, 1
+6, 1, 0, 1
+7, 1, 1, 1
+8, 0, 1, 1
+*User Element, type=VU1, nodes=8, coordinates=3, properties=13, variables=106
+1, 2, 3
+*Element, type=VU1, elset=HOSTUEL
+1, 1, 2, 3, 4, 5, 6, 7, 8
+*UEL Property, elset=HOSTUEL
+2e+11, 0.3, 7800, 0, 0, 0, 0.02, 250000000
+2e+09, 0, 0.05, 0, 0
+*End Part
+*Assembly, name=Assembly
+*Instance, name=CELL-1, part=CELL
+*End Instance
+*Nset, nset=BACK, instance=CELL-1
+1, 4, 5, 8
+*Nset, nset=DRIVEN, instance=CELL-1
+2, 3, 6, 7
+*Nset, nset=ALLN, instance=CELL-1
+1, 2, 3, 4, 5, 6, 7, 8
+*End Assembly
+*Amplitude, name=CYCLE, definition=SMOOTH STEP
+0., 0., 0.004, 1., 0.006, 1., 0.012, -2.
+*Step, name=S1
+*Dynamic, Explicit
+, 0.012
+*Boundary
+BACK, 1, 1
+ALLN, 2, 3
+*Boundary, amplitude=CYCLE
+DRIVEN, 1, 1, 0.04
+*Output, history, frequency=1000000
+*Node Output, nset=ALLN
+RF1, RF2, RF3, U1, U2, U3, V1, V2, V3
+*Output, field, number interval=160
+*Node Output
+U, RF, V
+*Output, history, time interval=2e-05
+*Energy Output
+ALLIE, ALLKE, ALLWK, ALLVD, ALLAE, ALLPD, ETOTAL
+*End Step

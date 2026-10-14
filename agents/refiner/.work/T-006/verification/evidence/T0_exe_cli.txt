@@ -1,0 +1,81 @@
+## exe --help
+[PYI-21964:ERROR] Could not create temporary directory!
+rc=127
+## visualize --help
+[PYI-3780:ERROR] Could not create temporary directory!
+rc=127
+## no args
+usage: embmesh [-h] {list,visualize} ...
+embmesh: error: the following arguments are required: cmd
+rc=2
+## missing deck
+rc=0
+## wedge
+Traceback (most recent call last):
+  File "embmesh_entry.py", line 4, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "embmesh\cli.py", line 23, in main
+    fibers, rows = mesh_flat(a.deck, a.instance, a.diameter, a.output, a.elset, a.gap, a.fiber_type, preview=a.preview)
+                   ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "embmesh\generate.py", line 14, in mesh_flat
+    d=parse_deck(deck_path); elems,nodes=select_elements(d,instance,elset); fibers=flat_disc_fibers(nodes,diameter,gap=gap,reference=reference)
+                                         ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "embmesh\selection.py", line 22, in select_elements
+    if bad: raise HexOnlyError("unsupported host element types: " + ", ".join(f"{k} ({v})" for k,v in sorted(bad.items())))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+embmesh.errors.HexOnlyError: unsupported host element types: C3D4 (1)
+[PYI-35984:ERROR] Failed to execute script 'embmesh_entry' due to unhandled exception!
+rc=1
+ls: cannot access 'verification/evidence/exe_wedge': No such file or directory
+## bad instance
+Traceback (most recent call last):
+  File "embmesh_entry.py", line 4, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "embmesh\cli.py", line 23, in main
+    fibers, rows = mesh_flat(a.deck, a.instance, a.diameter, a.output, a.elset, a.gap, a.fiber_type, preview=a.preview)
+                   ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "embmesh\generate.py", line 14, in mesh_flat
+    d=parse_deck(deck_path); elems,nodes=select_elements(d,instance,elset); fibers=flat_disc_fibers(nodes,diameter,gap=gap,reference=reference)
+                                         ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "embmesh\selection.py", line 9, in select_elements
+    ins = deck.instances[instance]; part = deck.parts[ins.part]
+          ~~~~~~~~~~~~~~^^^^^^^^^^
+KeyError: 'NOPE'
+[PYI-42012:ERROR] Failed to execute script 'embmesh_entry' due to unhandled exception!
+rc=1
+## neg diameter
+patched deck: verification/evidence/exe_negd/output.inp
+host/fiber VTK: verification/evidence/exe_negd/host_fibers.vtk
+fibers: 0; host elements: 1
+rc=0
+fiber_volume.csv
+fibers.vtk
+host_fibers.vtk
+output.inp
+report.json
+## zero diameter
+embmesh\fibers.py:15: RuntimeWarning: divide by zero encountered in scalar divide
+  center=pts.mean(0); t0,t1=orthogonal_directions(reference,axis); u=pts@t0; v=pts@t1; w=pts@axis; pitch=diameter+gap; lo,hi=w.min(),w.max(); n=max(1,int(np.floor((hi-lo)/pitch))+1); fibers=[]; label=1
+Traceback (most recent call last):
+  File "embmesh_entry.py", line 4, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "embmesh\cli.py", line 23, in main
+    fibers, rows = mesh_flat(a.deck, a.instance, a.diameter, a.output, a.elset, a.gap, a.fiber_type, preview=a.preview)
+                   ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "embmesh\generate.py", line 14, in mesh_flat
+    d=parse_deck(deck_path); elems,nodes=select_elements(d,instance,elset); fibers=flat_disc_fibers(nodes,diameter,gap=gap,reference=reference)
+                                                                                   ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "embmesh\fibers.py", line 15, in flat_disc_fibers
+    center=pts.mean(0); t0,t1=orthogonal_directions(reference,axis); u=pts@t0; v=pts@t1; w=pts@axis; pitch=diameter+gap; lo,hi=w.min(),w.max(); n=max(1,int(np.floor((hi-lo)/pitch))+1); fibers=[]; label=1
+                                                                                                                                                        ~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+OverflowError: cannot convert float infinity to integer
+[PYI-43912:ERROR] Failed to execute script 'embmesh_entry' due to unhandled exception!
+rc=1
+## neg gap
+patched deck: verification/evidence/exe_neggap/output.inp
+host/fiber VTK: verification/evidence/exe_neggap/host_fibers.vtk
+fibers: 36; host elements: 1
+rc=0

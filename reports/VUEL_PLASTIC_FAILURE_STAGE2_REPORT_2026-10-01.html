@@ -1,0 +1,129 @@
+<!doctype html><html><head><meta charset="utf-8">
+<title>Stage 2 report: engineering-strain failure trigger on a plastic element (2026-10-01)</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:900px;margin:0 auto;padding:32px 24px 64px;line-height:1.55;color:#1c1a17;background:#faf9f5}
+h1,h2,h3,h4{font-weight:650;letter-spacing:-0.01em}
+h1{font-size:26px;border-bottom:2px solid #ddd7cc;padding-bottom:10px}
+h2{font-size:19px;margin-top:36px;border-bottom:1px solid #ddd7cc;padding-bottom:6px}
+h3{font-size:16px;margin-top:24px}
+code{font-family:'IBM Plex Mono',ui-monospace,Consolas,monospace;background:#efe9db;padding:1px 5px;border-radius:4px;font-size:0.9em}
+pre{background:#1c1a17;color:#f0ece3;padding:14px 16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;padding:0;color:inherit}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+th,td{text-align:left;padding:8px 10px;border:1px solid #ddd7cc;vertical-align:top}
+th{background:#efe9db}
+tr:nth-child(even){background:#f4f2ee}
+img,video{max-width:100%;border-radius:8px;border:1px solid #ddd7cc;display:block;margin:12px 0}
+blockquote{border-left:3px solid #b1460a;margin:0;padding:4px 16px;color:#6b645b}
+a{color:#b1460a}
+.src{color:#6b645b;font-size:12px;font-family:'IBM Plex Mono',ui-monospace,Consolas,monospace;margin-bottom:24px}
+</style></head><body>
+<div class="src">Converted from docs/VUEL_PLASTIC_FAILURE_STAGE2_REPORT_2026-10-01.md on 2026-10-06</div>
+<h1 id="stage-2-report-engineering-strain-failure-trigger-on-a-plastic-element-2026-10-01">Stage 2 report: engineering-strain failure trigger on a plastic element (2026-10-01)</h1>
+<p>Branch: <code>vuel-plastic-failure</code>. <strong>No changes to <code>uel/VUEL_failure.for</code> were
+needed for this stage</strong> -- the engineering-strain failure check (added in
+an earlier branch stage, see <code>docs/VUEL_FAILURE_CRITERION_REPORT_2026-10-01.md</code>)
+reads only the Green-Lagrange normal strains and is structurally independent
+of the plastic-state code Stage 1 added (confirmed by inspection when
+Stage 1 was written: the failure check runs on <code>STRAIN_VEC</code>, computed
+before the elastic-plastic stress update, never on <code>STRESS_PK2</code>/<code>EP_VEC</code>).
+This stage exists to confirm that independence holds in practice, not
+just on paper.</p>
+<h2 id="deck-verificationmake_t8_plastic_trippy-verificationroart8">Deck (<code>verification/make_t8_plastic_trip.py</code>, <code>verification/roar/t8/</code>,</h2>
+<p>ROAR job <strong>55972088</strong>)</p>
+<p>Single <code>VU1</code> hex, same uniaxial-stress BC pattern as T6/T7.
+<code>E=200 GPa, nu=0.3, SIGY0=250 MPa, HMOD=2 GPa, IPLAST=1</code> (same as Stage 1's
+plastic decks), <code>EPS_FAIL=0.02</code> -- comfortably past yield
+(<code>eps_y=0.00125</code>, so the element flows plastically for a long stretch
+first) and comfortably before the deck's peak applied strain of 0.04 (so
+the trigger is actually exercised, not just approached). Driven in tension
+0 -&gt; 0.04 over a 0.01 s SMOOTH STEP ramp, <code>B1_BULK=B2_BULK=BETA_RAYLEIGH=0</code>
+(same reasoning as Stage 1: isolate the check from damping noise).</p>
+<h2 id="result-pass">Result: PASS</h2>
+<p><code>run_t8_tension_trip</code> completed (<code>rc=0</code>, <code>THE ANALYSIS HAS COMPLETED
+SUCCESSFULLY</code>). The subroutine's own failure message:</p>
+<pre><code>*** VUEL_FAILURE: ELEMENT FAILED, elem = 1  time = 5.0382130E-03
+</code></pre>
+<p>RF1 (summed over the four x-pinned back-face nodes, same method as Stage
+1) vs. engineering strain (<code>U1</code> at node 2), pulled from the ODB:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">t (s)</th>
+<th style="text-align: right;">eps_eng</th>
+<th style="text-align: right;">sigma_fem (Pa)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">0.001634</td>
+<td style="text-align: right;">0.001345</td>
+<td style="text-align: right;">2.59e8</td>
+</tr>
+<tr>
+<td style="text-align: right;">0.002587</td>
+<td style="text-align: right;">0.004517</td>
+<td style="text-align: right;">2.71e8</td>
+</tr>
+<tr>
+<td style="text-align: right;">0.004085</td>
+<td style="text-align: right;">0.013289</td>
+<td style="text-align: right;">2.89e8</td>
+</tr>
+<tr>
+<td style="text-align: right;">0.004630</td>
+<td style="text-align: right;">0.017233</td>
+<td style="text-align: right;">2.87e8</td>
+</tr>
+<tr>
+<td style="text-align: right;"><strong>0.005038</strong></td>
+<td style="text-align: right;"><strong>0.020287</strong></td>
+<td style="text-align: right;"><strong>3.01e8</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;"><strong>0.005311</strong></td>
+<td style="text-align: right;"><strong>0.022323</strong></td>
+<td style="text-align: right;"><strong>0.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">0.006536</td>
+<td style="text-align: right;">0.030816</td>
+<td style="text-align: right;">0.0</td>
+</tr>
+<tr>
+<td style="text-align: right;">0.010000</td>
+<td style="text-align: right;">0.040000</td>
+<td style="text-align: right;">0.0</td>
+</tr>
+</tbody>
+</table>
+<p>This confirms all three things Stage 2 set out to check:</p>
+<ol>
+<li><strong>Stress tracks the plastic hardening curve before the trip</strong> -- the
+   values above through <code>eps=0.0203</code> are the same (to within the ODB's
+   frame sampling) as Stage 1's <code>t7_tension_plastic</code> deck's own hardening
+   curve at the same strains, not a pure-elastic line. Plasticity and the
+   not-yet-tripped failure check coexist correctly.</li>
+<li><strong>The trip occurs at the expected strain</strong>: the last nonzero-stress
+   frame is at <code>eps=0.020287</code>, matching <code>EPS_FAIL=0.02</code> (the small
+   overshoot is normal -- the trigger is evaluated once per increment at
+   increment end, and increments land between sampled output frames; see
+   the original failure-criterion report for the same one-increment-lag
+   behavior on a purely-elastic element).</li>
+<li><strong>RF goes to exactly zero immediately after</strong>: <code>0.0</code> (not just
+   "small") at the very next recorded frame, and stays exactly <code>0.0</code>
+   through the rest of the ramp to <code>eps=0.04</code> -- the element goes
+   numerically inert the increment after it fails, exactly as designed,
+   with plasticity active alongside it changing nothing about that
+   mechanism.</li>
+</ol>
+<h2 id="open-issues">Open issues</h2>
+<p>None new. The existing caveats from Stage 1 (no direct SVARS/element-output
+access for a VUEL in Explicit; zero damping used deliberately to keep
+these checks clean) carry forward unchanged.</p>
+<h2 id="next-stage-3">Next: Stage 3</h2>
+<p>Add the Jacobian (<code>detJ_current/detJ_initial</code>) collapse trigger and build
+a single-hex test that collapses (heavy compression and a shear-collapse
+case), confirming it trips before <code>detJ</code> goes non-positive, with no NaN
+and no abort.</p>
+</body></html>

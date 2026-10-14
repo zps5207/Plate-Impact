@@ -1,6 +1,8 @@
 from __future__ import annotations
 import argparse
+import json
 import sys
+from pathlib import Path
 from .parser import parse_deck
 from .generate import mesh
 from .errors import HexOnlyError, MesherInputError
@@ -62,6 +64,14 @@ def build_parser():
                    help="VU1 post-trigger linear degradation time (default: immediate)")
     v.add_argument("--vuel-compression-residual", type=float, default=0.0,
                    help="VU1 residual compression-only bulk fraction, 0..1 (default: 0)")
+    v.add_argument("--plate-node-contact", action="store_true",
+                   help="contact the ball with a node surface over every host-instance node")
+    v.add_argument("--fiber-node-contact", action="store_true",
+                   help="contact the ball with a node surface over every generated fiber node")
+    v.add_argument("--ball-instance",
+                   help="assembly instance used to build the ball exterior surface (required with node contact)")
+    v.add_argument("--contact-thickness", default="auto",
+                   help="node-surface contact thickness in deck units, or auto (default: auto)")
     return p
 
 
@@ -97,12 +107,25 @@ def main(argv=None):
                                  node_offset=a.node_offset, element_offset=a.element_offset,
                                  fiber_material=a.fiber_material, precise_volume=a.precise_volume,
                                  host_mode=a.host_mode, vuel_ghost_options=vuel_options,
+                                 plate_node_contact=a.plate_node_contact,
+                                 fiber_node_contact=a.fiber_node_contact,
+                                 ball_instance=a.ball_instance,
+                                 contact_thickness=a.contact_thickness,
                                  progress=progress)
             print(f"patched deck: {a.output}/output.inp")
             print(f"host/fiber VTK: {a.output}/host_fibers.vtk")
             if a.preview: print(f"preview: {a.output}/preview.html")
             if a.precise_volume: print(f"precise per-host volumes: {a.output}/fiber_volume_precise.csv")
             print(f"fibers: {len(fibers)}; host elements: {len(rows)}")
+            if a.plate_node_contact or a.fiber_node_contact:
+                report = json.loads(Path(a.output, 'report.json').read_text())
+                contact = report['ball_node_contact']
+                surfaces = [x for x in (contact['plate_surface'], contact['fiber_surface']) if x]
+                print(f"ball contact: {', '.join(surfaces)} -> {contact['ball_surface']}")
+                print(f"contact nodes: plate={contact['plate_node_count']} fibers={contact['fiber_node_count']}")
+                print(f"contact thickness: plate={contact['plate_contact_thickness']} fibers={contact['fiber_contact_thickness']}")
+                action = 'reused' if contact['interaction_reused'] else 'created'
+                print(f"contact interaction: {contact['interaction']} ({action})")
         return 0
     except FileNotFoundError as e:
         print(f"embmesh: {e}", file=sys.stderr); return 2

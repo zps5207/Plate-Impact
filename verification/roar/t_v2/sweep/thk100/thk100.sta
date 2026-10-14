@@ -1,0 +1,510 @@
+Abaqus/Explicit 2024                             DATE 13-Oct-2026  TIME 21:37:17
+-------------------------------------------------------------------------------
+ PREPROCESSOR WARNING MESSAGES
+-------------------------------------------------------------------------------
+
+
+***WARNING: There are 6 warning messages in the data (.dat) file.  Please
+            check the data file for possible errors in the input file.
+
+
+
+***WARNING: In step 1, some facet thicknesses for general contact were reduced
+            from the parent element or specified values due to a large
+            thickness compared to facet dimensions.  The most significant
+            thickness scaling factor was 6.59482E-03 for a facet on parent
+            element 38000 of instance PLATE-1.  An element set named
+            "WarnElemGContThickReduce" has been created to locate the regions
+            of reduced thickness.
+
+-------------------------------------------------------------------------------
+ MODEL INFORMATION (IN GLOBAL X-Y COORDINATES)
+-------------------------------------------------------------------------------
+
+   Total mass in model = 2.74900E-02
+   Center of mass of model = ( 1.603634E-02, 1.603691E-02,-2.084511E-04)
+
+    Moments of Inertia :
+                 About Center of Mass              About Origin
+      I(XX)          6.974619E-06                  1.404576E-05
+      I(YY)          6.974067E-06                  1.404470E-05
+      I(ZZ)          1.036341E-05                  2.450280E-05
+      I(XY)         -7.469592E-07                 -7.816652E-06
+      I(YZ)          1.606454E-06                  1.698351E-06
+      I(ZX)          1.606043E-06                  1.697936E-06
+
+-------------------------------------------------------------------------------
+ STABLE TIME INCREMENT INFORMATION
+-------------------------------------------------------------------------------
+
+
+  The stable time increment estimate for each element is based on
+  linearization about the initial state.
+
+
+   Initial time increment = 6.43887E-09
+
+   Statistics for all elements:
+      Mean = 4.49457E-06
+      Standard deviation = 2.81379E-06
+
+   Most critical elements:
+    Element number   Rank    Time increment   Increment ratio
+    (Instance name)
+   ----------------------------------------------------------
+        3098          1       6.438873E-09      1.000000E+00
+    BALL-1
+        3198          2       6.438875E-09      9.999997E-01
+    BALL-1
+        3238          3       6.438875E-09      9.999997E-01
+    BALL-1
+        3058          4       6.438876E-09      9.999996E-01
+    BALL-1
+        3278          5       6.438880E-09      9.999990E-01
+    BALL-1
+        3018          6       6.438880E-09      9.999990E-01
+    BALL-1
+        3138          7       6.438885E-09      9.999982E-01
+    BALL-1
+        3158          8       6.438888E-09      9.999978E-01
+    BALL-1
+        3038          9       6.438893E-09      9.999969E-01
+    BALL-1
+        3258         10       6.438894E-09      9.999968E-01
+    BALL-1
+
+
+  Instance name for the most critical element will be printed if the critical
+  element changes or at the beginning of a new page.
+
+
+-------------------------------------------------------------------------------
+
+  INFORMATION REGARDING INITIAL CONTACT OVERCLOSURES FOR NEWLY DEFINED GENERAL
+  CONTACT INTERACTIONS IN STEP 1
+
+-------------------------------------------------------------------------------
+
+  Abaqus/Explicit will attempt to resolve 108 initial node-face overclosure(s).
+
+
+  Maximum initial overclosure for node-face contact is 2.91162E-03 at node
+  11060 of instance PLATE-1 and face S3 of element 1645 of instance BALL-1.
+
+
+  No initial edge-edge overclosures found.
+
+
+  No nodal position adjustments have been made.
+
+
+  108 node-face overclosure(s) left unresolved and will be stored as offsets.
+  To help identify the nodes involved in the overclosures a node set
+  InfoNodeUnresolvInitOver has been created.
+
+
+  Maximum unresolved overclosure is 2.91162E-03 at node 11060 of instance
+  PLATE-1 and face S3 of element 1645 of instance BALL-1.
+
+
+  No edge-edge overclosures left unresolved.
+
+
+***NOTE: You can view the deformed configuration due to the resolution of
+         initial overclosures.  In increment 0, draw the deformed shape or
+         draw a symbol plot of vector displacements.
+
+------------------------------------------------------------------------------
+
+Abaqus/Explicit 2024                             DATE 13-Oct-2026  TIME 21:37:59
+
+The single precision Abaqus/Explicit executable will be used in this analysis.
+
+
+-------------------------------------------------------------------------------
+ SOLUTION PROGRESS
+-------------------------------------------------------------------------------
+
+ STEP 1  ORIGIN 0.0000
+
+  Total memory used for step 1 is approximately 132.9 megabytes.
+  Element by element stable time estimation algorithm will be used.
+  Scaling factor:  1.0000
+              STEP     TOTAL      WALL      STABLE    CRITICAL    KINETIC      TOTAL
+INCREMENT     TIME      TIME      TIME   INCREMENT     ELEMENT     ENERGY     ENERGY
+        0  0.000E+00 0.000E+00  00:00:08 6.439E-09        3098  4.094E+03  4.094E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number     0, of   1000, at step time 0.000E+00
+
+***WARNING: Some nodes involved in general contact have penetrated their
+            tracked faces by more than 50.000 percent of the typical element
+            dimension in the general contact domain, 1.25490E-03. Please check
+            the node set "InfoNodeDeepPenetFirst". Please make sure that these
+            nodes and their contacting faces have sufficient mass to allow the
+            code to calculate realistic contact penalties for enforcing the
+            contact constraint.
+
+       11  7.083E-08 7.083E-08  00:00:40 6.439E-09        3178  4.078E+03  4.090E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number     1, of   1000, at step time 7.083E-08
+       22  1.416E-07 1.416E-07  00:01:15 6.431E-09        3098  4.061E+03  4.090E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number     2, of   1000, at step time 1.416E-07
+       33  2.124E-07 2.124E-07  00:01:46 6.432E-09        2998  4.055E+03  4.089E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number     3, of   1000, at step time 2.124E-07
+       44  2.831E-07 2.831E-07  00:02:19 6.429E-09        3038  4.056E+03  4.086E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number     4, of   1000, at step time 2.831E-07
+       55  3.538E-07 3.538E-07  00:02:54 6.426E-09        3238  4.048E+03  4.077E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number     5, of   1000, at step time 3.538E-07
+       66  4.246E-07 4.246E-07  00:03:28 6.435E-09        3078  4.043E+03  4.074E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number     6, of   1000, at step time 4.246E-07
+       77  4.953E-07 4.953E-07  00:04:05 6.424E-09        3218  4.040E+03  4.071E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number     7, of   1000, at step time 4.953E-07
+       88  5.662E-07 5.662E-07  00:04:38 6.458E-09        3200  4.037E+03  4.069E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number     8, of   1000, at step time 5.662E-07
+       98  6.309E-07 6.309E-07  00:05:10 6.476E-09        3029  4.034E+03  4.066E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number     9, of   1000, at step time 6.309E-07
+      109  7.022E-07 7.022E-07  00:05:41 6.475E-09        3189  4.031E+03  4.064E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    10, of   1000, at step time 7.022E-07
+      120  7.734E-07 7.734E-07  00:06:11 6.449E-09        3180  4.028E+03  4.062E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    11, of   1000, at step time 7.734E-07
+      131  8.445E-07 8.445E-07  00:06:42 6.475E-09        3249  4.023E+03  4.058E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    12, of   1000, at step time 8.445E-07
+      142  9.158E-07 9.158E-07  00:07:11 6.475E-09        3229  4.020E+03  4.056E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    13, of   1000, at step time 9.158E-07
+      152  9.805E-07 9.805E-07  00:07:46 6.476E-09        3189  4.017E+03  4.053E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    14, of   1000, at step time 9.805E-07
+      163  1.052E-06 1.052E-06  00:08:14 6.478E-09        3249  4.014E+03  4.049E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    15, of   1000, at step time 1.052E-06
+      174  1.123E-06 1.123E-06  00:08:45 6.476E-09        3089  4.009E+03  4.046E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    16, of   1000, at step time 1.123E-06
+      185  1.194E-06 1.194E-06  00:09:15 6.478E-09        3009  4.005E+03  4.044E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    17, of   1000, at step time 1.194E-06
+      196  1.265E-06 1.265E-06  00:09:48 6.478E-09        3189  4.002E+03  4.042E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    18, of   1000, at step time 1.265E-06
+      206  1.330E-06 1.330E-06  00:10:19 6.475E-09        3229  3.999E+03  4.040E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    19, of   1000, at step time 1.330E-06
+      217  1.401E-06 1.401E-06  00:10:52 6.477E-09        3089  3.995E+03  4.037E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    20, of   1000, at step time 1.401E-06
+      228  1.473E-06 1.473E-06  00:11:30 6.478E-09        3209  3.991E+03  4.034E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    21, of   1000, at step time 1.473E-06
+      239  1.543E-06 1.543E-06  00:12:06 6.452E-09        3157  3.987E+03  4.032E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    22, of   1000, at step time 1.543E-06
+      250  1.614E-06 1.614E-06  00:12:41 6.477E-09        3249  3.984E+03  4.030E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    23, of   1000, at step time 1.614E-06
+      261  1.686E-06 1.686E-06  00:13:15 6.477E-09        3249  3.982E+03  4.028E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    24, of   1000, at step time 1.686E-06
+      271  1.750E-06 1.750E-06  00:13:45 6.478E-09        3269  3.979E+03  4.027E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    25, of   1000, at step time 1.750E-06
+      282  1.822E-06 1.822E-06  00:14:12 6.503E-09        3226  3.975E+03  4.023E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    26, of   1000, at step time 1.822E-06
+      293  1.893E-06 1.893E-06  00:14:42 6.497E-09        3269  3.970E+03  4.019E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    27, of   1000, at step time 1.893E-06
+      304  1.965E-06 1.965E-06  00:15:16 6.492E-09        3068  3.965E+03  4.014E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    28, of   1000, at step time 1.965E-06
+      315  2.036E-06 2.036E-06  00:15:48 6.481E-09        3229  3.963E+03  4.012E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    29, of   1000, at step time 2.036E-06
+      325  2.101E-06 2.101E-06  00:16:18 6.483E-09        3089  3.959E+03  4.009E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    30, of   1000, at step time 2.101E-06
+      336  2.172E-06 2.172E-06  00:16:49 6.483E-09        3089  3.956E+03  4.006E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    31, of   1000, at step time 2.172E-06
+      347  2.243E-06 2.243E-06  00:17:22 6.479E-09        3057  3.951E+03  4.004E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    32, of   1000, at step time 2.243E-06
+      358  2.315E-06 2.315E-06  00:17:54 6.480E-09        3249  3.949E+03  3.999E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    33, of   1000, at step time 2.315E-06
+      369  2.386E-06 2.386E-06  00:18:24 6.455E-09        2995  3.945E+03  3.996E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    34, of   1000, at step time 2.386E-06
+      379  2.450E-06 2.450E-06  00:18:50 6.483E-09        3129  3.942E+03  3.993E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    35, of   1000, at step time 2.450E-06
+      390  2.521E-06 2.521E-06  00:19:14 6.434E-09        3242  3.938E+03  3.990E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    36, of   1000, at step time 2.521E-06
+      401  2.592E-06 2.592E-06  00:19:40 6.456E-09        2998  3.935E+03  3.987E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    37, of   1000, at step time 2.592E-06
+      412  2.663E-06 2.663E-06  00:20:07 6.512E-09        3015  3.932E+03  3.985E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    38, of   1000, at step time 2.663E-06
+      423  2.734E-06 2.734E-06  00:20:35 6.465E-09        3003  3.928E+03  3.984E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    39, of   1000, at step time 2.734E-06
+
+ STEP 1  ORIGIN 0.0000
+
+              STEP     TOTAL      WALL      STABLE    CRITICAL    KINETIC      TOTAL
+INCREMENT     TIME      TIME      TIME   INCREMENT     ELEMENT     ENERGY     ENERGY
+      434  2.806E-06 2.806E-06  00:21:02 6.521E-09        3017  3.924E+03  3.981E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    40, of   1000, at step time 2.806E-06
+      444  2.871E-06 2.871E-06  00:21:29 6.481E-09        3224  3.921E+03  3.979E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    41, of   1000, at step time 2.871E-06
+      455  2.942E-06 2.942E-06  00:21:56 6.486E-09        3304  3.916E+03  3.976E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    42, of   1000, at step time 2.942E-06
+      466  3.014E-06 3.014E-06  00:22:22 6.551E-09        3258  3.910E+03  3.972E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    43, of   1000, at step time 3.014E-06
+      477  3.086E-06 3.086E-06  00:22:42 6.479E-09        3165  3.905E+03  3.969E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    44, of   1000, at step time 3.086E-06
+      487  3.150E-06 3.150E-06  00:23:09 6.491E-09        3185  3.902E+03  3.966E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    45, of   1000, at step time 3.150E-06
+      498  3.222E-06 3.222E-06  00:23:35 6.475E-09        3186  3.899E+03  3.962E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    46, of   1000, at step time 3.222E-06
+      509  3.293E-06 3.293E-06  00:24:01 6.473E-09        3126  3.894E+03  3.958E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    47, of   1000, at step time 3.293E-06
+      520  3.364E-06 3.364E-06  00:24:28 6.472E-09        3166  3.892E+03  3.950E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    48, of   1000, at step time 3.364E-06
+      531  3.436E-06 3.436E-06  00:24:44 6.481E-09        3267  3.889E+03  3.947E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    49, of   1000, at step time 3.436E-06
+      541  3.501E-06 3.501E-06  00:25:11 6.478E-09        3127  3.884E+03  3.945E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    50, of   1000, at step time 3.501E-06
+      552  3.572E-06 3.572E-06  00:25:41 6.490E-09        3107  3.881E+03  3.942E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    51, of   1000, at step time 3.572E-06
+      563  3.643E-06 3.643E-06  00:26:04 6.466E-09        3188  3.877E+03  3.941E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    52, of   1000, at step time 3.643E-06
+      574  3.714E-06 3.714E-06  00:26:29 6.465E-09        3049  3.874E+03  3.938E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    53, of   1000, at step time 3.714E-06
+      585  3.785E-06 3.785E-06  00:26:55 6.462E-09        3289  3.870E+03  3.936E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    54, of   1000, at step time 3.785E-06
+      596  3.856E-06 3.856E-06  00:27:21 6.454E-09        3029  3.865E+03  3.934E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    55, of   1000, at step time 3.856E-06
+      606  3.921E-06 3.921E-06  00:27:53 6.458E-09        3049  3.859E+03  3.929E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    56, of   1000, at step time 3.921E-06
+      617  3.992E-06 3.992E-06  00:28:22 6.470E-09        3229  3.854E+03  3.925E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    57, of   1000, at step time 3.992E-06
+      628  4.063E-06 4.063E-06  00:28:48 6.512E-09        3146  3.849E+03  3.922E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    58, of   1000, at step time 4.063E-06
+      639  4.135E-06 4.135E-06  00:29:16 6.514E-09        3186  3.845E+03  3.919E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    59, of   1000, at step time 4.135E-06
+      649  4.200E-06 4.200E-06  00:29:37 6.517E-09        3146  3.841E+03  3.917E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    60, of   1000, at step time 4.200E-06
+      660  4.272E-06 4.272E-06  00:30:02 6.517E-09        3208  3.837E+03  3.914E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    61, of   1000, at step time 4.272E-06
+      671  4.343E-06 4.343E-06  00:30:26 6.503E-09        3229  3.833E+03  3.912E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    62, of   1000, at step time 4.343E-06
+      682  4.415E-06 4.415E-06  00:30:54 6.503E-09        3189  3.830E+03  3.910E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    63, of   1000, at step time 4.415E-06
+      693  4.486E-06 4.486E-06  00:31:20 6.500E-09        3049  3.826E+03  3.908E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    64, of   1000, at step time 4.486E-06
+      703  4.551E-06 4.551E-06  00:31:46 6.501E-09        3269  3.820E+03  3.905E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    65, of   1000, at step time 4.551E-06
+      714  4.623E-06 4.623E-06  00:32:08 6.499E-09        3169  3.815E+03  3.901E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    66, of   1000, at step time 4.623E-06
+      725  4.694E-06 4.694E-06  00:32:34 6.508E-09        3189  3.811E+03  3.898E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    67, of   1000, at step time 4.694E-06
+      736  4.766E-06 4.766E-06  00:33:00 6.521E-09        3049  3.805E+03  3.895E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    68, of   1000, at step time 4.766E-06
+      746  4.831E-06 4.831E-06  00:33:25 6.534E-09        3289  3.801E+03  3.892E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    69, of   1000, at step time 4.831E-06
+      757  4.903E-06 4.903E-06  00:33:52 6.551E-09        3268  3.794E+03  3.889E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    70, of   1000, at step time 4.903E-06
+      768  4.975E-06 4.975E-06  00:34:17 6.545E-09        3189  3.790E+03  3.885E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    71, of   1000, at step time 4.975E-06
+      778  5.041E-06 5.041E-06  00:34:46 6.540E-09        3249  3.786E+03  3.884E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    72, of   1000, at step time 5.041E-06
+      789  5.113E-06 5.113E-06  00:35:15 6.539E-09        3229  3.781E+03  3.880E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    73, of   1000, at step time 5.113E-06
+      800  5.185E-06 5.185E-06  00:35:44 6.550E-09        3149  3.777E+03  3.877E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    74, of   1000, at step time 5.185E-06
+      810  5.250E-06 5.250E-06  00:36:14 6.593E-09        3130  3.772E+03  3.874E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    75, of   1000, at step time 5.250E-06
+      821  5.323E-06 5.323E-06  00:36:42 6.545E-09        3309  3.768E+03  3.872E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    76, of   1000, at step time 5.323E-06
+      832  5.394E-06 5.394E-06  00:37:13 6.506E-09        3169  3.762E+03  3.869E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    77, of   1000, at step time 5.394E-06
+      843  5.466E-06 5.466E-06  00:37:44 6.503E-09        3189  3.759E+03  3.867E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    78, of   1000, at step time 5.466E-06
+      853  5.531E-06 5.531E-06  00:38:16 6.504E-09        3189  3.755E+03  3.864E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    79, of   1000, at step time 5.531E-06
+
+ STEP 1  ORIGIN 0.0000
+
+              STEP     TOTAL      WALL      STABLE    CRITICAL    KINETIC      TOTAL
+INCREMENT     TIME      TIME      TIME   INCREMENT     ELEMENT     ENERGY     ENERGY
+      864  5.602E-06 5.602E-06  00:38:50 6.503E-09        3169  3.751E+03  3.862E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    80, of   1000, at step time 5.602E-06
+      875  5.674E-06 5.674E-06  00:39:21 6.528E-09        3188  3.747E+03  3.860E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    81, of   1000, at step time 5.674E-06
+      886  5.746E-06 5.746E-06  00:39:50 6.532E-09        3288  3.742E+03  3.858E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    82, of   1000, at step time 5.746E-06
+      896  5.811E-06 5.811E-06  00:40:14 6.533E-09        3128  3.738E+03  3.855E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    83, of   1000, at step time 5.811E-06
+      907  5.883E-06 5.883E-06  00:40:45 6.514E-09        3149  3.733E+03  3.851E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    84, of   1000, at step time 5.883E-06
+      918  5.954E-06 5.954E-06  00:41:13 6.510E-09        3109  3.727E+03  3.849E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    85, of   1000, at step time 5.954E-06
+      929  6.026E-06 6.026E-06  00:41:39 6.520E-09        3049  3.722E+03  3.845E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    86, of   1000, at step time 6.026E-06
+      939  6.091E-06 6.091E-06  00:42:07 6.514E-09        3049  3.719E+03  3.843E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    87, of   1000, at step time 6.091E-06
+      950  6.163E-06 6.163E-06  00:42:38 6.506E-09        3209  3.715E+03  3.841E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    88, of   1000, at step time 6.163E-06
+      961  6.235E-06 6.235E-06  00:43:04 6.514E-09        3209  3.709E+03  3.837E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    89, of   1000, at step time 6.235E-06
+      972  6.306E-06 6.306E-06  00:43:35 6.512E-09        3109  3.705E+03  3.835E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    90, of   1000, at step time 6.306E-06
+      982  6.371E-06 6.371E-06  00:44:07 6.502E-09        3149  3.701E+03  3.833E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    91, of   1000, at step time 6.371E-06
+      993  6.443E-06 6.443E-06  00:44:36 6.513E-09        3189  3.696E+03  3.829E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    92, of   1000, at step time 6.443E-06
+     1004  6.515E-06 6.515E-06  00:45:07 6.514E-09        3269  3.692E+03  3.828E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    93, of   1000, at step time 6.515E-06
+     1015  6.586E-06 6.586E-06  00:45:38 6.516E-09        3169  3.686E+03  3.824E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    94, of   1000, at step time 6.586E-06
+     1025  6.651E-06 6.651E-06  00:46:12 6.526E-09        3269  3.681E+03  3.820E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    95, of   1000, at step time 6.651E-06
+     1036  6.723E-06 6.723E-06  00:46:42 6.523E-09        3189  3.678E+03  3.819E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    96, of   1000, at step time 6.723E-06
+     1047  6.795E-06 6.795E-06  00:47:15 6.523E-09        3189  3.675E+03  3.818E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    97, of   1000, at step time 6.795E-06
+     1057  6.860E-06 6.860E-06  00:47:43 6.592E-09        3269  3.672E+03  3.816E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    98, of   1000, at step time 6.860E-06
+     1068  6.933E-06 6.933E-06  00:48:17 6.533E-09        3309  3.663E+03  3.810E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number    99, of   1000, at step time 6.933E-06
+     1079  7.004E-06 7.004E-06  00:48:51 6.529E-09        3009  3.656E+03  3.806E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number   100, of   1000, at step time 7.004E-06
+     1090  7.076E-06 7.076E-06  00:49:25 6.562E-09        3208  3.652E+03  3.803E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number   101, of   1000, at step time 7.076E-06
+     1100  7.142E-06 7.142E-06  00:49:50 6.567E-09        3268  3.648E+03  3.801E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number   102, of   1000, at step time 7.142E-06
+     1111  7.214E-06 7.214E-06  00:50:21 6.543E-09        3289  3.644E+03  3.799E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number   103, of   1000, at step time 7.214E-06
+     1122  7.286E-06 7.286E-06  00:50:50 6.571E-09        3028  3.638E+03  3.795E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number   104, of   1000, at step time 7.286E-06
+     1132  7.352E-06 7.352E-06  00:51:21 6.575E-09        3148  3.634E+03  3.792E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number   105, of   1000, at step time 7.352E-06
+     1143  7.424E-06 7.424E-06  00:51:49 6.548E-09        3149  3.629E+03  3.790E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number   106, of   1000, at step time 7.424E-06
+     1154  7.496E-06 7.496E-06  00:52:17 6.544E-09        3189  3.625E+03  3.787E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number   107, of   1000, at step time 7.496E-06
+     1164  7.562E-06 7.562E-06  00:52:45 6.550E-09        3169  3.619E+03  3.784E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number   108, of   1000, at step time 7.562E-06
+     1175  7.634E-06 7.634E-06  00:53:16 6.544E-09        3049  3.615E+03  3.782E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number   109, of   1000, at step time 7.634E-06
+     1186  7.706E-06 7.706E-06  00:53:42 6.541E-09        3269  3.610E+03  3.779E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number   110, of   1000, at step time 7.706E-06
+     1196  7.771E-06 7.771E-06  00:54:08 6.547E-09        3249  3.607E+03  3.777E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number   111, of   1000, at step time 7.771E-06
+     1207  7.843E-06 7.843E-06  00:54:39 6.546E-09        3149  3.602E+03  3.774E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number   112, of   1000, at step time 7.843E-06
+     1218  7.915E-06 7.915E-06  00:55:07 6.552E-09        3269  3.599E+03  3.773E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number   113, of   1000, at step time 7.915E-06
+     1228  7.981E-06 7.981E-06  00:55:33 6.551E-09        3189  3.596E+03  3.771E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number   114, of   1000, at step time 7.981E-06
+     1239  8.053E-06 8.053E-06  00:56:00 6.550E-09        3169  3.593E+03  3.769E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number   115, of   1000, at step time 8.053E-06
+     1250  8.125E-06 8.125E-06  00:56:29 6.554E-09        3129  3.589E+03  3.766E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number   116, of   1000, at step time 8.125E-06
+     1260  8.190E-06 8.190E-06  00:56:55 6.554E-09        3269  3.585E+03  3.765E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number   117, of   1000, at step time 8.190E-06
+     1271  8.262E-06 8.262E-06  00:57:25 6.550E-09        3169  3.580E+03  3.762E+03
+INSTANCE WITH CRITICAL ELEMENT: BALL-1
+Output Field Frame Number   118, of   1000, at step time 8.262E-06

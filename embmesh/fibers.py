@@ -2,7 +2,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 import numpy as np
 from .layup import orthogonal_directions
-from .geometry import boundary_faces, segment_boundary_crossings
+from .geometry import boundary_faces, hex_volume, segment_boundary_crossings
 
 _AXES = {"x": np.array([1., 0, 0]), "y": np.array([0., 1, 0]), "z": np.array([0., 0, 1])}
 
@@ -10,7 +10,7 @@ _AXES = {"x": np.array([1., 0, 0]), "y": np.array([0., 1, 0]), "z": np.array([0.
 @dataclass
 class Fiber:
     label: int
-    points: np.ndarray          # (N, 3), N >= 2: a polyline (2 points for a straight fiber)
+    points: np.ndarray          # (N, 3), N >= 2: a polyline (straight fibers may be segmented)
     layer: int
     direction: str
     curvature_data: dict = field(default_factory=dict)
@@ -108,6 +108,11 @@ def flat_disc_fibers(elems, nodes, diameter, thickness_axis=None, gap=0.0, refer
     w = pts @ axis
     lo, hi = w.min(), w.max()
     boundary_quads = _boundary_quads(elems, nodes)
+    host_volumes = [
+        hex_volume(np.asarray([nodes[n] for n in e.connectivity[:8]], float))
+        for e in elems.values()
+    ]
+    target_length = float(np.cbrt(np.median(host_volumes)))
     # A fiber row clipped exactly to the host's true boundary surface lands its
     # endpoint exactly ON that surface -- a measure-zero, numerically ambiguous
     # case for *any* point-in-host test (ours, and Abaqus's own embedded-element
@@ -142,6 +147,10 @@ def flat_disc_fibers(elems, nodes, diameter, thickness_axis=None, gap=0.0, refer
                 hi3 = lo2 + t_hi * span - end_inset - boundary_eps
                 if hi3 <= lo3:
                     continue
-                fibers.append(Fiber(label, np.array([base + lo3 * d, base + hi3 * d]), k, "t0" if j == 0 else "t90"))
+                clipped_span = hi3 - lo3
+                n_segments = max(1, round(clipped_span / target_length))
+                parameters = np.linspace(lo3, hi3, n_segments + 1)
+                fiber_points = base + parameters[:, None] * d
+                fibers.append(Fiber(label, fiber_points, k, "t0" if j == 0 else "t90"))
                 label += 1
     return fibers

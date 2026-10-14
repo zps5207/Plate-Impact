@@ -1,0 +1,235 @@
+<!doctype html><html><head><meta charset="utf-8">
+<title>VUEL engineering-strain failure criterion: does Abaqus/Explicit honor it? (2026-10-01)</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:900px;margin:0 auto;padding:32px 24px 64px;line-height:1.55;color:#1c1a17;background:#faf9f5}
+h1,h2,h3,h4{font-weight:650;letter-spacing:-0.01em}
+h1{font-size:26px;border-bottom:2px solid #ddd7cc;padding-bottom:10px}
+h2{font-size:19px;margin-top:36px;border-bottom:1px solid #ddd7cc;padding-bottom:6px}
+h3{font-size:16px;margin-top:24px}
+code{font-family:'IBM Plex Mono',ui-monospace,Consolas,monospace;background:#efe9db;padding:1px 5px;border-radius:4px;font-size:0.9em}
+pre{background:#1c1a17;color:#f0ece3;padding:14px 16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;padding:0;color:inherit}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+th,td{text-align:left;padding:8px 10px;border:1px solid #ddd7cc;vertical-align:top}
+th{background:#efe9db}
+tr:nth-child(even){background:#f4f2ee}
+img,video{max-width:100%;border-radius:8px;border:1px solid #ddd7cc;display:block;margin:12px 0}
+blockquote{border-left:3px solid #b1460a;margin:0;padding:4px 16px;color:#6b645b}
+a{color:#b1460a}
+.src{color:#6b645b;font-size:12px;font-family:'IBM Plex Mono',ui-monospace,Consolas,monospace;margin-bottom:24px}
+</style></head><body>
+<div class="src">Converted from docs/VUEL_FAILURE_CRITERION_REPORT_2026-10-01.md on 2026-10-06</div>
+<h1 id="vuel-engineering-strain-failure-criterion-does-abaqusexplicit-honor-it-2026-10-01">VUEL engineering-strain failure criterion: does Abaqus/Explicit honor it? (2026-10-01)</h1>
+<h2 id="question">Question</h2>
+<p>Branch <code>uel/VUEL.for</code> to add a simple failure criterion (max absolute normal
+engineering strain, goal suggested ~1.0), run it on ROAR, and find out
+empirically whether Abaqus/Explicit will honor that failure by deleting the
+element or converting it to SPH particles — the way it does for a native
+element whose material (VUMAT/UMAT) sets a <code>STATUS</code>-type state variable.</p>
+<p><strong>Short answer: no.</strong> Abaqus has no hook that lets a <code>*User Element</code> request
+deletion or particle conversion. The subroutine can make itself numerically
+inert once its own criterion trips (confirmed below), but the element stays
+in the mesh, in the ODB, and in Abaqus's own element count forever — nothing
+in Abaqus's bookkeeping (<code>.sta</code> file, element count, native STATUS field)
+ever learns that anything happened.</p>
+<h2 id="what-was-built">What was built</h2>
+<ul>
+<li><strong><code>uel/VUEL_failure.for</code></strong> — a branch of <code>uel/VUEL.for</code> (production file
+  untouched). At each Gauss point, recovers the three normal engineering
+  (nominal) strains from the Green-Lagrange normal strains already computed
+  by the host formulation: <code>lambda_i = sqrt(2*E_ii + 1)</code>, `eng_i = lambda_i</li>
+<li>1<code>.</code>props(7)<code>(</code>EPS_FAIL<code>) is the trip threshold on</code>max(|eng_1|,|eng_2|,|eng_3|)<code>, checked once per element per increment
+  (pooled over all 8 Gauss points), at the *end* of the increment — the same
+  timing Abaqus's own native damage/deletion logic uses.</code>nsvars<code>grew from
+  48 to 49;</code>svars(.,49)<code>is the element's own failure flag (0 = intact,
+  1 = failed), read back at the top of the next call. Once failed, the
+  element zeroes its own PK2/viscous/bulk stress and internal force
+  contribution for every subsequent increment — "numerically inert" — but
+  nothing else changes: mass is computed once up front (</code>jMassCalc` is only
+  called once per analysis for a UEL) and is never shed.</li>
+<li><strong><code>verification/make_t6_failure.py</code></strong> + <strong><code>verification/roar/t6/</code></strong> —
+  single-<code>VU1</code>-hex ("T4"-style) compression decks:</li>
+<li><code>t6_compress_nofail</code> — <code>EPS_FAIL = 1.0</code> (the goal's suggested value).</li>
+<li><code>t6_compress_trip</code> — <code>EPS_FAIL = 0.3</code>.
+  Both apply a ramped <code>-0.6</code> x-displacement (SMOOTH STEP, 0.01 s step) to
+  the driven face against a fully pinned opposite face — true uniaxial
+  compression (see "False start" below for why the BCs needed fixing).</li>
+<li><strong><code>verification/roar/t6.sbatch</code></strong> — same <code>t4.sbatch</code>/<code>t5.sbatch</code> pattern.</li>
+</ul>
+<h2 id="physical-note-on-1-engineering-strain-compression-test">Physical note on "1 engineering strain" + "compression test"</h2>
+<p>A 1-D engineering (nominal) strain cannot reach <code>-1.0</code> under compression —
+that limit is zero volume. It asymptotically approaches <code>-1</code> but a
+<code>|strain| &gt;= 1.0</code> threshold (the goal's suggested value) is <strong>unreachable
+from the compressive side</strong> in any stable analysis. <code>t6_compress_nofail</code>
+demonstrates this by construction: same <code>-0.6</code> applied compression as the
+trip case, but <code>EPS_FAIL=1.0</code> is never approached (max |eng strain| reached
+≈0.6, see Results). <code>t6_compress_trip</code> uses <code>EPS_FAIL=0.3</code> instead, so the
+same loading actually exercises the criterion while still being a genuine
+compression test.</p>
+<h2 id="false-start-the-bc-pattern-mattered">False start: the BC pattern mattered</h2>
+<p>The first attempt reused <code>verification/make_t4.py</code>'s minimal
+rigid-body-removing BC pattern (it only pins 2 of the 4 back-face nodes in
+x, leaving the other 2 free — adequate for T4's tension smoke test, which
+only needed <em>some</em> valid equilibrium solution). Under compression this let
+the single hex deform non-uniformly enough that <code>max|eng strain|</code> plateaued
+at <strong>0.2998</strong>, just barely under a 0.3 threshold, even with the driven face
+displaced the full <code>-0.6</code>. Confirmed by adding a temporary unconditional
+per-call <code>WRITE</code> and re-running (ROAR job 55967615) — see
+<code>verification/roar/t6_dbg.sbatch</code> pattern (not kept). Fixed by pinning the
+<em>entire</em> back face (<code>x=0</code>: nodes 1,4,5,8) in x, which gives a clean uniaxial
+compression state; that is the version committed in <code>verification/roar/t6/</code>.</p>
+<p>Two other ROAR/Abaqus keyword lessons from getting a VUEL's state variables
+into any kind of output, both confirmed on real Abaqus 2024 and neither
+previously documented in <code>docs/abaqus-explicit-quirks.md</code>:
+1. <code>*Element Output</code> (field/.odb request) rejects <code>SVARS</code> as an identifier
+   for a <code>*User Element</code>: <code>***ERROR: UNIDENTIFIED OR INVALID OUTPUT REQUEST
+   SVARS</code>.
+2. <code>*El Print</code> (the usual UEL-SVARS-to-.dat workaround, per several Abaqus
+   forum threads) is an Abaqus/Standard-only keyword: Abaqus/Explicit
+   rejects it outright — <code>***ERROR: THE ELPRINT KEYWORD IS NOT AVAILABLE IN
+   Abaqus/Explicit</code>. Several circulating writeups (ResearchGate, Abaqus
+   mailing-list archives) describe <code>*El Print, ..., SVARS</code> as <em>the</em> fix for
+   getting UEL state variables out, without flagging that this applies to
+   Standard, not Explicit — worth remembering next time this comes up.</p>
+<p>Net effect: there is no supported way to get <code>uel/VUEL_failure.for</code>'s own
+failure flag into the ODB at all for Explicit. The evidence channel used
+instead was the subroutine's own <code>WRITE(*,*)</code> to the job's stdout, plus
+node-level <code>RF</code>/<code>U</code> history (both ordinary, fully-supported output).</p>
+<h2 id="results-roar-job-55967626-both-decks-rc0-the-analysis-has-completed">Results (ROAR job 55967626, both decks rc=0, `THE ANALYSIS HAS COMPLETED</h2>
+<p>SUCCESSFULLY`)</p>
+<p><strong><code>t6_compress_nofail</code></strong> (<code>EPS_FAIL=1.0</code>): no <code>VUEL_FAILURE</code> message at any
+point in the 0.01 s step. Expected — see the physical-bound note above.</p>
+<p><strong><code>t6_compress_trip</code></strong> (<code>EPS_FAIL=0.3</code>): subroutine printed</p>
+<pre><code>*** VUEL_FAILURE: ELEMENT FAILED, elem =    1  time =  5.0382130E-03  max|eng strain| =  0.300... threshold = 0.300...
+</code></pre>
+<p>at <code>t ≈ 5.04 ms</code>, as expected (driven face is at ≈-0.3 engineering-strain
+displacement roughly halfway through a smooth-step ramp to -0.6). The
+reaction force history at the fixed node (<code>RF1</code>, extracted from the ODB
+with <code>abaqus python</code>) makes the "numerically inert" behavior unmistakable:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">frame</th>
+<th style="text-align: right;">t (s)</th>
+<th style="text-align: right;">RF1 (N)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">0.00409</td>
+<td style="text-align: right;">7.19e9</td>
+</tr>
+<tr>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">0.00463</td>
+<td style="text-align: right;">8.35e9</td>
+</tr>
+<tr>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0.00504</td>
+<td style="text-align: right;"><strong>8.97e9</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">0.00558</td>
+<td style="text-align: right;"><strong>0.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">0.00613</td>
+<td style="text-align: right;">0.0</td>
+</tr>
+<tr>
+<td style="text-align: right;">...</td>
+<td style="text-align: right;">...</td>
+<td style="text-align: right;">0.0</td>
+</tr>
+<tr>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">0.01000</td>
+<td style="text-align: right;">0.0</td>
+</tr>
+</tbody>
+</table>
+<p><code>RF1</code> climbs smoothly for 10 frames, then drops to <em>exactly</em> <code>0.0</code> at the
+very next output frame (the one immediately after the failure message) and
+stays there for the rest of the step — the element's own force/stress
+contribution genuinely vanished the increment after it failed, exactly as
+the subroutine was written to do.</p>
+<p>But: <strong><code>len(odb.rootAssembly.instances['CELL-1'].elements)</code> is <code>1</code> in every
+frame, before and after failure.</strong> No entry resembling "elements deleted",
+"converted to particle", or "status" appears anywhere in either job's
+<code>.sta</code> file. Abaqus's own bookkeeping never registers the event; the only
+evidence it happened is this subroutine's own stdout message and the
+RF/stress trace going to zero. The element is not removed, not converted,
+not flagged in any native field — it is simply present, inert, and
+indistinguishable in the mesh/ODB from an element that was never touched.</p>
+<h2 id="why-consulted-literaturedocumentation">Why — consulted literature/documentation</h2>
+<p>Both of Abaqus's native "something failed, now what" mechanisms are keyed
+to a <strong>material-point STATUS state variable</strong>, not anything a <code>*User
+Element</code> can expose:</p>
+<ul>
+<li><strong>Ordinary element deletion</strong> (<code>*Section Controls</code>, default
+  <code>ELEMENT DELETION=YES</code>) is driven by a damage model or a VUMAT/UMAT
+  setting the state variable named in <code>*Depvar, delete=N</code>; <code>STATUS</code> field
+  output (1=active, 0=deleted) is a <em>material</em>-level quantity.</li>
+<li><strong>Conversion to SPH particles</strong> ("Finite element conversion to SPH
+  particles", Abaqus Analysis User's Guide §15.2.2) is even more
+  restrictive: eligible host elements are limited to <strong><code>C3D8R</code>, <code>C3D6</code>, and
+  <code>C3D4</code></strong> (reduced-integration native continuum solids) only, and the
+  conversion flag is a state variable that only <code>VUMAT</code>/<code>VUSDFLD</code> (material
+  subroutines, again material-point-scoped) are documented to set. A <code>VU1</code>
+  user element is neither in the eligible-type list nor does it have a
+  <code>*Material</code> definition at all (<code>*UEL Property</code> is not a material), so
+  there is no variable Abaqus's conversion logic could even look at.</li>
+</ul>
+<p>This is the same root cause as <code>docs/BUGS.md</code> BUG-020 (native
+<code>*Embedded Element</code> rejecting every node on a VUEL host, confirmed ROAR job
+55933355): Abaqus's higher-level adaptive/failure/embedding features are
+built against its own native element-and-material bookkeeping, and a
+<code>*User Element</code> simply isn't wired into any of them. A VUEL is, by design,
+a black box to the rest of Abaqus beyond force/mass/stable-dt — which is
+exactly what this test now confirms empirically for element failure too,
+not just embedding.</p>
+<p>Sources: <a href="http://dsk.ippt.pan.pl/docs/abaqus/v6.13/books/usb/pt04ch15s02aus96.html">15.2.2 Finite element conversion to SPH particles (Abaqus 6.13
+docs mirror)</a>,
+corroborated via <a href="https://ceae-server.colorado.edu/v2016/books/usb/pt04ch15s02aus97.html">a second mirror</a>
+(element-type list and the VUMAT/VUSDFLD-only conversion-flag mechanism);
+general element-deletion/<code>*Depvar,delete=N</code>/<code>STATUS</code> background from
+several ResearchGate/Abaqus-mailing-list threads (search only — see session
+log, not independently re-verified against the primary manual section for
+that specific feature, unlike the SPH-conversion citation above which was
+fetched directly).</p>
+<h2 id="what-this-means-for-the-project">What this means for the project</h2>
+<ul>
+<li>If element erosion/failure is wanted for a VUEL-hosted mesh, it has to be
+  <strong>entirely homegrown</strong> (as demonstrated here: zero the stress/force once
+  a criterion trips) — there is no way to get Abaqus's native deletion
+  visuals, <code>.sta</code> reporting, mass removal, or SPH conversion to engage, no
+  matter what state variable is set or how <code>*Depvar</code>/<code>*Section Controls</code>
+  are configured.</li>
+<li>A homegrown "dead" element still occupies its mass and nodes forever
+  (VUEL mass is computed once, up front — there's no way to shed it
+  mid-analysis the way native deletion does), so for something like a
+  fragmenting-material or spall simulation, a VUEL host is a real
+  limitation, not just a missing nicety. This reinforces the shelved
+  [[vuel-host-toggle-todo]] decision to treat VUEL-host coupling as
+  needing its own design work rather than a drop-in toggle.</li>
+<li>No ODB-visible status field is possible for a VUEL's own state (neither
+  <code>*Element Output</code> nor <code>*El Print</code> support it in Explicit) — any
+  diagnosis of VUEL-internal state has to go through the subroutine's own
+  <code>WRITE</code> to stdout, or through indirect node-level history (as done here).</li>
+</ul>
+<h2 id="reproducing">Reproducing</h2>
+<pre><code>ssh roar &quot;mkdir -p /storage/home/zps5207/scratch/t6&quot;
+scp -r verification/roar/t6 verification/roar/t6.sbatch roar:/storage/home/zps5207/scratch/
+ssh roar &quot;cd /storage/home/zps5207/scratch &amp;&amp; sbatch t6.sbatch&quot;
+# after it completes:
+ssh roar &quot;cat /storage/home/zps5207/scratch/run_t6_compress_trip/t6_compress_trip.stdout&quot; | grep VUEL_FAILURE
+</code></pre>
+<p>Job IDs this session: 55967504/55967514/55967534/55967550 (iteration —
+fixed an elset-scoping error, then the <code>*Element Output</code>/<code>*El Print</code> SVARS
+errors), 55967606/55967615 (debug instrumentation run, <code>dbg_trip</code>, found
+the BC bug), <strong>55967626 (final, both decks rc=0 — the results above)</strong>.</p>
+</body></html>

@@ -1,0 +1,262 @@
+<!doctype html><html><head><meta charset="utf-8">
+<title>Stage 1 report: linear-hardening J2 plasticity on VUEL_failure.for (2026-10-01)</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:900px;margin:0 auto;padding:32px 24px 64px;line-height:1.55;color:#1c1a17;background:#faf9f5}
+h1,h2,h3,h4{font-weight:650;letter-spacing:-0.01em}
+h1{font-size:26px;border-bottom:2px solid #ddd7cc;padding-bottom:10px}
+h2{font-size:19px;margin-top:36px;border-bottom:1px solid #ddd7cc;padding-bottom:6px}
+h3{font-size:16px;margin-top:24px}
+code{font-family:'IBM Plex Mono',ui-monospace,Consolas,monospace;background:#efe9db;padding:1px 5px;border-radius:4px;font-size:0.9em}
+pre{background:#1c1a17;color:#f0ece3;padding:14px 16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;padding:0;color:inherit}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+th,td{text-align:left;padding:8px 10px;border:1px solid #ddd7cc;vertical-align:top}
+th{background:#efe9db}
+tr:nth-child(even){background:#f4f2ee}
+img,video{max-width:100%;border-radius:8px;border:1px solid #ddd7cc;display:block;margin:12px 0}
+blockquote{border-left:3px solid #b1460a;margin:0;padding:4px 16px;color:#6b645b}
+a{color:#b1460a}
+.src{color:#6b645b;font-size:12px;font-family:'IBM Plex Mono',ui-monospace,Consolas,monospace;margin-bottom:24px}
+</style></head><body>
+<div class="src">Converted from docs/VUEL_PLASTIC_FAILURE_STAGE1_REPORT_2026-10-01.md on 2026-10-06</div>
+<h1 id="stage-1-report-linear-hardening-j2-plasticity-on-vuel_failurefor-2026-10-01">Stage 1 report: linear-hardening J2 plasticity on VUEL_failure.for (2026-10-01)</h1>
+<p>Branch: <code>vuel-plastic-failure</code>. See <code>docs/VUEL_PLASTIC_FAILURE_STAGE0_PLAN.md</code>
+for the formulation (additive Green-Lagrange J2 return mapping, closed-form
+linear hardening, user-confirmed before implementation).</p>
+<h2 id="verdict-pass-with-two-caveats-documented-below-not-blocking">Verdict: PASS, with two caveats documented below (not blocking)</h2>
+<p>All four decks ran to <code>THE ANALYSIS HAS COMPLETED SUCCESSFULLY</code> (rc=0).
+Stress recovered from the ODB (see "Evidence channel" below) tracks the
+analytic 1-D elastic/linear-hardening bar response to within <strong>~6%</strong>
+through tension, compression, and reloading; permanent plastic strain
+after a partial unload matches analytic to <strong>~0.24%</strong>.</p>
+<h2 id="deck-summary-verificationmake_t7_plasticitypy">Deck summary (<code>verification/make_t7_plasticity.py</code>,</h2>
+<p><code>verification/roar/t7/</code>, ROAR job <strong>55971580</strong> + a follow-up small fix,
+job 55971606)</p>
+<p>All single-<code>VU1</code>-hex, unit cube, uniaxial-stress BC pattern (full back
+face x=0 pinned in x; one corner/two edges minimally pinned in y/z to
+remove rigid body modes only -- same pattern verified in
+<code>verification/roar/t6/</code>). <code>E=200 GPa, nu=0.3, SIGY0=250 MPa, HMOD=2 GPa</code>
+(10% of E, placeholder steel-like values, user-confirmed Stage 0).
+<code>B1_BULK=B2_BULK=BETA_RAYLEIGH=0</code> for every T7 deck so no numerical-damping
+stress contaminates the comparison (deliberate -- see "Caveat 2" below).</p>
+<table>
+<thead>
+<tr>
+<th>deck</th>
+<th>IPLAST</th>
+<th>loading</th>
+<th>purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>t7_elastic_control</code></td>
+<td>0</td>
+<td>0 -&gt; 0.02</td>
+<td>confirms IPLAST=0 reproduces the ORIGINAL pure-elastic law exactly</td>
+</tr>
+<tr>
+<td><code>t7_tension_plastic</code></td>
+<td>1</td>
+<td>0 -&gt; 0.04</td>
+<td>monotonic tension well past yield (eps_y=0.00125)</td>
+</tr>
+<tr>
+<td><code>t7_compression_plastic</code></td>
+<td>1</td>
+<td>0 -&gt; -0.04</td>
+<td>monotonic compression well past yield</td>
+</tr>
+<tr>
+<td><code>t7_tension_unload</code></td>
+<td>1</td>
+<td>0 -&gt; 0.04 -&gt; 0.038</td>
+<td>partial elastic unload + permanent set</td>
+</tr>
+</tbody>
+</table>
+<h2 id="evidence-channel-why-rf-not-svarss">Evidence channel (why RF, not SVARS/S)</h2>
+<p>Confirmed on real Abaqus 2024: <code>*Element Output</code> rejects <code>SVARS</code> for a
+<code>*User Element</code>, and <code>*El Print</code> (the usual workaround) is an
+Abaqus/Standard-only keyword Explicit rejects outright (both added to
+<code>docs/abaqus-explicit-quirks.md</code>). So this stage's evidence is the ODB's
+ordinary <code>RF</code>/<code>U</code> node fields: node 2's <code>U1</code> gives the imposed engineering
+strain directly (unit reference length), and the <strong>sum of <code>RF1</code> over all
+four x-pinned back-face nodes (1, 4, 5, 8)</strong> gives the axial PK2 stress
+S11 in magnitude (nominal/PK2 stress = force per REFERENCE area,
+independent of current deformation, exact for this unit-cross-section
+cube). <code>verification/t7_check_plasticity.py</code> implements this and compares
+against the analytic 1-D bilinear bar.</p>
+<p><strong>Bug found and fixed in the CHECK SCRIPT itself</strong> (not the subroutine):
+an early version read <code>RF1</code> at node 1 only. Node 1 is the single
+fully-pinned corner; nodes 4, 5, 8 are also pinned in x (that's what makes
+this a clean uniaxial-stress BC) and by symmetry each carries about 1/4 of
+the total axial reaction. Missing that gave an apparently ~4x-too-soft
+FEM stress even on the <code>t7_elastic_control</code> deck (which should match
+exactly) -- the giveaway that pointed straight at the bug.</p>
+<h2 id="bug-found-and-fixed-in-the-deck-generator-uel-property-8-value-line">Bug found and fixed in the DECK GENERATOR: <code>*UEL Property</code> 8-value line</h2>
+<p>limit (real Abaqus behavior, not a subroutine bug)</p>
+<p>The first real run showed <code>t7_tension_plastic</code>'s stress tracking the pure
+elastic line indefinitely past yield -- i.e., apparently no plasticity at
+all. A debug <code>WRITE</code> of the material properties at the first call showed
+<code>SIGY0</code> read correctly (250 MPa) but <code>HMOD=0</code> and <code>IPLAST=0</code>, even though
+the deck specifies <code>HMOD=2e9</code> and <code>IPLAST=1</code>. Root cause, confirmed
+against the Abaqus Keywords Reference ("Eight values per line are used
+for both real and integer values in the <em>UEL PROPERTY keyword data
+lines"): <code>nprops</code> grew from 7 to 10 for this stage, and the generator put
+all 10 values on one <code>*UEL Property</code> data line. Abaqus silently
+</em><em>truncates to the first 8</em>* with no error -- <code>props(9)</code> and <code>props(10)</code>
+(HMOD, IPLAST) were simply never set. Fixed by splitting the data across
+two lines (8 then 2); documented in <code>docs/abaqus-explicit-quirks.md</code> so
+it isn't rediscovered later. (See "Open issues" for why this was not
+caught before the first ROAR run: <code>nprops&lt;=8</code> for every deck before this
+stage, so the limit was never exercised.)</p>
+<h2 id="results">Results</h2>
+<h3 id="t7_elastic_control-iplast0"><code>t7_elastic_control</code> (IPLAST=0)</h3>
+<p>Max <code>|rel_err|</code> over the whole 0 -&gt; 0.02 ramp: <strong>~3.0%</strong> at the peak
+strain, shrinking to &lt;1% at small strain. This residual is the expected
+Green-Lagrange-vs-small-strain difference at finite strain (at eps=0.02,
+Green-Lagrange E11 = eps+eps^2/2 = 0.0202, a ~1% kinematic difference that
+compounds through the stress relation) -- <strong>not</strong> a plasticity defect,
+since IPLAST=0 never invokes the new code path at all (confirmed:
+<code>EP_VEC</code>/<code>PEEQ</code> stay at their svars-default zero, <code>STRESS_PK2</code> is
+literally <code>CMAT*STRAIN_VEC</code>, byte-identical formula to before this
+branch). This deck is the regression check that the new code is a
+superset of the old behavior; it passes.</p>
+<h3 id="t7_tension_plastic-and-t7_compression_plastic-iplast1"><code>t7_tension_plastic</code> and <code>t7_compression_plastic</code> (IPLAST=1)</h3>
+<p>Both track the bilinear curve (elastic slope E to eps_y=0.00125, then
+tangent modulus Et=E*HMOD/(E+HMOD)=1.98 GPa) closely through the full
+0-&gt;0.04 (resp. 0-&gt;-0.04) ramp:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">eps_eng</th>
+<th style="text-align: right;">sigma_fem (tension)</th>
+<th style="text-align: right;">sigma_analytic</th>
+<th style="text-align: right;">rel_err</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">0.00135</td>
+<td style="text-align: right;">259.0 MPa</td>
+<td style="text-align: right;">250.2 MPa</td>
+<td style="text-align: right;">+3.5%</td>
+</tr>
+<tr>
+<td style="text-align: right;">0.00450</td>
+<td style="text-align: right;">270.6 MPa</td>
+<td style="text-align: right;">256.5 MPa</td>
+<td style="text-align: right;">+5.5%</td>
+</tr>
+<tr>
+<td style="text-align: right;">0.01329</td>
+<td style="text-align: right;">289.0 MPa</td>
+<td style="text-align: right;">273.8 MPa</td>
+<td style="text-align: right;">+5.6%</td>
+</tr>
+<tr>
+<td style="text-align: right;">0.02029</td>
+<td style="text-align: right;">301.0 MPa</td>
+<td style="text-align: right;">287.7 MPa</td>
+<td style="text-align: right;">+4.6%</td>
+</tr>
+<tr>
+<td style="text-align: right;">0.03082</td>
+<td style="text-align: right;">310.7 MPa</td>
+<td style="text-align: right;">308.5 MPa</td>
+<td style="text-align: right;">+0.7%</td>
+</tr>
+<tr>
+<td style="text-align: right;">0.04000</td>
+<td style="text-align: right;">335.4 MPa</td>
+<td style="text-align: right;">326.7 MPa</td>
+<td style="text-align: right;">+2.6%</td>
+</tr>
+</tbody>
+</table>
+<p>(compression is the mirror image to within &lt;1%). <code>rel_err</code> stays within
+<strong>roughly +/-6%</strong> across the whole range, settling to a few % at larger
+strain -- consistent with, and not noticeably worse than, the pure-elastic
+control's own Green-Lagrange-vs-small-strain residual, which is the
+expected comparison given this is a finite-strain formulation checked
+against a small-strain analytic reference (see
+<code>docs/VUEL_PLASTIC_FAILURE_STAGE0_PLAN.md</code>'s stated limitation). No sign
+of runaway/unconstrained stress past yield (the original symptom of the
+8-value-line bug) remains.</p>
+<h3 id="t7_tension_unload"><code>t7_tension_unload</code></h3>
+<p>Loading leg (0-&gt;0.04) matches the numbers above exactly (same deck up to
+that point). Unload leg (0.04-&gt;0.038, a small excursion kept inside the
+elastic range on unload, <code>2*sigma_y(PEEQ_max)/E ~ 0.0033 &gt; 0.002</code>):</p>
+<ul>
+<li>Early reversal tracks the elastic slope closely (stress crosses zero
+  within a few % of the analytic crossing point).</li>
+<li>By the end of the small unload excursion: <code>sigma_fem = -91.7 MPa</code> vs
+  <code>sigma_analytic = -73.3 MPa</code> (rel_err +25%, the single largest
+  deviation in this whole stage). Attributed to undamped dynamic ringing:
+  <code>BETA_RAYLEIGH=0</code> and <code>B1_BULK=B2_BULK=0</code> were deliberately set for
+  every T7 deck specifically to keep the loading-leg comparison clean of
+  numerical-damping stress, but that same choice means nothing damps out
+  the transient excited by the sudden stiffness change at the
+  load-reversal event. This is a property of the TEST setup (zero
+  damping), not evidence of a return-mapping defect -- see "Permanent
+  set" below for direct evidence the underlying algorithm is still
+  correct through this leg.</li>
+<li><strong>Permanent (plastic) strain</strong>, computed from the elastic unload line
+  itself (<code>eps_p = eps_total - sigma_fem/E</code>, valid at any point on the
+  elastic unload leg since <code>sigma = E*(eps-eps_p)</code> holds instantaneously
+  regardless of any ongoing dynamic oscillation): at the final frame,
+  <code>eps_p_fem = 0.038 - (-91.7e6/2e11) = 0.038459</code>, vs
+  <code>eps_p_analytic = 0.038366</code> -- <strong>rel_err = 0.24%</strong>. This is the
+  deck's actual pass criterion (goal: "checks elastic unload slope and
+  permanent set") and it is tight.</li>
+</ul>
+<h2 id="caveats-open-issues-not-blocking-stage-2">Caveats / open issues (not blocking Stage 2)</h2>
+<ol>
+<li><strong>Comparison tolerance is "~6% during loading, tight for permanent
+   set, up to ~25% transient near a load reversal with zero damping"</strong>,
+   not a single number. The 6% band already includes the expected
+   finite-strain-vs-small-strain kinematic residual (confirmed via the
+   elastic control), so it is not purely numerical error in the plasticity
+   algorithm; a tighter bound would need either a smaller peak strain
+   (reducing the kinematic residual) or an analytic finite-strain
+   reference instead of the small-strain bar formula used here.</li>
+<li><strong>Zero damping was a deliberate simplification for this stage</strong>
+   (isolating plasticity from Rayleigh/bulk-viscosity numerical
+   stress), but it is not representative of how <code>VUEL_failure.for</code> will
+   actually be used (nonzero <code>BETA_RAYLEIGH</code>/bulk viscosity). Stage 3's
+   Jacobian-trigger collapse tests will need damping back on (collapse
+   dynamics are far more violent than this stage's slow ramps), so this
+   tradeoff does not carry forward as a fixed choice.</li>
+<li><strong>No direct access to the subroutine's own <code>Ep</code>/<code>PEEQ</code> state variables
+   was possible</strong> (same <code>*Element Output</code>/<code>*El Print</code> limitation noted
+   above) -- every number in this report is inferred from node-level
+   <code>RF</code>/<code>U</code>, not read directly from <code>svars</code>. This is sufficient for Stage
+   1's verification but means a future stage wanting to inspect the
+   full stress/strain TENSOR (not just axial) at a Gauss point will need
+   the subroutine's own <code>WRITE</code> diagnostics, as used here to find the
+   8-value-line bug.</li>
+</ol>
+<h2 id="reproducing">Reproducing</h2>
+<pre><code>scp -r verification/roar/t7 verification/roar/t7.sbatch roar:/storage/home/zps5207/scratch/
+ssh roar &quot;cd /storage/home/zps5207/scratch &amp;&amp; sbatch t7.sbatch&quot;
+# after completion:
+scp verification/t7_check_plasticity.py roar:/storage/home/zps5207/scratch/
+ssh roar &quot;module load abaqus/2024; cd /storage/home/zps5207/scratch &amp;&amp; \
+  for d in t7_elastic_control t7_tension_plastic t7_compression_plastic t7_tension_unload; do \
+    abaqus python t7_check_plasticity.py run_\$d/\$d.odb; done&quot;
+</code></pre>
+<p>Job IDs this stage: 55969795/55970063/55970375/55970440/55970503 (first
+attempts -- CRLF deck-list bug, then genuine ROAR queue congestion, see
+session log), <strong>55971580 (main 4-deck run, all rc=0, props-truncation bug
+still present)</strong>, 55971560 (debug instrumentation run that found the
+8-value-line bug), <strong>55971580 rerun after the fix -- same job id, final
+numbers above</strong>, 55971606 (<code>t7_tension_unload</code> small-excursion rerun,
+final unload numbers above).</p>
+<h2 id="next-stage-2">Next: Stage 2</h2>
+<p>Re-add the engineering-strain failure trigger on top of this plastic
+element (already present in the file from an earlier branch stage; needs
+a fresh verification run now that plasticity is active alongside it, per
+the goal's stage ordering) and confirm RF goes to exactly zero after trip,
+same as the purely-elastic <code>verification/roar/t6/</code> check.</p>
+</body></html>

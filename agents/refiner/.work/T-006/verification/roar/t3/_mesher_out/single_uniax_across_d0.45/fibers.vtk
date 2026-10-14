@@ -1,0 +1,18 @@
+# vtk DataFile Version 3.0
+embmesh fibers
+ASCII
+DATASET POLYDATA
+POINTS 8 float
+0 0.225 0.225
+1 0.225 0.225
+0 0.675 0.225
+1 0.675 0.225
+0.225 0 0.675
+0.225 1 0.675
+0.675 0 0.675
+0.675 1 0.675
+LINES 4 12
+2 0 1
+2 2 3
+2 4 5
+2 6 7

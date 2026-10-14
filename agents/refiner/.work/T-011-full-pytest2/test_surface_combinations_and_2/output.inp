@@ -1,0 +1,41 @@
+*Assembly, name=A
+*Instance, name=Plate-1, part=HOST
+*End Instance
+*Instance, name=Ball-1, part=BALL
+*End Instance
+*Instance, name=EMBFIB-1, part=EMBFIB
+*End Instance
+** embmesh generated ball-contact sets and surfaces
+*Elset, elset=EMBMESH_BALL_ELEMENTS, instance=Ball-1
+7
+*Surface, type=ELEMENT, name=EMBMESH_BALL_SURF
+EMBMESH_BALL_ELEMENTS,
+*Nset, nset=EMBMESH_PLATE_ALL_NODES, instance=Plate-1
+1, 2, 3, 4, 5, 6, 7, 8
+*Surface, type=NODE, name=EMBMESH_PLATE_NODES
+EMBMESH_PLATE_ALL_NODES,
+*Nset, nset=EMBMESH_FIBER_ALL_NODES, instance=EMBFIB-1
+100, 101, 102
+*Surface, type=NODE, name=EMBMESH_FIBER_NODES
+EMBMESH_FIBER_ALL_NODES,
+*End Assembly
+** embmesh generated frictionless hard contact interaction
+*Surface Interaction, name=EMBMESH_CONTACT
+*Friction
+0.0
+*Surface Behavior, pressure-overclosure=HARD
+*Step
+*Dynamic, Explicit
+, 1e-3
+** embmesh generated node-to-ball contact
+*Contact, op=NEW
+*Contact Inclusions
+EMBMESH_PLATE_NODES , EMBMESH_BALL_SURF
+EMBMESH_FIBER_NODES , EMBMESH_BALL_SURF
+*Contact Property Assignment
+ ,  , EMBMESH_CONTACT
+*Surface Property Assignment, property=THICKNESS
+EMBMESH_PLATE_NODES, 1
+*Surface Property Assignment, property=THICKNESS
+EMBMESH_FIBER_NODES, 0.5
+*End Step

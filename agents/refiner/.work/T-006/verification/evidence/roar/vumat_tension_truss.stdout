@@ -1,0 +1,153 @@
+Analysis initiated from SIMULIA established products
+Abaqus JOB vumat_tension_truss
+Abaqus 2024
+USING MEMORY DOUG-LEA ALLOCATOR
+Abaqus License Manager checked out the following licenses:
+Abaqus/Explicit checked out 5 tokens from Flexnet server license2.2e.hpc.psu.edu.
+<204 out of 300 licenses remain available>.
+Begin Compiling Single Precision Abaqus/Explicit User Subroutines
+Mon 28 Sep 2026 06:27:10 PM EDT
+Intel(R) Fortran Intel(R) 64 Compiler Classic for applications running on Intel(R) 64, Version 2021.4.0 Build 20210910_000000
+Copyright (C) 1985-2021 Intel Corporation.  All rights reserved.
+
+ Intel(R) Fortran 2021.4.0-2742
+VUMAT_tension_only.for(4): remark #15009: vumat_ has been targeted for automatic cpu dispatch
+End Compiling Single Precision Abaqus/Explicit User Subroutines
+Begin Linking Single Precision Abaqus/Explicit User Subroutines
+Intel(R) Fortran Intel(R) 64 Compiler Classic for applications running on Intel(R) 64, Version 2021.4.0 Build 20210910_000000
+Copyright (C) 1985-2021 Intel Corporation.  All rights reserved.
+
+GNU ld version 2.30-128.el8_10
+End Linking Single Precision Abaqus/Explicit User Subroutines
+Mon 28 Sep 2026 06:27:14 PM EDT
+Begin Analysis Input File Processor
+Mon 28 Sep 2026 06:27:14 PM EDT
+Run pre
+Mon 28 Sep 2026 06:27:15 PM EDT
+End Analysis Input File Processor
+Begin Abaqus/Explicit Packager
+Mon 28 Sep 2026 06:27:15 PM EDT
+PAC_NUM_THREADS VALUE: 1
+Run package
+Abaqus/Explicit 2024                             DATE 28-Sep-2026  TIME 18:27:15
+-------------------------------------------------------------------------------
+ PREPROCESSOR WARNING MESSAGES
+-------------------------------------------------------------------------------
+
+
+***WARNING: There are 4 warning messages in the data (.dat) file.  Please
+            check the data file for possible errors in the input file.
+
+
+-------------------------------------------------------------------------------
+  USER SUBROUTINE VUMAT
+-------------------------------------------------------------------------------
+
+
+***WARNING: A material defined in user subroutine VUMAT must be defined as
+            purely elastic (using the initial elastic modulus) at the
+            beginning of the analysis (stepTime=0). This is an informative
+            message. It does not necessarily indicate that user subroutine
+            VUMAT is incorrectly defined.
+
+
+
+***ERROR: Bad Material definition in element number 100000 instance EMBFIB-1:
+          zero or negative initial dilatational modulus caused by bad material
+          data. Please check your material input and any initial conditions if
+          necessary.
+
+
+***ERROR: Bad Material definition in element number 100001 instance EMBFIB-1:
+          zero or negative initial dilatational modulus caused by bad material
+          data. Please check your material input and any initial conditions if
+          necessary.
+
+
+***ERROR: Bad Material definition in element number 100002 instance EMBFIB-1:
+          zero or negative initial dilatational modulus caused by bad material
+          data. Please check your material input and any initial conditions if
+          necessary.
+
+
+***ERROR: Bad Material definition in element number 100003 instance EMBFIB-1:
+          zero or negative initial dilatational modulus caused by bad material
+          data. Please check your material input and any initial conditions if
+          necessary.
+
+
+***ERROR: Bad Material definition in element number 100004 instance EMBFIB-1:
+          zero or negative initial dilatational modulus caused by bad material
+          data. Please check your material input and any initial conditions if
+          necessary.
+
+
+***ERROR: Bad Material definition in element number 100005 instance EMBFIB-1:
+          zero or negative initial dilatational modulus caused by bad material
+          data. Please check your material input and any initial conditions if
+          necessary.
+
+
+***ERROR: Bad Material definition in element number 100006 instance EMBFIB-1:
+          zero or negative initial dilatational modulus caused by bad material
+          data. Please check your material input and any initial conditions if
+          necessary.
+
+
+***ERROR: Bad Material definition in element number 100007 instance EMBFIB-1:
+          zero or negative initial dilatational modulus caused by bad material
+          data. Please check your material input and any initial conditions if
+          necessary.
+
+
+***ERROR: Bad Material definition in element number 100008 instance EMBFIB-1:
+          zero or negative initial dilatational modulus caused by bad material
+          data. Please check your material input and any initial conditions if
+          necessary.
+
+
+***ERROR: Bad Material definition in element number 100009 instance EMBFIB-1:
+          zero or negative initial dilatational modulus caused by bad material
+          data. Please check your material input and any initial conditions if
+          necessary.
+
+
+***ERROR: Bad Material definition in element number 100010 instance EMBFIB-1:
+          zero or negative initial dilatational modulus caused by bad material
+          data. Please check your material input and any initial conditions if
+          necessary.
+
+
+***ERROR: Bad Material definition in element number 100011 instance EMBFIB-1:
+          zero or negative initial dilatational modulus caused by bad material
+          data. Please check your material input and any initial conditions if
+          necessary.
+
+
+***ERROR: Bad Material definition in element number 100012 instance EMBFIB-1:
+          zero or negative initial dilatational modulus caused by bad material
+          data. Please check your material input and any initial conditions if
+          necessary.
+
+
+***ERROR: Bad Material definition in element number 100013 instance EMBFIB-1:
+          zero or negative initial dilatational modulus caused by bad material
+          data. Please check your material input and any initial conditions if
+          necessary.
+
+
+***ERROR: Bad Material definition in element number 100014 instance EMBFIB-1:
+          zero or negative initial dilatational modulus caused by bad material
+          data. Please check your material input and any initial conditions if
+          necessary.
+
+
+***ERROR: Bad Material definition in element number 100015 instance EMBFIB-1:
+          zero or negative initial dilatational modulus caused by bad material
+          data. Please check your material input and any initial conditions if
+          necessary.
+
+Mon 28 Sep 2026 06:27:16 PM EDT
+Abaqus Error: Abaqus/Explicit Packager exited with an error - Please see the 
+status file for possible error messages if the file exists.
+Abaqus/Analysis exited with errors

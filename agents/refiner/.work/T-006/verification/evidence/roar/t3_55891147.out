@@ -1,0 +1,34 @@
+host: p-bc-5405  date: Mon Sep 28 18:25:54 EDT 2026
+single_uniax_along_d0.15 rc=0
+single_uniax_across_d0.15 rc=0
+single_shear_d0.15 rc=0
+single_hydro_d0.15 rc=0
+single_uniax_along_d0.25 rc=0
+single_uniax_across_d0.25 rc=0
+single_shear_d0.25 rc=0
+single_hydro_d0.25 rc=0
+single_uniax_along_d0.35 rc=0
+single_uniax_across_d0.35 rc=0
+single_shear_d0.35 rc=0
+single_hydro_d0.35 rc=0
+single_uniax_along_d0.45 rc=0
+single_uniax_across_d0.45 rc=0
+single_shear_d0.45 rc=0
+single_hydro_d0.45 rc=0
+single_compress_d0.25_truss rc=0
+single_compress_d0.25_beam rc=0
+single_uniax_along_d0.25_beam rc=0
+vumat_tension_truss rc=1
+vumat_tension_beam rc=1
+vumat_compress_truss rc=1
+control_nofiber rc=0
+cantilever_10x2x2 rc=0
+cantilever_40x4x4 rc=1
+sens_hostsize_n1 rc=0
+sens_hostsize_n2 rc=0
+sens_hostsize_n4 rc=0
+sens_refine_n1 rc=0
+sens_refine_n2 rc=0
+sens_refine_n3 rc=1
+sens_refine_n4 rc=0
+done Mon Sep 28 18:28:06 EDT 2026

@@ -57,7 +57,9 @@ def test_vuel_ghost_conversion_has_pairs_scaled_material_and_svar107():
     assert "200" in text                 # scaled initial yield: 2e6 * 1e-4
     assert "*Initial Conditions, type=SOLUTION" in text
     assert "*Elset, elset=EMBMESH_GHOST_DIAGNOSTICS, instance=HOST-1\n11" in text
-    assert "*Output, field, number interval=1000\n*Element Output, elset=EMBMESH_GHOST_DIAGNOSTICS\nS, LE, PEEQ, SDEG, STATUS\n*End Step" in text
+    assert "*Elset, elset=EMBMESH_VUEL_DIAGNOSTICS, instance=HOST-1\n10" in text
+    assert "*Output, field, number interval=1000\n*Element Output, elset=EMBMESH_GHOST_DIAGNOSTICS\nS, LE, PEEQ, SDEG, STATUS" in text
+    assert "*Output, field, number interval=1000\n*Element Output, elset=EMBMESH_VUEL_DIAGNOSTICS\nSDV49, SDV106, SDV107\n*End Step" in text
     assert "HOST-1.10, 0, 0, 0, 0, 0, 0, 0" in text
     assert text.splitlines()[text.splitlines().index("HOST-1.10, 0, 0, 0, 0, 0, 0, 0") + 13].endswith("0.125")
     assert meta["fiber_volume_svar"] == 107

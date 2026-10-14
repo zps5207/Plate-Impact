@@ -1,0 +1,51 @@
+{
+  "checks": {
+    "embedded_elset_is_all_ghosts": true,
+    "ghost_count_24000": true,
+    "ghost_deletion_enabled": true,
+    "ghost_density_scaled_1e-4": true,
+    "ghost_ductile_threshold_zero": true,
+    "ghost_labels_24001_48000": true,
+    "ghost_modulus_scaled_1e-4": true,
+    "ghost_poisson_preserved": true,
+    "ghost_yield_scaled_1e-4": true,
+    "ghost_zero_displacement_evolution": true,
+    "node_identical_pairs": true,
+    "properties_13": true,
+    "reference_fibers_identical": true,
+    "svar107_count_24000": true,
+    "svar107_matches_csv": true,
+    "svar1_to_106_zero": true,
+    "uel_property_max_8_per_line": true,
+    "vuel_count_24000": true,
+    "vuel_eps_matches_stvk_yield_equivalent": true,
+    "vuel_type_starts_vu": true
+  },
+  "counts": {
+    "ghost": 24000,
+    "initial_solution": 24000,
+    "vuel": 24000
+  },
+  "expected_ghost_mass": 1.924101825850784e-06,
+  "expected_total_to_real_mass_ratio": 1.0001,
+  "generated_fibers_sha256": "3e2ebf2e5a570355ef656bb1308c123b86fa541a3c6075b408b5a891f635d601",
+  "max_fraction_error": 4.884981308350689e-15,
+  "pass": true,
+  "real_host_mass_from_volume_csv": 0.01924101825850784,
+  "reference_fibers_sha256": "3e2ebf2e5a570355ef656bb1308c123b86fa541a3c6075b408b5a891f635d601",
+  "vuel_properties": [
+    5080000.0,
+    0.4,
+    980.0,
+    0.0,
+    0.06,
+    1.2,
+    0.113800332690901,
+    611000.0,
+    44500.0,
+    1.0,
+    0.05,
+    0.0,
+    0.0
+  ]
+}

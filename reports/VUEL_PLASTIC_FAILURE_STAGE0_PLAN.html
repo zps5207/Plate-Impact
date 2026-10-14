@@ -1,0 +1,189 @@
+<!doctype html><html><head><meta charset="utf-8">
+<title>Stage 0 plan: elastic-plastic VUEL with homegrown failure</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:900px;margin:0 auto;padding:32px 24px 64px;line-height:1.55;color:#1c1a17;background:#faf9f5}
+h1,h2,h3,h4{font-weight:650;letter-spacing:-0.01em}
+h1{font-size:26px;border-bottom:2px solid #ddd7cc;padding-bottom:10px}
+h2{font-size:19px;margin-top:36px;border-bottom:1px solid #ddd7cc;padding-bottom:6px}
+h3{font-size:16px;margin-top:24px}
+code{font-family:'IBM Plex Mono',ui-monospace,Consolas,monospace;background:#efe9db;padding:1px 5px;border-radius:4px;font-size:0.9em}
+pre{background:#1c1a17;color:#f0ece3;padding:14px 16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;padding:0;color:inherit}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+th,td{text-align:left;padding:8px 10px;border:1px solid #ddd7cc;vertical-align:top}
+th{background:#efe9db}
+tr:nth-child(even){background:#f4f2ee}
+img,video{max-width:100%;border-radius:8px;border:1px solid #ddd7cc;display:block;margin:12px 0}
+blockquote{border-left:3px solid #b1460a;margin:0;padding:4px 16px;color:#6b645b}
+a{color:#b1460a}
+.src{color:#6b645b;font-size:12px;font-family:'IBM Plex Mono',ui-monospace,Consolas,monospace;margin-bottom:24px}
+</style></head><body>
+<div class="src">Converted from docs/VUEL_PLASTIC_FAILURE_STAGE0_PLAN.md on 2026-10-06</div>
+<h1 id="stage-0-plan-elastic-plastic-vuel-with-homegrown-failure">Stage 0 plan: elastic-plastic VUEL with homegrown failure</h1>
+<p>Branch: <code>vuel-plastic-failure</code>. Working file:
+<code>uel/VUEL_failure.for</code> (already a branch of <code>uel/VUEL.for</code>; production file
+stays untouched throughout). This plan is written <em>before</em> any plasticity
+code is added, per the goal's Stage 0 instruction to inspect the existing
+formulation first and surface anything that could change results.</p>
+<h2 id="1-what-the-existing-formulation-gives-us-read-in-full-uelvuelfor">1. What the existing formulation gives us (read in full: <code>uel/VUEL.for</code></h2>
+<p>/ current <code>uel/VUEL_failure.for</code>, lines ~95-250, ~765-975)</p>
+<ul>
+<li><strong>Total Lagrangian, St. Venant-Kirchhoff elastic</strong>: <code>S = C : E</code>, <code>E</code> =
+  Green-Lagrange strain from <code>F = I + du/dX</code> (reference-config shape
+  derivatives throughout — <code>SHAPE8H_TL</code> never updates with deformation).
+  Both <code>S</code> (PK2 stress) and <code>E</code> are materially-frame (Lagrangian) tensors:
+  <strong>both are invariant under a superposed rigid-body rotation by
+  construction</strong>, unlike a Cauchy-stress/rate-form (hypoelastic) model,
+  which needs a corotational or Jaumann rate to stay objective. This
+  matters directly for the plasticity choice below.</li>
+<li><strong>Voigt convention is mixed, and matters for getting J2 right</strong>:
+  <code>STRAIN_VEC(4:6)</code> are <strong>engineering</strong> shear (<code>2*E12</code> etc. —
+  <code>COMPUTE_GREEN_LAGRANGE</code> line ~884 says so explicitly), but
+  <code>STRESS_VEC</code>/<code>STRESS_PK2(4:6)</code> are <strong>true</strong> tensor shear stress
+  (<code>S12</code> etc., not doubled) — confirmed by <code>CMAT(4,4)=mu</code> applied directly
+  to the doubled strain, giving <code>S12 = mu*(2*E12) = 2*mu*E12</code>, the correct
+  tensorial relation. The existing <code>ELIE</code> energy sum
+  (<code>0.5*STRESS_PK2(I)*STRAIN_VEC(I)</code>, no extra factor) is only correct
+  <em>because</em> of this specific mixed convention — any new energy/invariant
+  calculation I add must use the same trick (sum over i=1..6 of
+  <code>true_stress_i * engineering_strain_i</code>) rather than inventing a
+  different one.</li>
+<li><strong>Internal force assembly (<code>BL_MAT</code>, Step 10) only depends on
+  <code>DEFGRAD</code>/shape derivatives and the stress vector it's handed</strong> — it does
+  not care how that stress vector was computed. So a plasticity model that
+  produces a <code>STRESS_TOTAL</code>-shaped 6-vector in the same convention slots in
+  with zero changes to <code>BL_MAT</code>, <code>FINT</code> assembly, bulk viscosity, Rayleigh
+  damping, mass, or stable-<code>dt</code> logic.</li>
+<li><strong>Energy array slots</strong>: the file already names
+  <code>iElPd=1, iElCd=2, iElIe=3, iElTs=4, iElDd=5, iElBv=6, iElDe=7, iElHe=8,
+  iElKe=9, iElTh=10, iElDmd=11, iElDc=12</code> but only ever writes <code>iElIe</code>,
+  <code>iElDd</code>, <code>iElKe</code>, <code>iElBv</code>. These names match Abaqus's documented VUEL
+  energy-array ordering, and <strong><code>iElPd</code> is specifically "plastic
+  dissipation"</strong> (folds into <code>ALLPD</code>/<code>ETOTAL</code> automatically) — unused so
+  far, exactly what plastic dissipation should be routed into.</li>
+</ul>
+<h2 id="2-plasticity-formulation-chosen-additive-green-lagrangepk2-j2-with">2. Plasticity formulation chosen: additive Green-Lagrange/PK2 J2 with</h2>
+<p>linear isotropic hardening, closed-form radial return</p>
+<p>Decompose the Green-Lagrange strain <strong>additively</strong>: <code>E = Ee + Ep</code>, with the
+<strong>same elastic law and the same <code>CMAT</code> already in the file</strong>:
+<code>S = C : Ee</code>. Von Mises yield (<code>sigma_eq &lt;= sigma_y0 + H*PEEQ</code>) and
+associative flow are applied directly to this <code>(S, E)</code> pair, exactly the
+way a small-strain return-mapping algorithm would, just with <code>E</code>
+(Green-Lagrange) standing in for infinitesimal strain and <code>S</code> (PK2) for
+Cauchy stress.</p>
+<p><strong>Why this is the "simplest update consistent with the existing
+formulation"</strong>, not a compromise:
+- It reuses the existing <code>CMAT</code>, <code>BL_MAT</code>, stress-storage, and energy
+  machinery completely unchanged — only the "compute <code>STRESS_PK2</code> from
+  <code>STRAIN_VEC</code>" step gets an elastic-predictor/plastic-corrector split
+  instead of a single matrix multiply.
+- It is <strong>exactly as objective as the existing elastic model</strong> under
+  superposed rigid rotation, because the whole calculation stays in the
+  Lagrangian <code>(S, E)</code> pair — no Jaumann/corotational correction is needed
+  (that need is specific to rate-form hypoelastic-plastic models, which
+  this is not).
+- Linear hardening + J2 give a <strong>closed-form</strong> return (no local Newton
+  iteration): <code>Δγ = (sigma_trial - sigma_y_old)/(3*mu + H)</code>. This is
+  standard, textbook (Simo &amp; Hughes-style small-strain radial return,
+  just applied in <code>E</code>/<code>S</code> instead of <code>ε</code>/<code>σ</code>), and gives an exact analytic
+  target to check Stage 1 against.
+- Plastic dissipation is exactly <code>0.5*(sigma_y_old+sigma_y_new)*Δγ</code> per
+  unit reference volume for <em>linear</em> hardening (the trapezoidal rule is
+  exact here, not an approximation, because <code>sigma_y</code> is linear in <code>PEEQ</code>)
+  — goes into <code>energy(KBLOCK,iElPd)</code>.</p>
+<p><strong>What this is <em>not</em>, stated plainly (the limitation to document in the
+file header)</strong>: this is <strong>not</strong> a modern multiplicative <code>F = Fe·Fp</code>
+finite-strain plasticity model. It decomposes <em>strain</em> additively rather
+than the <em>deformation gradient</em> multiplicatively, so at very large
+stretches (well beyond the moderate deformations this project's plate-impact
+use case is centered on) it will diverge from a rigorous large-strain
+model — e.g. it does not exactly preserve isochoric (volume-preserving)
+plastic flow under large volumetric distortion the way an <code>Fe·Fp</code> model
+does by construction. For the regime this project cares about (host
+elements straining before they fail/collapse, not elements already deep
+into post-failure crush), it is the right level of complexity: consistent
+with the existing St. Venant-Kirchhoff elastic law (which has the same
+moderate-strain-accuracy caveat already, undocumented in the current file
+header — I'll note that too), easy to verify analytically, and reuses
+100% of the existing architecture.</p>
+<h3 id="algorithm-per-gauss-point-per-force-call-only-while-the-element-is-not">Algorithm per Gauss point per force-call (only while the element is not</h3>
+<p>already failed)</p>
+<p>State added to <code>svars</code> per Gauss point: plastic Green-Lagrange strain
+tensor <code>Ep</code> (6 components, <strong>same engineering-shear-Voigt convention as
+<code>STRAIN_VEC</code></strong>, so it can be subtracted from it directly) + accumulated
+equivalent plastic strain <code>PEEQ</code> (1 scalar) = 7 values/GP x 8 GP = 56,
+plus the existing 48 (stress) + 1 (failure flag, keeping its slot at
+<code>svars(49)</code> for compatibility with the <code>t6</code> decks and
+<code>VUEL_FAILURE_CRITERION_REPORT_2026-10-01.md</code>) = <strong>nsvars = 105</strong>.</p>
+<ol>
+<li><code>Ee_trial_VEC = STRAIN_VEC - EP_VEC_old</code> (direct Voigt subtraction, both
+   engineering convention).</li>
+<li><code>S_trial_VEC = CMAT * Ee_trial_VEC</code> (exactly today's elastic step).</li>
+<li>Hydrostatic <code>P = (S_trial(1)+S_trial(2)+S_trial(3))/3</code>;
+   deviatoric <code>SDEV(1:3) = S_trial(1:3) - P</code>, <code>SDEV(4:6) = S_trial(4:6)</code>
+   (shear is already deviatoric; these are <em>true</em> stress components).</li>
+<li>`sigma_trial = sqrt(1.5 * (SDEV(1)^2+SDEV(2)^2+SDEV(3)^2</li>
+<li>2<em>(SDEV(4)^2+SDEV(5)^2+SDEV(6)^2)))<code>(the</code>2</em>` on shear terms is
+   required for a true-tensor double contraction — easy to get wrong,
+   calling it out explicitly).</li>
+<li><code>sigma_y_old = SIGY0 + HMOD*PEEQ_old</code>. If <code>sigma_trial &lt;= sigma_y_old</code>:
+   elastic step, <code>S = S_trial</code>, <code>Ep</code>/<code>PEEQ</code> unchanged (matches today's
+   code exactly when <code>sigma_trial</code> never exceeds yield, e.g. <code>IPLAST=0</code>
+   or <code>SIGY0</code> huge).</li>
+<li>Else (plastic step): <code>Δγ = (sigma_trial - sigma_y_old)/(3*mu + HMOD)</code>;
+   <code>sigma_y_new = sigma_y_old + HMOD*Δγ</code>;
+   <code>FACTOR = 1.5*Δγ/sigma_trial</code>;
+   <code>ΔEp_VEC(1:3) = FACTOR*SDEV(1:3)</code>, <code>ΔEp_VEC(4:6) = 2*FACTOR*SDEV(4:6)</code>
+   (the extra <code>2</code> converts true-tensor shear back to the engineering-Voigt
+   convention <code>EP_VEC</code> is stored in — mirrors the existing <code>STRAIN_VEC</code>
+   convention exactly);
+   <code>S_VEC = S_trial_VEC - CMAT * ΔEp_VEC</code> (reuses <code>CMAT</code> again — this
+   automatically leaves the hydrostatic part untouched since <code>ΔEp</code> is
+   traceless, no special-casing needed);
+   <code>EP_VEC_new = EP_VEC_old + ΔEp_VEC</code>; <code>PEEQ_new = PEEQ_old + Δγ</code>.</li>
+<li>Energy: <code>ELIE += 0.5*sum_i(S_VEC(i)*Ee_new_VEC(i))*DVOL</code> (elastic part
+   only, <code>Ee_new = STRAIN_VEC - EP_VEC_new</code>); plastic dissipation
+   <code>energy(KBLOCK,iElPd) += 0.5*(sigma_y_old+sigma_y_new)*Δγ*DVOL</code> (zero
+   when step was elastic).</li>
+<li>Rayleigh viscous stress and bulk viscosity are computed exactly as
+   today, from the <em>total</em> strain rate, and added on top of <code>S_VEC</code> —
+   unaffected by plasticity (pure numerical damping, standard explicit-code
+   practice).</li>
+</ol>
+<p>Volumetric response stays <strong>purely elastic</strong> (J2 is pressure-independent
+by construction — standard, not a simplification specific to this branch).</p>
+<h3 id="props-interface-change-flagging-per-the-ask-when-it-changes-the">Props / interface change (flagging per the "ask when it changes the</h3>
+<p>interface" rule — see question below)</p>
+<ul>
+<li><code>props(7)</code> stays <code>EPS_FAIL</code> (unchanged from the current failure-only
+  branch).</li>
+<li>New: <code>props(8) = SIGY0</code> (initial yield stress, Pa), <code>props(9) = HMOD</code>
+  (linear isotropic hardening modulus, Pa), <code>props(10) = IPLAST</code> (0 =
+  exactly today's pure-elastic path — old <code>t6</code> decks keep working
+  unmodified by just not setting <code>props(8:10)</code>/defaulting <code>IPLAST=0</code> via
+  <code>nprops=7</code> back-compatibility, 1 = elastic-plastic path, new <code>nprops=10</code>
+  decks).</li>
+<li><code>nsvars</code>: 49 -&gt; 105 (layout above). Every deck generator
+  (<code>verification/make_t6_failure.py</code> and any new Stage 1+ generator) needs
+  the matching <code>*User Element ..., properties=10, variables=105</code> and
+  <code>*UEL Property</code> line.</li>
+</ul>
+<h2 id="3-jacobian-trigger-stage-3-preview-not-implemented-yet">3. Jacobian trigger (Stage 3 preview, not implemented yet)</h2>
+<p><code>detJ0</code> (reference-configuration Jacobian from <code>SHAPE8H_TL</code>) is constant
+per Gauss point for a given element (undeformed geometry never changes) —
+the trigger needs the <strong>current-configuration</strong> Jacobian instead, i.e.
+<code>det(F) = DETF</code> already computed every call by <code>COMPUTE_DEFGRAD</code>. Trigger:
+<code>min over 8 GPs of DETF_gp &lt;= JAC_FAIL</code> (prop, default 0.05, explicitly a
+tunable starting point per the goal, not a validated number), with
+<code>DETF &lt;= 0</code> treated as an immediate trip. Every division (<code>1/sigma_trial</code>
+in step 6 above, <code>1/DETJ0</code> in <code>SHAPE8H_TL</code>, any future log/sqrt) needs a
+guard so a collapsing element can't NaN before the latch catches it —
+noted now so Stage 1's new divisions (<code>sigma_trial</code> in the denominator)
+are written defensively from the start rather than retrofitted in Stage 3.</p>
+<h2 id="4-open-questions-decisions-that-could-change-results-asking-before">4. Open questions / decisions that could change results — asking before</h2>
+<p>writing code, per the goal's Stage 0 instruction</p>
+<p>See the accompanying question. Everything else above (closed-form radial
+return, energy routing, Voigt conventions, svars layout) is either forced
+by consistency with the existing file or standard/textbook, so I'm not
+re-asking those — flagging them here for the record instead.</p>
+</body></html>

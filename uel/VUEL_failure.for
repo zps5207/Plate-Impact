@@ -179,8 +179,9 @@ C                       1.0 when the degradation ramp is complete
 C       svars(107)    = per-element fiber volume fraction initialized
 C                       via *Initial Conditions,
 C                       TYPE=SOLUTION.
-C                       Stage 7 scales this element's host stiffness,
-C                       yield and hardening by eta=max(1-Vf,1e-6).
+C                       T-006 scales physical integration volume and
+C                       host matrix mass by eta=max(1-Vf,1e-6), while
+C                       leaving intrinsic material constants unchanged.
 C
 C======================================================================
       SUBROUTINE VUEL(nblock,rhs,amass,dtimeStable,svars,nsvars,
@@ -284,7 +285,6 @@ C     Element matrices and vectors
       REAL*8 UVEC(24), VVEC(24)
       REAL*8 BL_MAT(6,24)
       REAL*8 CMAT(6,6)
-      REAL*8 CMAT_K(6,6)
       REAL*8 STRAIN_VEC(6), STRAINRATE_VEC(6)
       REAL*8 STRESS_PK2(6)
       REAL*8 STRESS_VISC(6)
@@ -295,13 +295,14 @@ C
 C     Damping and energy variables
       REAL*8 OMEGA_MAX, XI_DAMP
       REAL*8 DAMP_DISSIP, BV_DISSIP
-      REAL*8 ELVOL, ELKE, ELIE
+      REAL*8 ELVOL_GEOM, ELVOL_EFF, DVOL_GEOM, DVOL_EFF
+      REAL*8 ELKE, ELIE
       REAL*8 CWAVE, CHARLEN, DTELEM
 C
 C     Loop indices and utilities
       INTEGER KBLOCK, IGAUSS, I, J, K, II, JJ
       INTEGER IDOF, JDOF, INODE, JNODE
-      REAL*8 DVOL, FACTOR
+      REAL*8 FACTOR
       REAL*8 SMALL
       PARAMETER (SMALL = 1.0D-30)
 C
@@ -329,8 +330,6 @@ C
 C     Stage 5 post-failure degradation and unilateral residual response
       REAL*8 DEGRADE_TIME, COMP_RESIDUAL_FRAC
       REAL*8 FIBER_VOL_FRAC, ETA_VF_RAW, ETA_VF
-      REAL*8 EMOD_K, ALAMBDA_K, AMU_K, BULK_MODULUS_K
-      REAL*8 SIGY0_K, HMOD_K
       REAL*8 DAMAGE, DAMAGE_OLD, STRESS_SCALE
       REAL*8 BULK_MODULUS, VOL_ELASTIC_STRAIN, P_RESIDUAL
       REAL*8 STRESS_RESIDUAL(6)
@@ -431,9 +430,9 @@ C
       END IF
 C
       DO KBLOCK = 1, nblock
-C       Stage 7 host-volume correction.  The floor prevents zero or
-C       negative constitutive stiffness if a bad Vf reaches the VUEL.
-C       Call-level constants remain intact for mass/stable-dt behavior.
+C       Per-element matrix volume fraction. Intrinsic material constants
+C       stay unchanged; ETA_VF scales physical integration volume and mass.
+C       The floor prevents a zero/negative effective matrix volume.
         FIBER_VOL_FRAC = 0.0D0
         IF (nsvars .GE. 107) FIBER_VOL_FRAC = svars(KBLOCK,107)
         ETA_VF_RAW = 1.0D0 - FIBER_VOL_FRAC
@@ -446,36 +445,9 @@ C       Call-level constants remain intact for mass/stable-dt behavior.
      *               ' eta_used =', ETA_VF
         END IF
 C
-        EMOD_K = ETA_VF * EMOD
-        ALAMBDA_K = EMOD_K * ENU /
-     *    ((1.0D0 + ENU) * (1.0D0 - 2.0D0 * ENU))
-        AMU_K = EMOD_K / (2.0D0 * (1.0D0 + ENU))
-        BULK_MODULUS_K = ALAMBDA_K + 2.0D0*AMU_K/3.0D0
-        SIGY0_K = ETA_VF * SIGY0
-        HMOD_K = ETA_VF * HMOD
-C
-        DO I = 1, 6
-          DO J = 1, 6
-            CMAT_K(I,J) = 0.0D0
-          END DO
-        END DO
-        CMAT_K(1,1) = ALAMBDA_K + 2.0D0 * AMU_K
-        CMAT_K(2,2) = ALAMBDA_K + 2.0D0 * AMU_K
-        CMAT_K(3,3) = ALAMBDA_K + 2.0D0 * AMU_K
-        CMAT_K(4,4) = AMU_K
-        CMAT_K(5,5) = AMU_K
-        CMAT_K(6,6) = AMU_K
-        CMAT_K(1,2) = ALAMBDA_K
-        CMAT_K(1,3) = ALAMBDA_K
-        CMAT_K(2,1) = ALAMBDA_K
-        CMAT_K(2,3) = ALAMBDA_K
-        CMAT_K(3,1) = ALAMBDA_K
-        CMAT_K(3,2) = ALAMBDA_K
-C
-        IF ((NCALLS .EQ. 1) .AND. (KBLOCK .EQ. 1)) THEN
-          WRITE(*,*) 'FIBER_VOL_FRAC (SVAR107) =', FIBER_VOL_FRAC
-          WRITE(*,*) 'VF SCALE: eta =', ETA_VF,
-     *               ' E_k =', EMOD_K, ' SIGY0_k =', SIGY0_K
+        IF (NCALLS .EQ. 1) THEN
+          WRITE(*,*) 'T006_ETA elem eta vf nblock ', jElem(KBLOCK),
+     *               ETA_VF, FIBER_VOL_FRAC, nblock
         END IF
 C
 C----------------------------------------------------------------------
@@ -507,7 +479,7 @@ C       Flatten into vectors
 C
 C======================================================================
 C       OPERATION CODE: MASS MATRIX CALCULATION
-C       Note: Mass matrix uses REFERENCE configuration (unchanged)
+C       Host matrix mass uses the effective reference volume.
 C======================================================================
         IF (lflags(iOpCode) .EQ. jMassCalc) THEN
 C
@@ -517,7 +489,7 @@ C
             END DO
           END DO
 C
-          ELVOL = 0.0D0
+          ELVOL_GEOM = 0.0D0
 C
           DO IGAUSS = 1, 8
             XI   = XIGP(IGAUSS)
@@ -531,11 +503,12 @@ C           Compute shape functions and Jacobian w.r.t. REFERENCE config
      *                      SHP, DN_DX, DN_DY, DN_DZ,
      *                      XJ, XJINV, DETJ0)
 C
-            DVOL = DETJ0 * WT
-            ELVOL = ELVOL + DVOL
+            DVOL_GEOM = DETJ0 * WT
+            ELVOL_GEOM = ELVOL_GEOM + DVOL_GEOM
           END DO
 C
-          ELEMASS = DENS * ELVOL
+          ELVOL_EFF = ETA_VF * ELVOL_GEOM
+          ELEMASS = DENS * ELVOL_EFF
 C
 C         Lumped mass: distribute equally to all nodes
           DO INODE = 1, 8
@@ -547,8 +520,12 @@ C         Lumped mass: distribute equally to all nodes
 C
           IF (NCALLS .LE. 5) THEN
             WRITE(*,*) '--- MASS CALC (TL) --- call #', NCALLS
-            WRITE(*,*) 'Reference ELVOL =', ELVOL
+            WRITE(*,*) 'Reference ELVOL_GEOM =', ELVOL_GEOM
+            WRITE(*,*) 'Matrix ELVOL_EFF =', ELVOL_EFF
             WRITE(*,*) 'ELEMASS =', ELEMASS
+            WRITE(*,*) 'T006_MASS elem eta geom eff mass ',
+     *                 jElem(KBLOCK), ETA_VF, ELVOL_GEOM,
+     *                 ELVOL_EFF, ELEMASS
           END IF
 C
         END IF
@@ -563,7 +540,8 @@ C
           END DO
           ELIE = 0.0D0
           ELKE = 0.0D0
-          ELVOL = 0.0D0
+          ELVOL_GEOM = 0.0D0
+          ELVOL_EFF = 0.0D0
           DAMP_DISSIP = 0.0D0
           BV_DISSIP = 0.0D0
           PLASTIC_DISSIP = 0.0D0
@@ -622,8 +600,10 @@ C
               WRITE(*,*) 'DETJ0 =', DETJ0
             END IF
 C
-            DVOL = DETJ0 * WT
-            ELVOL = ELVOL + DVOL
+            DVOL_GEOM = DETJ0 * WT
+            DVOL_EFF = ETA_VF * DVOL_GEOM
+            ELVOL_GEOM = ELVOL_GEOM + DVOL_GEOM
+            ELVOL_EFF = ELVOL_EFF + DVOL_EFF
 C
 C           ----------------------------------------------------------
 C           Step 2: Compute DEFORMATION GRADIENT F
@@ -693,7 +673,7 @@ C           ----------------------------------------------------------
             END DO
             PEEQ_OLD = svars(KBLOCK, IGPBASE+7)
             DGAMMA = 0.0D0
-            SIGY_OLD = SIGY0_K + HMOD_K*PEEQ_OLD
+            SIGY_OLD = SIGY0 + HMOD*PEEQ_OLD
             SIGY_NEW = SIGY_OLD
 C
             IF (.NOT. CONSTITUTIVE_ACTIVE) THEN
@@ -713,7 +693,7 @@ C             original formula whenever EP_VEC is zero)
                 S_TRIAL_VEC(I) = 0.0D0
                 DO J = 1, 6
                   S_TRIAL_VEC(I) = S_TRIAL_VEC(I)
-     *                             + CMAT_K(I,J) * EE_TRIAL_VEC(J)
+     *                             + CMAT(I,J) * EE_TRIAL_VEC(J)
                 END DO
               END DO
 C
@@ -744,12 +724,12 @@ C               convention used for STRAIN_VEC -- see file header)
      *                       + SDEV(6)*SDEV(6))), 0.0D0))
 C
                 IF ((SIGMA_TRIAL .GT. SIGY_OLD) .AND.
-     *              ((3.0D0*AMU_K + HMOD_K) .GT. SMALL)) THEN
+     *              ((3.0D0*AMU + HMOD) .GT. SMALL)) THEN
 C                 Closed-form radial return -- exact for linear
 C                 isotropic hardening + J2, no local Newton iteration
                   DGAMMA = (SIGMA_TRIAL - SIGY_OLD)
-     *                     / (3.0D0*AMU_K + HMOD_K)
-                  SIGY_NEW = SIGY_OLD + HMOD_K*DGAMMA
+     *                     / (3.0D0*AMU + HMOD)
+                  SIGY_NEW = SIGY_OLD + HMOD*DGAMMA
                   PEEQ_OLD = PEEQ_OLD + DGAMMA
 C
                   IF (SIGMA_TRIAL .GT. SMALL) THEN
@@ -780,7 +760,7 @@ C             since DEp is traceless (pressure-independent J2 flow)
                 STRESS_PK2(I) = S_TRIAL_VEC(I)
                 DO J = 1, 6
                   STRESS_PK2(I) = STRESS_PK2(I)
-     *                           - CMAT_K(I,J)*DEP_VEC(J)
+     *                           - CMAT(I,J)*DEP_VEC(J)
                 END DO
               END DO
 C
@@ -807,7 +787,7 @@ C           ----------------------------------------------------------
               STRESS_VISC(I) = 0.0D0
               DO J = 1, 6
                 STRESS_VISC(I) = STRESS_VISC(I) 
-     *                           + BETA_RAYLEIGH * CMAT_K(I,J)
+     *                           + BETA_RAYLEIGH * CMAT(I,J)
      *                           * STRAINRATE_VEC(J)
               END DO
             END DO
@@ -825,7 +805,7 @@ C
             QBULK = 0.0D0
 C
             IF (EVDOT .LT. 0.0D0) THEN
-              CHARLEN = DVOL ** (1.0D0 / 3.0D0)
+              CHARLEN = DVOL_GEOM ** (1.0D0 / 3.0D0)
               QBULK = DENS * CHARLEN * (
      *                B1_BULK * CWAVE * DABS(EVDOT) +
      *                B2_BULK * CHARLEN * EVDOT * EVDOT )
@@ -849,7 +829,7 @@ C           deviatoric, so tr(Ee) is the volumetric elastic strain.
             IF (ELEM_ALREADY_FAILED .AND.
      *          (COMP_RESIDUAL_FRAC .GT. 0.0D0) .AND.
      *          (VOL_ELASTIC_STRAIN .LT. 0.0D0)) THEN
-              P_RESIDUAL = COMP_RESIDUAL_FRAC * BULK_MODULUS_K
+              P_RESIDUAL = COMP_RESIDUAL_FRAC * BULK_MODULUS
      *                     * VOL_ELASTIC_STRAIN
               STRESS_RESIDUAL(1) = P_RESIDUAL
               STRESS_RESIDUAL(2) = P_RESIDUAL
@@ -870,12 +850,16 @@ C           Store stress in state variables
 C
 C           ----------------------------------------------------------
 C           Step 10: INTERNAL FORCE
-C           f_int = integral(B_L^T * S * dV_0)
-C           Note: Integration over REFERENCE volume
+C           Physical PK2/residual stress uses effective matrix volume.
+C           Numerical stabilization stays on geometric volume.
 C           ----------------------------------------------------------
             DO I = 1, 24
               DO J = 1, 6
-                FINT(I) = FINT(I) + BL_MAT(J,I) * STRESS_TOTAL(J) * DVOL
+                FINT(I) = FINT(I) + BL_MAT(J,I) *
+     *            (STRESS_SCALE*STRESS_PK2(J)
+     *             + DAMAGE*STRESS_RESIDUAL(J)) * DVOL_EFF
+                FINT(I) = FINT(I) + BL_MAT(J,I) * STRESS_SCALE *
+     *            (STRESS_VISC(J) + STRESS_BULK(J)) * DVOL_GEOM
               END DO
             END DO
 C
@@ -888,21 +872,21 @@ C           0.5*r*K*min(tr(Ee),0)^2, blended by D.
             IF (CONSTITUTIVE_ACTIVE) THEN
               DO I = 1, 6
                 ELIE = ELIE + 0.5D0*STRESS_SCALE*STRESS_PK2(I)
-     *                         *EE_NEW_VEC(I)*DVOL
+     *                         *EE_NEW_VEC(I)*DVOL_EFF
               END DO
 C             Plastic dissipation: exact trapezoidal integral of the
 C             LINEAR sigma_y(PEEQ) curve over this increment's DGAMMA
 C             (zero when the step was elastic, DGAMMA=0)
               PLASTIC_DISSIP = PLASTIC_DISSIP
      *            + STRESS_SCALE*0.5D0*(SIGY_OLD+SIGY_NEW)
-     *              *DGAMMA*DVOL
+     *              *DGAMMA*DVOL_EFF
             END IF
             IF (ELEM_ALREADY_FAILED .AND.
      *          (VOL_ELASTIC_STRAIN .LT. 0.0D0) .AND.
      *          (COMP_RESIDUAL_FRAC .GT. 0.0D0)) THEN
               ELIE = ELIE + 0.5D0*DAMAGE*COMP_RESIDUAL_FRAC
-     *             * BULK_MODULUS_K*VOL_ELASTIC_STRAIN
-     *             * VOL_ELASTIC_STRAIN*DVOL
+     *             * BULK_MODULUS*VOL_ELASTIC_STRAIN
+     *             * VOL_ELASTIC_STRAIN*DVOL_EFF
             END IF
 C
 C           Rayleigh and bulk-viscosity dissipation use the same (1-D)
@@ -913,13 +897,13 @@ C           the compression-only residual has no numerical damping.
               DO I = 1, 6
                 DAMP_DISSIP = DAMP_DISSIP
      *                      + STRESS_SCALE*STRESS_VISC(I)
-     *                      * STRAINRATE_VEC(I)*DVOL*dtimeCur
+     *                      * STRAINRATE_VEC(I)*DVOL_GEOM*dtimeCur
               END DO
 C
               IF (EVDOT .LT. 0.0D0) THEN
                 BV_DISSIP = BV_DISSIP
      *                      + STRESS_SCALE*QBULK*DABS(EVDOT)
-     *                      * DVOL*dtimeCur
+     *                      * DVOL_GEOM*dtimeCur
               END IF
             END IF
 C
@@ -961,7 +945,7 @@ C         Assemble RHS
           END DO
 C
 C         Kinetic energy
-          ELEMASS = DENS * ELVOL
+          ELEMASS = DENS * ELVOL_EFF
           DO INODE = 1, 8
             DO I = 1, 3
               ELKE = ELKE + 0.5D0 * (ELEMASS / 8.0D0) *
@@ -995,7 +979,7 @@ C         ----------------------------------------------------------
      *        (COMP_RESIDUAL_FRAC .LE. SMALL)) THEN
             dtimeStable(KBLOCK) = 1.0D30
           ELSE
-            CHARLEN = ELVOL ** (1.0D0 / 3.0D0)
+            CHARLEN = ELVOL_GEOM ** (1.0D0 / 3.0D0)
             OMEGA_MAX = CWAVE / CHARLEN * 2.0D0
             XI_DAMP = BETA_RAYLEIGH * OMEGA_MAX / 2.0D0
             DTELEM = (2.0D0 / OMEGA_MAX) *
@@ -1003,6 +987,13 @@ C         ----------------------------------------------------------
             DTELEM = 0.8D0 * DTELEM
 C
             dtimeStable(KBLOCK) = DTELEM
+          END IF
+C
+          IF (NCALLS .LE. 10) THEN
+            WRITE(*,*) 'T006_DT elem eta dt geom ', jElem(KBLOCK),
+     *                 ETA_VF, dtimeStable(KBLOCK), ELVOL_GEOM
+            WRITE(*,*) 'T006_FINT elem eta f1 ', jElem(KBLOCK),
+     *                 ETA_VF, FINT(1)
           END IF
 C
 C         Debug output

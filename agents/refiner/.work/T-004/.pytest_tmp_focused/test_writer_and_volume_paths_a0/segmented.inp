@@ -1,0 +1,26 @@
+*Part, name=P
+*Node
+1,0,0,0
+2,1,0,0
+*End Part
+*Part, name=EMBFIB
+*Node, nset=EMBMESH_NODES
+100000, 0.1, 0.5, 0.5
+100001, 0.3, 0.5, 0.5
+100002, 0.6, 0.5, 0.5
+100003, 0.9, 0.5, 0.5
+*Element, type=T3D2, elset=EMBMESH_FIBERS_T0
+100000, 100000,100001
+100001, 100001,100002
+100002, 100002,100003
+*Solid Section, elset=EMBMESH_FIBERS_T0, material=Fiber
+0.00785398163397448
+*End Part
+*Assembly
+*Instance, name=P-1, part=P
+*End Instance
+*Instance, name=EMBFIB-1, part=EMBFIB
+*End Instance
+*Embedded Element, host elset=HOST
+EMBFIB-1.EMBMESH_FIBERS_T0
+*End Assembly

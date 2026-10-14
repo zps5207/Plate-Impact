@@ -1,0 +1,11 @@
+t006_slow_tension_vf0
+t006_slow_tension_vf05
+t006_slow_tension_vf0_baseline
+t006_slow_compression_vf0
+t006_slow_compression_vf05
+t006_slow_compression_vf0_baseline
+t006_bulk_vf0
+t006_bulk_vf05
+t006_bulk_physical_vf0
+t006_bulk_physical_vf05
+t006_mixed_vf

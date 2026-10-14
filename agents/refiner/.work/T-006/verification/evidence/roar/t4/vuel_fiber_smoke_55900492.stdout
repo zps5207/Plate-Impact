@@ -1,0 +1,308 @@
+Analysis initiated from SIMULIA established products
+Abaqus JOB vuel_fiber_smoke
+Abaqus 2024
+USING MEMORY DOUG-LEA ALLOCATOR
+Abaqus License Manager checked out the following licenses:
+Abaqus/Explicit checked out 5 tokens from Flexnet server license2.2e.hpc.psu.edu.
+<253 out of 300 licenses remain available>.
+Begin Compiling Single Precision Abaqus/Explicit User Subroutines
+Tue 29 Sep 2026 10:50:39 AM EDT
+Intel(R) Fortran Intel(R) 64 Compiler Classic for applications running on Intel(R) 64, Version 2021.4.0 Build 20210910_000000
+Copyright (C) 1985-2021 Intel Corporation.  All rights reserved.
+
+ Intel(R) Fortran 2021.4.0-2742
+vuel_fiber_smoke_user.for(39): remark #15009: vuel_ has been targeted for automatic cpu dispatch
+vuel_fiber_smoke_user.for(541): remark #15009: shape8h_tl_ has been targeted for automatic cpu dispatch
+vuel_fiber_smoke_user.for(903): remark #15009: build_bl_matrix_ has been targeted for automatic cpu dispatch
+vuel_fiber_smoke_user.for(753): remark #15009: compute_green_lagrange_ has been targeted for automatic cpu dispatch
+End Compiling Single Precision Abaqus/Explicit User Subroutines
+Begin Linking Single Precision Abaqus/Explicit User Subroutines
+Intel(R) Fortran Intel(R) 64 Compiler Classic for applications running on Intel(R) 64, Version 2021.4.0 Build 20210910_000000
+Copyright (C) 1985-2021 Intel Corporation.  All rights reserved.
+
+GNU ld version 2.30-128.el8_10
+End Linking Single Precision Abaqus/Explicit User Subroutines
+Tue 29 Sep 2026 10:50:46 AM EDT
+Begin Analysis Input File Processor
+Tue 29 Sep 2026 10:50:46 AM EDT
+Run pre
+Tue 29 Sep 2026 10:50:49 AM EDT
+End Analysis Input File Processor
+Begin Abaqus/Explicit Packager
+Tue 29 Sep 2026 10:50:49 AM EDT
+PAC_NUM_THREADS VALUE: 1
+Run package
+ === VUEL TOTAL LAGRANGIAN: FIRST CALL ===
+ E =   199999995904.000       nu =  0.300000011920929       rho =
+   7800.00000000000     
+ beta_Rayleigh =  0.000000000000000E+000
+ b1_bulk =  5.999999865889549E-002  b2_bulk =   1.20000004768372     
+ lambda =   115384623425.900       mu =   76923074642.3119     
+ nblock =           1  nnode =           8
+ ndofel =          24  nsvars =          48
+ --- MASS CALC (TL) --- call #           1
+ Reference ELVOL =   1.00000000000000     
+ ELEMASS =   7800.00000000000     
+ --- FINT (TL) --- call #           2
+ time =  0.0000000E+00
+ DETF (last GP) =   1.00000000000000     
+ E11, E22, E33 =  0.000000000000000E+000  0.000000000000000E+000
+  0.000000000000000E+000
+ S11, S22, S33 =  0.000000000000000E+000  0.000000000000000E+000
+  0.000000000000000E+000
+ ELIE =  0.000000000000000E+000  ELKE =  0.000000000000000E+000
+ DTELEM =  1.361679626272872E-004
+Abaqus/Explicit 2024                             DATE 29-Sep-2026  TIME 10:50:49
+-------------------------------------------------------------------------------
+ PREPROCESSOR WARNING MESSAGES
+-------------------------------------------------------------------------------
+
+
+***WARNING: There are 7 warning messages in the data (.dat) file.  Please
+            check the data file for possible errors in the input file.
+
+
+-------------------------------------------------------------------------------
+  USER SUBROUTINE VUMAT
+-------------------------------------------------------------------------------
+
+
+***WARNING: A material defined in user subroutine VUMAT must be defined as
+            purely elastic (using the initial elastic modulus) at the
+            beginning of the analysis (stepTime=0). This is an informative
+            message. It does not necessarily indicate that user subroutine
+            VUMAT is incorrectly defined.
+
+
+-------------------------------------------------------------------------------
+ MODEL INFORMATION (IN GLOBAL X-Y COORDINATES)
+-------------------------------------------------------------------------------
+
+   Total mass in model = 7800.8
+   Center of mass of model = ( 4.999909E-01, 5.000000E-01, 4.999909E-01)
+
+    Moments of Inertia :
+                 About Center of Mass              About Origin
+      I(XX)          3.900386E+03                  7.800702E+03
+      I(YY)          3.900386E+03                  7.800631E+03
+      I(ZZ)          3.900386E+03                  7.800702E+03
+      I(XY)          3.534107E-02                 -1.950122E+03
+      I(YZ)         -1.577732E-01                 -1.950316E+03
+      I(ZX)          3.935537E-06                 -1.950122E+03
+
+-------------------------------------------------------------------------------
+ STABLE TIME INCREMENT INFORMATION
+-------------------------------------------------------------------------------
+
+
+  The stable time increment estimate for each element is based on
+  linearization about the initial state.
+
+
+   Initial time increment = 1.36168E-04
+
+   Statistics for all elements:
+      Mean = 1.33912E-02
+      Standard deviation = 8.66590E-03
+
+   Most critical elements:
+    Element number   Rank    Time increment   Increment ratio
+    (Instance name)
+   ----------------------------------------------------------
+           1          1       1.361680E-04      1.000000E+00
+    CELL-1
+         201          2       1.194863E-02      1.139611E-02
+    CELL-1
+         101          3       1.250920E-02      1.088543E-02
+    CELL-1
+         202          4       2.069564E-02      6.579549E-03
+    CELL-1
+         102          5       2.166656E-02      6.284705E-03
+    CELL-1
+
+
+  Instance name for the most critical element will be printed if the critical
+  element changes or at the beginning of a new page.
+
+
+Tue 29 Sep 2026 10:50:50 AM EDT
+End Abaqus/Explicit Packager
+Begin Abaqus/Explicit Analysis
+Tue 29 Sep 2026 10:50:50 AM EDT
+Run explicit
+ === VUEL TOTAL LAGRANGIAN: FIRST CALL ===
+ E =   199999995904.000       nu =  0.300000011920929       rho =
+   7800.00000000000     
+ beta_Rayleigh =  0.000000000000000E+000
+ b1_bulk =  5.999999865889549E-002  b2_bulk =   1.20000004768372     
+ lambda =   115384623425.900       mu =   76923074642.3119     
+ nblock =           1  nnode =           8
+ ndofel =          24  nsvars =          48
+ --- FINT (TL) --- call #           1
+ time =  0.0000000E+00
+ DETF (last GP) =   1.00000000000000     
+ E11, E22, E33 =  0.000000000000000E+000  0.000000000000000E+000
+  0.000000000000000E+000
+ S11, S22, S33 =  0.000000000000000E+000  0.000000000000000E+000
+  0.000000000000000E+000
+ ELIE =  0.000000000000000E+000  ELKE =  0.000000000000000E+000
+ DTELEM =  1.361679626272872E-004
+ --- FINT (TL) --- call #           2
+ time =  1.3616796E-04
+ DETF (last GP) =   1.00000002473499     
+ E11, E22, E33 =  2.473499127741974E-008  0.000000000000000E+000
+  0.000000000000000E+000
+ S11, S22, S33 =   6659.42081460778        2854.03765398800     
+   2854.03765398800     
+ ELIE =  8.236035788099543E-005  ELKE =  6.434403207301473E-005
+ DTELEM =  1.361679626272872E-004
+
+Abaqus/Explicit 2024                             DATE 29-Sep-2026  TIME 10:50:51
+
+The single precision Abaqus/Explicit executable will be used in this analysis.
+
+
+-------------------------------------------------------------------------------
+ SOLUTION PROGRESS
+-------------------------------------------------------------------------------
+
+ STEP 1  ORIGIN 0.0000
+
+  Total memory used for step 1 is approximately 912.8 kilobytes.
+  Element by element stable time estimation algorithm will be used.
+  Scaling factor:  1.0000
+              STEP     TOTAL      WALL      STABLE    CRITICAL    KINETIC      TOTAL
+INCREMENT     TIME      TIME      TIME   INCREMENT     ELEMENT     ENERGY     ENERGY
+        0  0.000E+00 0.000E+00  00:00:00 1.362E-04           1  0.000E+00  0.000E+00
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+Output Field Frame Number     0, of      5, at step time 0.000E+00
+ --- FINT (TL) --- call #           3
+ time =  2.7233592E-04
+ DETF (last GP) =   1.00000014372278     
+ E11, E22, E33 =  1.871317409918305E-007 -2.140152777219129E-008
+ -2.200740267799262E-008
+ S11, S22, S33 =   45372.9001325806        13290.8597355003     
+   13197.6482142946     
+ ELIE =  3.778089712441912E-003  ELKE =  3.103056741076779E-003
+ DTELEM =  1.361679632852141E-004
+ --- FINT (TL) --- call #           4
+ time =  4.0850387E-04
+ DETF (last GP) =   1.00000029955161     
+ E11, E22, E33 =  5.856081317645589E-007 -1.400686185926148E-007
+ -1.459875563769586E-007
+ S11, S22, S33 =   124657.245793021        13014.6721251904     
+   12104.0663392138     
+ ELIE =  2.987740512358531E-002  ELKE =  2.506802328828289E-002
+ DTELEM =  1.361679669436345E-004
+ --- FINT (TL) --- call #           5
+ time =  5.4467184E-04
+ DETF (last GP) =   1.00000060363048     
+ E11, E22, E33 =  1.292540436015344E-006 -3.299043718207884E-007
+ -3.590038212264446E-007
+ S11, S22, S33 =   268502.247918236        18895.3618058157     
+   14418.5235684528     
+ ELIE =  0.132343548452354       ELKE =  0.101545341298776     
+ DTELEM =  1.361679602787523E-004
+ --- FINT (TL) --- call #           6
+ time =  6.8083982E-04
+ DETF (last GP) =   1.00000118229528     
+ E11, E22, E33 =  2.367383491241881E-006 -5.397937852813506E-007
+ -6.452887091334958E-007
+ S11, S22, S33 =   500632.189302506        53374.1600216466     
+   37144.1722179195     
+ ELIE =  0.419248125796557       ELKE =  0.293609644137675     
+ DTELEM =  1.361679618311555E-004
+        4  5.447E-04 5.447E-04  00:00:00 1.362E-04           1  1.844E-01  1.317E-02
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+ --- FINT (TL) --- call #           7
+ time =  8.1700779E-04
+ DETF (last GP) =   1.00000191802912     
+ E11, E22, E33 =  3.864266231334845E-006 -8.276947101037990E-007
+ -1.118527184262863E-006
+ S11, S22, S33 =   815815.303036725        93975.1796025311     
+   49231.7233662393     
+ ELIE =   1.07357880691844       ELKE =  0.698885705070883     
+ DTELEM =  1.361679598237289E-004
+ --- FINT (TL) --- call #           8
+ time =  9.5317577E-04
+ DETF (last GP) =   1.00000283173644     
+ E11, E22, E33 =  5.850276842744861E-006 -1.192335711663883E-006
+ -1.826169385932275E-006
+ S11, S22, S33 =   1226785.48094739        143306.658548056     
+   45793.7884749399     
+ ELIE =   2.38502739329282       ELKE =   1.41711531536995     
+ DTELEM =  1.361679592290438E-004
+ --- FINT (TL) --- call #           9
+ time =  1.0893437E-03
+ DETF (last GP) =   1.00000403679739     
+ E11, E22, E33 =  8.387918636221237E-006 -1.603958542206740E-006
+ -2.747089355881194E-006
+ S11, S22, S33 =   1756241.79263392        219029.964607860     
+   43163.6907954464     
+ ELIE =   4.77988464145495       ELKE =   2.56599136847356     
+ DTELEM =  1.361679676608700E-004
+ --- FINT (TL) --- call #          10
+ time =  1.2234261E-03
+ DETF (last GP) =   1.00000547524580     
+ E11, E22, E33 =  1.145926089463067E-005 -2.104965163785000E-006
+ -3.878910413757097E-006
+ S11, S22, S33 =   2394738.43521077        307934.488097367     
+   35019.8423474104     
+ ELIE =   8.78086878862113       ELKE =   4.28751342603851     
+ DTELEM =  1.361679625131121E-004
+        8  1.089E-03 1.089E-03  00:00:00 1.341E-04         101  3.376E+00  5.675E-02
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+       12  1.609E-03 1.609E-03  00:00:00 1.262E-04         101  1.460E+01  5.952E-02
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+       16  2.111E-03 2.111E-03  00:00:00 1.252E-04         101  3.187E+01  3.597E-02
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+Output Field Frame Number     1, of      5, at step time 2.111E-03
+       20  2.612E-03 2.612E-03  00:00:00 1.251E-04         101  5.706E+01  9.834E-03
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+       24  3.113E-03 3.113E-03  00:00:00 1.251E-04         101  9.078E+01 -8.023E-02
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+       28  3.613E-03 3.613E-03  00:00:00 1.251E-04         101  1.205E+02 -2.421E-01
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+       32  4.114E-03 4.114E-03  00:00:00 1.251E-04         101  1.428E+02 -4.547E-01
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+Output Field Frame Number     2, of      5, at step time 4.114E-03
+       36  4.614E-03 4.614E-03  00:00:00 1.252E-04         101  1.622E+02 -7.409E-01
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+       40  5.115E-03 5.115E-03  00:00:00 1.252E-04         101  1.669E+02 -1.104E+00
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+       44  5.616E-03 5.616E-03  00:00:00 1.252E-04         101  1.532E+02 -1.520E+00
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+       48  6.117E-03 6.117E-03  00:00:00 1.252E-04         101  1.339E+02 -1.980E+00
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+Output Field Frame Number     3, of      5, at step time 6.117E-03
+       52  6.617E-03 6.617E-03  00:00:00 1.252E-04         101  1.082E+02 -2.436E+00
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+       56  7.118E-03 7.118E-03  00:00:00 1.252E-04         101  7.392E+01 -2.865E+00
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+       60  7.619E-03 7.619E-03  00:00:00 1.253E-04         101  4.450E+01 -3.272E+00
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+       64  8.120E-03 8.120E-03  00:00:00 1.253E-04         101  2.353E+01 -3.588E+00
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+Output Field Frame Number     4, of      5, at step time 8.120E-03
+       68  8.622E-03 8.622E-03  00:00:00 1.253E-04         101  8.286E+00 -3.798E+00
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+       73  9.234E-03 9.234E-03  00:00:00 1.253E-04         101  7.941E-01 -3.968E+00
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+       78  9.793E-03 9.793E-03  00:00:00 1.253E-04         101  6.710E-03 -4.019E+00
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+       80  1.000E-02 1.000E-02  00:00:00 1.253E-04         101  2.198E-03 -4.019E+00
+INSTANCE WITH CRITICAL ELEMENT: CELL-1
+Restart Number  1 at 1.00000E-02
+Output Field Frame Number     5, of      5, at step time 1.000E-02
+  EXPLICIT EXECUTABLE TIME SUMMARY
+       USER TIME (SEC)      =  4.00000E-02
+       SYSTEM TIME (SEC)    =  2.00000E-02
+       WALLCLOCK TIME (SEC) =            0
+              INIT (SEC) =          0
+              MAIN (SEC) =          0
+
+  THE ANALYSIS HAS COMPLETED SUCCESSFULLY
+
+Tue 29 Sep 2026 10:50:52 AM EDT
+End Abaqus/Explicit Analysis
+Abaqus JOB vuel_fiber_smoke COMPLETED

@@ -1,0 +1,164 @@
+<!doctype html><html><head><meta charset="utf-8">
+<title>VUEL Plastic-Failure Project — Stage 5 Report</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:900px;margin:0 auto;padding:32px 24px 64px;line-height:1.55;color:#1c1a17;background:#faf9f5}
+h1,h2,h3,h4{font-weight:650;letter-spacing:-0.01em}
+h1{font-size:26px;border-bottom:2px solid #ddd7cc;padding-bottom:10px}
+h2{font-size:19px;margin-top:36px;border-bottom:1px solid #ddd7cc;padding-bottom:6px}
+h3{font-size:16px;margin-top:24px}
+code{font-family:'IBM Plex Mono',ui-monospace,Consolas,monospace;background:#efe9db;padding:1px 5px;border-radius:4px;font-size:0.9em}
+pre{background:#1c1a17;color:#f0ece3;padding:14px 16px;border-radius:8px;overflow-x:auto}
+pre code{background:none;padding:0;color:inherit}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+th,td{text-align:left;padding:8px 10px;border:1px solid #ddd7cc;vertical-align:top}
+th{background:#efe9db}
+tr:nth-child(even){background:#f4f2ee}
+img,video{max-width:100%;border-radius:8px;border:1px solid #ddd7cc;display:block;margin:12px 0}
+blockquote{border-left:3px solid #b1460a;margin:0;padding:4px 16px;color:#6b645b}
+a{color:#b1460a}
+.src{color:#6b645b;font-size:12px;font-family:'IBM Plex Mono',ui-monospace,Consolas,monospace;margin-bottom:24px}
+</style></head><body>
+<div class="src">Converted from docs/VUEL_PLASTIC_FAILURE_STAGE5_REPORT_2026-10-01.md on 2026-10-06</div>
+<h1 id="vuel-plastic-failure-project-stage-5-report">VUEL Plastic-Failure Project — Stage 5 Report</h1>
+<p>Date: 2026-10-01
+Branch: <code>vuel-plastic-failure</code></p>
+<h2 id="objective">Objective</h2>
+<p>Verify the degradation-ramp failure behavior added to <code>uel/VUEL_failure.for</code>
+(<code>props(12) = DEGRADE_TIME</code>, <code>props(13) = COMP_RESIDUAL_BULK_FRAC</code>,
+<code>svars(106) = DAMAGE</code>) against a five-case T11 suite, on ROAR, with real
+Abaqus/Explicit numbers.</p>
+<h2 id="submission-history">Submission history</h2>
+<table>
+<thead>
+<tr>
+<th>Job ID</th>
+<th>Result</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>55978518</td>
+<td>FAILED (exit 64)</td>
+<td><code>t11.sbatch</code>'s own safety guard refused to run. Root cause below. No Abaqus jobs executed.</td>
+</tr>
+<tr>
+<td>55978605</td>
+<td>COMPLETED (exit 0)</td>
+<td>All 5 cases ran; checker passed.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="job-55978518-guard-false-refusal-not-a-physics-failure">Job 55978518 — guard false-refusal (not a physics failure)</h3>
+<p><code>/storage/home/zps5207/scratch</code> is a symlink to <code>/scratch/zps5207</code>. Slurm
+resolves <code>$SLURM_SUBMIT_DIR</code> to the real path, so the script saw
+<code>/scratch/zps5207/vuel_stage5_t11_20261001_01</code>, which did not match the
+guard's literal pattern <code>/storage/home/zps5207/scratch/*</code>, even though the
+directory is legitimately under scratch. <code>t11.sbatch</code> exited 64 with:</p>
+<pre><code class="language-text">REFUSING: Stage 5 must run under /storage/home/zps5207/scratch
+</code></pre>
+<p>Fix applied to <code>verification/roar/t11.sbatch</code>: canonicalize
+<code>$SLURM_SUBMIT_DIR</code> with <code>readlink -f</code> before the guard check, and accept
+either the symlinked or real scratch prefix. The guard's intent (refuse to
+run outside scratch) is unchanged — it now just resolves symlinks before
+comparing. Re-verified locally that the directory still rejects any path
+outside both prefixes before resubmitting.</p>
+<h3 id="job-55978605-successful-run">Job 55978605 — successful run</h3>
+<p>Submitted from the corrected script, under:</p>
+<pre><code class="language-text">/storage/home/zps5207/scratch/vuel_stage5_t11_20261001_01
+</code></pre>
+<p>Ran on compute node <code>p-bc-5421</code>, start 20:52:23 EDT, done 20:53:46 EDT
+(≈83s). Slurm output (<code>t11_55978605.out</code>):</p>
+<pre><code class="language-text">host: p-bc-5421  date: Thu Oct  1 20:52:23 EDT 2026
+t11_instant_chain rc=0
+t11_ramp_chain rc=0
+t11_ramp_tension rc=0
+t11_zero_cycle rc=0
+t11_residual_cycle rc=0
+checker rc=0
+done Thu Oct  1 20:53:46 EDT 2026
+</code></pre>
+<p><code>sacct</code>: <code>55978605|COMPLETED|0:0</code> (batch and extern steps both <code>COMPLETED</code>).</p>
+<h2 id="per-case-results-from-t11_resultsjson">Per-case results (from <code>t11_results.json</code>)</h2>
+<ol>
+<li>
+<p><strong><code>t11_instant_chain</code></strong> — reproduces Stage 4 instant-zero behavior.
+   Element 1 fails at <code>t=0.0029956952</code>; <code>node2_v1_final = 40.522</code>.
+   <code>strict_checks.instant_chain_reproduces_stage4 = true</code>.</p>
+</li>
+<li>
+<p><strong><code>t11_ramp_chain</code></strong> — cascading failure under a nonzero degradation
+   ramp. Elements 1 and 2 fail at <code>t=0.0029956952</code> and <code>t=0.003948871</code>;
+   <code>node2_v1_final = 141.789</code>.</p>
+</li>
+<li>
+<p><strong><code>t11_ramp_tension</code></strong> — degradation ramp under tension.</p>
+</li>
+<li>Failure at <code>t=0.0061275549</code>, ramp completes at <code>t=0.0081700711</code>
+     (measured duration <code>0.0020425162</code>, matching the configured
+     <code>DEGRADE_TIME</code>).</li>
+<li><code>pass_duration = true</code></li>
+<li><code>pass_force_persists_during_ramp = true</code> (reaction force doesn't drop
+     to zero instantly — it decays over the ramp)</li>
+<li>
+<p><code>pass_force_zero_after_ramp = true</code> (<code>max_abs_rf_after_completion =
+     0.0</code>)</p>
+</li>
+<li>
+<p><strong><code>t11_zero_cycle</code></strong> — compression/tension cycle with zero residual
+   bulk fraction (<code>COMP_RESIDUAL_BULK_FRAC = 0</code>).</p>
+</li>
+<li><code>pass_zero_control = true</code></li>
+<li>
+<p><code>zero_cycle_max_abs_rf_tension_plateau = 0.0</code> — confirms no spurious
+     stiffness remains once fully degraded, including under the tension
+     plateau.</p>
+</li>
+<li>
+<p><strong><code>t11_residual_cycle</code></strong> — same cycle with a nonzero compression-only
+   residual bulk fraction.</p>
+</li>
+<li><code>pass_compression_residual = true</code></li>
+<li><code>pass_no_residual_tension = true</code> —
+     <code>residual_cycle_max_abs_rf_tension_plateau = 0.0</code>, confirming the
+     residual stiffness is compression-only as designed.</li>
+<li>Final reaction force: measured <code>1177470208.0</code> vs. expected
+     <code>1177470100.3566337</code> — relative error <code>9.14e-8</code>, i.e. matches the
+     analytical compression-only-residual prediction to within numerical
+     noise.</li>
+</ol>
+<h2 id="overall-verdict">Overall verdict</h2>
+<p><code>"pass": true</code> in <code>t11_results.json</code>, with all <code>strict_checks</code> true
+(<code>compression_only_residual</code>, <code>instant_chain_reproduces_stage4</code>,
+<code>ramp_tension</code>) and all three <code>cycles</code> pass flags true. Stage 5 is
+<strong>verified</strong>.</p>
+<h2 id="evidence-retained-in-repo">Evidence retained in repo</h2>
+<pre><code class="language-text">verification/roar/t11/evidence_20261001/
+  t11_55978605.out
+  t11_results.json
+  t11_instant_chain.stdout
+  t11_ramp_chain.stdout
+  t11_ramp_tension.stdout
+  t11_zero_cycle.stdout
+  t11_residual_cycle.stdout
+</code></pre>
+<h2 id="files-changed-this-stage">Files changed this stage</h2>
+<ul>
+<li><code>verification/roar/t11.sbatch</code> — symlink-safe scratch-directory guard
+  (see job 55978518 above). No change to module loads, run logic, or the
+  checker invocation.</li>
+<li><code>docs/VUEL_PLASTIC_FAILURE_STAGE5_REPORT_2026-10-01.md</code> — this report.</li>
+<li><code>verification/roar/t11/evidence_20261001/</code> — retrieved Slurm/Abaqus/
+  checker evidence, added above.</li>
+</ul>
+<p>No changes were made to <code>uel/VUEL_failure.for</code>, <code>uel/VUEL.for</code>,
+<code>verification/make_t11_degradation.py</code>, or
+<code>verification/t11_check_degradation.py</code> during this stage — Codex's local
+implementation and verification scripts ran unmodified and passed as
+submitted.</p>
+<h2 id="process-note">Process note</h2>
+<p>Per current project direction, code editing and generation for subsequent
+stages is being handed to agy and Codex; this session's role going forward
+is orchestration — ROAR connection/MFA handling, job submission and
+monitoring, evidence retrieval, and reporting.</p>
+</body></html>

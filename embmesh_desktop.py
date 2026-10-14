@@ -43,7 +43,7 @@ class DesktopApp(ttk.Frame):
         self.master = master
         self.grid(sticky="nsew")
         master.title("Embedded Element Mesher")
-        master.minsize(760, 610)
+        master.minsize(800, 680)
         master.columnconfigure(0, weight=1)
         master.rowconfigure(0, weight=1)
         self.deck = tk.StringVar()
@@ -54,6 +54,11 @@ class DesktopApp(ttk.Frame):
         self.fiber_type = tk.StringVar(value="truss")
         self.thickness_axis = tk.StringVar()
         self.precise_volume = tk.BooleanVar(value=False)
+        self.plate_node_contact = tk.BooleanVar(value=False)
+        self.fiber_node_contact = tk.BooleanVar(value=False)
+        self.ball_instance = tk.StringVar()
+        self.contact_thickness = tk.StringVar(value="auto")
+        self._instance_names: list[str] = []
         self.status = tk.StringVar(value="Choose an Abaqus input deck to begin.")
         self.progress_value = tk.DoubleVar(value=0)
         self._build()
@@ -81,19 +86,40 @@ class DesktopApp(ttk.Frame):
         ttk.Label(self, text="Optional: x, y, z, or dx,dy,dz (normally auto-detected)").grid(row=8, column=2, sticky="w", padx=(8, 0))
         ttk.Checkbutton(self, text="Calculate precise per-host fiber volume (slower)", variable=self.precise_volume).grid(
             row=9, column=0, columnspan=3, sticky="w", pady=(6, 10))
+        contact = ttk.LabelFrame(self, text="Ball contact", padding=8)
+        contact.grid(row=10, column=0, columnspan=3, sticky="ew", pady=(0, 10))
+        ttk.Checkbutton(contact, text="Plate", variable=self.plate_node_contact,
+                        command=self._update_contact_controls).grid(row=0, column=0, sticky="w")
+        ttk.Checkbutton(contact, text="Fibers", variable=self.fiber_node_contact,
+                        command=self._update_contact_controls).grid(row=0, column=1, sticky="w", padx=(12, 20))
+        ttk.Label(contact, text="Ball instance").grid(row=0, column=2, sticky="e")
+        self.ball_instance_combo = ttk.Combobox(contact, textvariable=self.ball_instance, state="disabled", width=22)
+        self.ball_instance_combo.grid(row=0, column=3, sticky="ew", padx=(6, 16))
+        ttk.Label(contact, text="Thickness").grid(row=0, column=4, sticky="e")
+        self.contact_thickness_entry = ttk.Entry(contact, textvariable=self.contact_thickness, state="disabled", width=10)
+        self.contact_thickness_entry.grid(row=0, column=5, sticky="w", padx=(6, 0))
+        contact.columnconfigure(3, weight=1)
         controls = ttk.Frame(self)
-        controls.grid(row=10, column=0, columnspan=3, sticky="ew")
+        controls.grid(row=11, column=0, columnspan=3, sticky="ew")
         self.run_button = ttk.Button(controls, text="Generate embedded mesh", command=self.run_mesh)
         self.run_button.pack(side="left")
         ttk.Button(controls, text="Open output folder", command=self.open_output).pack(side="left", padx=8)
         self.preview_button = ttk.Button(controls, text="View fiber embedding", command=self.open_preview, state="disabled")
         self.preview_button.pack(side="left")
         self.progress = ttk.Progressbar(self, variable=self.progress_value, maximum=100, mode="determinate")
-        self.progress.grid(row=11, column=0, columnspan=3, sticky="ew", pady=(10, 4))
-        ttk.Label(self, textvariable=self.status).grid(row=12, column=0, columnspan=3, sticky="w", pady=(0, 4))
+        self.progress.grid(row=12, column=0, columnspan=3, sticky="ew", pady=(10, 4))
+        ttk.Label(self, textvariable=self.status).grid(row=13, column=0, columnspan=3, sticky="w", pady=(0, 4))
         self.log = tk.Text(self, height=14, wrap="word", state="disabled", font=("Cascadia Mono", 9))
-        self.log.grid(row=13, column=0, columnspan=3, sticky="nsew")
-        self.rowconfigure(13, weight=1)
+        self.log.grid(row=14, column=0, columnspan=3, sticky="nsew")
+        self.rowconfigure(14, weight=1)
+
+    def _update_contact_controls(self) -> None:
+        enabled = self.plate_node_contact.get() or self.fiber_node_contact.get()
+        self.ball_instance_combo.configure(state="readonly" if enabled and self._instance_names else "disabled")
+        self.contact_thickness_entry.configure(state="normal" if enabled else "disabled")
+        if enabled and not self.ball_instance.get() and self._instance_names:
+            candidates = [n for n in self._instance_names if n != self.instance.get()]
+            self.ball_instance.set(candidates[0] if candidates else self._instance_names[0])
 
     def _path_row(self, row: int, label: str, value: tk.StringVar, command, button: str) -> None:
         ttk.Label(self, text=label).grid(row=row, column=0, sticky="w", pady=4)
@@ -117,6 +143,9 @@ class DesktopApp(ttk.Frame):
         """Run the lightweight parser without blocking the desktop interface."""
         self.instance.set("")
         self.instance_combo.configure(values=(), state="disabled")
+        self._instance_names = []
+        self.ball_instance.set("")
+        self._update_contact_controls()
         self.status.set("Reading assembly instances from input deck…")
         try:
             command = [str(engine_path()), "list", str(deck)]
@@ -136,9 +165,11 @@ class DesktopApp(ttk.Frame):
         if Path(self.deck.get()).expanduser() != deck:
             return
         names = instance_names(output) if returncode == 0 else []
+        self._instance_names = names
         if names:
             self.instance_combo.configure(values=names, state="readonly")
             self.instance.set(names[0])
+            self._update_contact_controls()
             self.status.set(f"Found {len(names)} assembly instance(s).")
         else:
             self.instance_combo.configure(values=(), state="disabled")
@@ -178,6 +209,19 @@ class DesktopApp(ttk.Frame):
                 command += ["--thickness-axis", self.thickness_axis.get().strip()]
             if self.precise_volume.get():
                 command.append("--precise-volume")
+            if self.plate_node_contact.get() or self.fiber_node_contact.get():
+                if not self.ball_instance.get().strip():
+                    raise ValueError("Select a ball instance when ball contact is enabled.")
+                thickness = self.contact_thickness.get().strip()
+                if thickness.lower() != "auto":
+                    if float(thickness) < 0:
+                        raise ValueError("Contact thickness must be non-negative or 'auto'.")
+                if self.plate_node_contact.get():
+                    command.append("--plate-node-contact")
+                if self.fiber_node_contact.get():
+                    command.append("--fiber-node-contact")
+                command += ["--ball-instance", self.ball_instance.get().strip(),
+                            "--contact-thickness", thickness]
         except (ValueError, FileNotFoundError) as exc:
             messagebox.showerror("Cannot generate mesh", str(exc), parent=self.master)
             return

@@ -10,6 +10,7 @@ GHOST_MATERIAL = "EMBMESH_GHOST_MATERIAL"
 GHOST_CONTROLS = "EMBMESH_GHOST_CONTROLS"
 GHOST_DIAGNOSTIC_ELSET = "EMBMESH_GHOST_DIAGNOSTICS"
 GHOST_DIAGNOSTIC_VARIABLES = ("S", "LE", "PEEQ", "SDEG", "STATUS")
+VUEL_DIAGNOSTICS_ELSET = "EMBMESH_VUEL_DIAGNOSTICS"
 NSVARS = 107
 
 
@@ -356,13 +357,36 @@ def convert_to_vuel_ghost(lines, deck, instance, selected_elements, fractions, o
     ghost_material = _scaled_ghost_material(
         source_material, options.ghost_scale,
         options.ghost_ductile_failure_strain)
+    # Element-based contact surfaces on the host must follow the native ghost
+    # elements: the VU1 host elements have no contact faces of their own.
+    surface_elsets = set()
+    for _, block in _blocks(transformed):
+        if block and _keyword(block[0])[0] == "surface" \
+                and str(_keyword(block[0])[1].get("type", "")).upper() == "ELEMENT":
+            for record in _records(block[1:]):
+                surface_elsets.add(record.split(",")[0].strip())
     final = []
     inserted_model_data = False
     for prefix, block in _blocks(transformed):
         final.extend(prefix)
         if not block:
             continue
-        name, _ = _keyword(block[0])
+        name, keyword_options = _keyword(block[0])
+        if name == "elset" and str(keyword_options.get("elset", "")) in surface_elsets \
+                and str(keyword_options.get("instance", "")) == instance:
+            members = set()
+            for record in _records(block[1:]):
+                fields = [int(x) for x in record.split(",") if x.strip()]
+                if "generate" in keyword_options:
+                    step = fields[2] if len(fields) > 2 else 1
+                    members.update(range(fields[0], fields[1] + 1, step))
+                else:
+                    members.update(fields)
+            remapped = {ghost_by_host.get(m, m) for m in members}
+            if remapped != members:
+                header = re.sub(r",\s*generate\b", "", block[0], flags=re.I)
+                final.extend([header] + _instance_set_lines("x", instance, remapped)[1:])
+                continue
         if not inserted_model_data and name == "material":
             final.extend([
                 f"*Section Controls, name={GHOST_CONTROLS}, element deletion=YES",
@@ -373,8 +397,16 @@ def convert_to_vuel_ghost(lines, deck, instance, selected_elements, fractions, o
         if name == "end assembly":
             final.extend(_instance_set_lines(
                 GHOST_DIAGNOSTIC_ELSET, instance, ghost_by_host.values()))
+            final.extend(_instance_set_lines(
+                VUEL_DIAGNOSTICS_ELSET, instance, ghost_by_host.keys()))
         if name == "end step":
             final.extend(_ghost_diagnostic_output_lines())
+            final.extend([
+                "** embmesh: host VU1 failure state diagnostics",
+                "*Output, field, number interval=1000",
+                f"*Element Output, elset={VUEL_DIAGNOSTICS_ELSET}",
+                "SDV49, SDV106, SDV107",
+            ])
         final.extend(block)
         if name == "end assembly":
             final.extend(_initial_solution_lines(instance, fractions))

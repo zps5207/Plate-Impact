@@ -1,0 +1,20 @@
+{
+  "curve_meta": {
+    "full_circle": true,
+    "r_inner": 1.999999999995623,
+    "r_outer": 3.0000000000005054,
+    "z_max": 5.0,
+    "z_min": 0.0
+  },
+  "curved": "cylindrical",
+  "embedded_endpoint_total": 4468,
+  "embedded_endpoints_inside": 4468,
+  "estimated_stable_time_increment": 0.19790227182046327,
+  "fiber_count": 284,
+  "host_count": 192,
+  "propagated_symmetry_nodes": {},
+  "symmetry_constraints": {},
+  "total_fiber_volume": 63.039122400006946,
+  "volume_fraction_max": 1.037548846269894,
+  "volume_fraction_min": 0.6893411396067392
+}

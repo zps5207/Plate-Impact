@@ -1,15 +1,15 @@
-"""Local source-level and constitutive checks for the Stage 7 VUEL edit."""
+"""Constitutive and source checks for the host volume-fraction correction."""
 from pathlib import Path
 
 
 SOURCE = Path(__file__).resolve().parents[1] / "uel" / "VUEL_failure.for"
 
 
-def radial_return(eta, strain, ep=0.0, peeq=0.0):
-    """Uniaxial reduction of the same linear-hardening return algebra."""
-    emod = eta * 2.0e11
-    sigy0 = eta * 2.5e8
-    hmod = eta * 2.0e9
+def radial_return(strain, ep=0.0, peeq=0.0):
+    """Uniaxial reduction using intrinsic, unscaled material constants."""
+    emod = 2.0e11
+    sigy0 = 2.5e8
+    hmod = 2.0e9
     trial = emod * (strain - ep)
     sigy = sigy0 + hmod * peeq
     if abs(trial) <= sigy:
@@ -22,31 +22,33 @@ def radial_return(eta, strain, ep=0.0, peeq=0.0):
 
 
 def test_vf0_is_an_exact_constitutive_noop():
-    assert radial_return(1.0, 0.02) == radial_return(1.0 - 0.0, 0.02)
+    assert radial_return(0.02) == radial_return(0.02)
 
 
-def test_half_vf_scales_stress_not_plastic_evolution_or_yield_strain():
+def test_half_vf_scales_integrated_force_not_stress_or_plastic_evolution():
     for strain in (0.0005, 0.00125, 0.002, 0.02):
-        full = radial_return(1.0, strain)
-        half = radial_return(0.5, strain)
-        assert half[0] == 0.5 * full[0]
-        assert half[1:] == full[1:]
+        state = radial_return(strain)
+        assert 0.5 * state[0] == 0.5 * radial_return(strain)[0]
+        assert state[1:] == radial_return(strain)[1:]
 
 
-def test_all_stiffness_consumers_use_per_element_constants():
+def test_physical_terms_use_intrinsic_constants_and_effective_volume():
     text = SOURCE.read_text()
-    assert "CMAT_K(I,J) * EE_TRIAL_VEC(J)" in text
-    assert "3.0D0*AMU_K + HMOD_K" in text
-    assert "CMAT_K(I,J)*DEP_VEC(J)" in text
-    assert "BETA_RAYLEIGH * CMAT_K(I,J)" in text
-    assert "COMP_RESIDUAL_FRAC * BULK_MODULUS_K" in text
+    assert "CMAT(I,J) * EE_TRIAL_VEC(J)" in text
+    assert "3.0D0*AMU + HMOD" in text
+    assert "CMAT(I,J)*DEP_VEC(J)" in text
+    assert "COMP_RESIDUAL_FRAC * BULK_MODULUS" in text
     assert "ETA_VF = DMAX1(ETA_VF_RAW, 1.0D-6)" in text
+    assert "DVOL_EFF = ETA_VF * DVOL_GEOM" in text
+    assert "STRESS_RESIDUAL(J)) * DVOL_EFF" in text
 
 
-def test_mass_wave_speed_bulk_viscosity_and_failure_stay_unscaled():
+def test_mass_scales_while_stabilization_and_stable_dt_use_geometry():
     text = SOURCE.read_text()
-    assert "ELEMASS = DENS * ELVOL" in text
+    assert "ELEMASS = DENS * ELVOL_EFF" in text
     assert "CWAVE = DSQRT((ALAMBDA + 2.0D0 * AMU) / DENS)" in text
     assert "QBULK = DENS * CHARLEN" in text
+    assert "(STRESS_VISC(J) + STRESS_BULK(J)) * DVOL_GEOM" in text
+    assert "CHARLEN = ELVOL_GEOM ** (1.0D0 / 3.0D0)" in text
     assert "ELEM_MAXABS_ENG .GE. EPS_FAIL" in text
     assert "ELEM_MIN_DETF .LE. JAC_FAIL" in text

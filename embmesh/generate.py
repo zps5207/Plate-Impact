@@ -12,6 +12,7 @@ from .geometry import point_in_hex
 from .symmetry import boundary_symmetry_sets, fiber_nodes_on_symmetry
 from .hostvtk import write_host_fiber_vtk
 from .vuelghost import VuelGhostOptions, convert_to_vuel_ghost
+from .contact import add_ball_node_contact
 
 
 def _validate(diameter, gap):
@@ -39,6 +40,8 @@ def mesh(deck_path, instance, diameter, output_dir, elset=None, gap=0., fiber_ty
          curved=None, curve_axis_point=(0., 0., 0.), curve_axis_dir=(0., 0., 1.), curve_center=(0., 0., 0.),
          curve_pole_axis=(0., 0., 1.), fiber_material="Fiber", precise_volume=False,
          host_mode="native", vuel_ghost_options=None,
+         plate_node_contact=False, fiber_node_contact=False, ball_instance=None,
+         contact_thickness="auto",
          progress=None):
     """Mesh a host region with embedded fibers. `curved` selects the layup family:
     None/'flat' (default) for a flat plate/box/cube, 'cylindrical' for a plate
@@ -123,6 +126,10 @@ def mesh(deck_path, instance, diameter, output_dir, elset=None, gap=0., fiber_ty
                            node_offset=node_offset, element_offset=element_offset,
                            host_elset=elset or 'HOST', host_instance=instance, symmetry_nodes=propagated,
                            fiber_material=fiber_material, host_labels=embedded_host_labels)
+    contact_meta = add_ball_node_contact(
+        out / 'output.inp', d, instance, elems, nodes, fibers, node_offset,
+        ball_instance, plate=plate_node_contact, fiber=fiber_node_contact,
+        thickness=contact_thickness)
     report_kw = dict(fiber_count=len(fibers), host_count=len(elems), curved=curved,
                  curve_meta={k: (list(v) if isinstance(v, np.ndarray) else v) for k, v in curve_meta.items()},
                  symmetry_constraints={k: [int(v[0]), float(v[1])] for k, v in constraints.items()},
@@ -133,6 +140,8 @@ def mesh(deck_path, instance, diameter, output_dir, elset=None, gap=0., fiber_ty
                  embedded_endpoints_inside=inside, embedded_endpoint_total=total_pts,
                  estimated_stable_time_increment=stable_dt)
     report_kw.update(host_meta)
+    if contact_meta is not None:
+        report_kw["ball_node_contact"] = contact_meta
     if precise_rows is not None:
         by_label = {r[0]: r for r in rows}
         diffs = [abs(pr[2] - by_label[pr[0]][2]) / by_label[pr[0]][2] for pr in precise_rows if by_label[pr[0]][2] > 0]

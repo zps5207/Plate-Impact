@@ -1,0 +1,85 @@
+{
+  "cycles": {
+    "pass_compression_residual": true,
+    "pass_no_residual_tension": true,
+    "pass_zero_control": true,
+    "residual_cycle_failure_events": [
+      {
+        "criterion": "ENG STRAIN",
+        "element": 1,
+        "time": 0.0020425196
+      }
+    ],
+    "residual_cycle_final": {
+      "rf1_back_sum": 1177470208.0,
+      "time": 0.012000000104308128,
+      "u1": -0.07998987287282944,
+      "v1": -0.07078170776367188
+    },
+    "residual_cycle_max_abs_rf_tension_plateau": 0.0,
+    "residual_expected_final_abs_rf": 1177470100.3566337,
+    "residual_final_rel_error": 9.141919298351554e-08,
+    "residual_measured_final_abs_rf": 1177470208.0,
+    "zero_cycle_failure_events": [
+      {
+        "criterion": "ENG STRAIN",
+        "element": 1,
+        "time": 0.0020425196
+      }
+    ],
+    "zero_cycle_final": {
+      "rf1_back_sum": 0.0,
+      "time": 0.012000000104308128,
+      "u1": -0.07994469255208969,
+      "v1": -16.162118911743164
+    },
+    "zero_cycle_max_abs_rf_tension_plateau": 0.0
+  },
+  "instant_chain": {
+    "failed_elements": [
+      1
+    ],
+    "failure_times": [
+      0.0029956952
+    ],
+    "first_failure_time": 0.0029956952,
+    "node2_v1_final": 40.52199935913086,
+    "node2_v1_max_after_first_failure": 152.7091827392578,
+    "node2_v1_min_after_first_failure": -90.69743347167969
+  },
+  "pass": true,
+  "ramp_chain": {
+    "failed_elements": [
+      1,
+      2
+    ],
+    "failure_times": [
+      0.0029956952,
+      0.003948871
+    ],
+    "first_failure_time": 0.0029956952,
+    "node2_v1_final": 141.78883361816406,
+    "node2_v1_max_after_first_failure": 178.02096557617188,
+    "node2_v1_min_after_first_failure": 16.009838104248047
+  },
+  "ramp_tension": {
+    "completion_time": 0.0081700711,
+    "failure_time": 0.0061275549,
+    "first_post_failure_frame": {
+      "rf1_back_sum": -4290089920.0,
+      "time": 0.006127554923295975,
+      "u1": 0.020796997472643852,
+      "v1": 6.242206573486328
+    },
+    "max_abs_rf_after_completion": 0.0,
+    "measured_degradation_duration": 0.0020425162000000004,
+    "pass_duration": true,
+    "pass_force_persists_during_ramp": true,
+    "pass_force_zero_after_ramp": true
+  },
+  "strict_checks": {
+    "compression_only_residual": true,
+    "instant_chain_reproduces_stage4": true,
+    "ramp_tension": true
+  }
+}
