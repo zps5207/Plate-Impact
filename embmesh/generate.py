@@ -5,6 +5,7 @@ from pathlib import Path
 from .parser import parse_deck
 from .selection import select_elements
 from .fibers import flat_disc_fibers
+from .stacked import stacked_surface_fibers
 from .curved_layup import cylindrical_fibers, spherical_fibers
 from .volume import fiber_volume_rows, fiber_volume_rows_precise
 from .writers import write_volume_csv, write_precise_volume_csv, write_report, write_vtk, append_fibers_to_deck
@@ -44,8 +45,9 @@ def mesh(deck_path, instance, diameter, output_dir, elset=None, gap=0., fiber_ty
          contact_thickness="auto",
          progress=None):
     """Mesh a host region with embedded fibers. `curved` selects the layup family:
-    None/'flat' (default) for a flat plate/box/cube, 'cylindrical' for a plate
-    curved about a single axis, or 'spherical' for a spherically curved plate."""
+    None/'flat' (default) for a flat plate/box/cube, 'stacked' for a curved
+    translation stack, 'cylindrical' for a plate curved about a single axis,
+    or 'spherical' for a spherically curved plate."""
     def report(percent, message):
         if progress:
             progress(percent, message)
@@ -60,12 +62,15 @@ def mesh(deck_path, instance, diameter, output_dir, elset=None, gap=0., fiber_ty
     report(25, "Generating fiber layout")
     if curved in ("flat", "none", ""):
         fibers = flat_disc_fibers(elems, nodes, diameter, thickness_axis=thickness_axis, gap=gap, reference=reference)
+    elif curved == "stacked":
+        fibers, curve_meta = stacked_surface_fibers(elems, nodes, diameter, thickness_axis=thickness_axis,
+                                                     gap=gap, reference=reference, return_meta=True)
     elif curved in ("cylindrical", "cylinder", "single-axis", "single_axis"):
         fibers, curve_meta = cylindrical_fibers(nodes, diameter, curve_axis_point, curve_axis_dir, gap=gap, reference=reference)
     elif curved in ("spherical", "sphere"):
         fibers, curve_meta = spherical_fibers(nodes, diameter, curve_center, curve_pole_axis, gap=gap, reference=reference)
     else:
-        raise ValueError(f"unknown --curved mode {curved!r}; expected flat, cylindrical, or spherical")
+        raise ValueError(f"unknown --curved mode {curved!r}; expected flat, stacked, cylindrical, or spherical")
 
     out = Path(output_dir); out.mkdir(parents=True, exist_ok=True)
     report(35, "Calculating fiber volume in host elements")
@@ -139,6 +144,9 @@ def mesh(deck_path, instance, diameter, output_dir, elset=None, gap=0., fiber_ty
                  volume_fraction_max=max((r[3] for r in rows), default=0),
                  embedded_endpoints_inside=inside, embedded_endpoint_total=total_pts,
                  estimated_stable_time_increment=stable_dt)
+    if curved == "stacked":
+        report_kw.update(curve_meta)
+        report_kw["shortest_fiber_segment_m"] = stable_dt
     report_kw.update(host_meta)
     if contact_meta is not None:
         report_kw["ball_node_contact"] = contact_meta

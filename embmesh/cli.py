@@ -26,11 +26,11 @@ def build_parser():
     v.add_argument("--fiber-type", choices=("truss", "beam"), default="truss")
     v.add_argument("--preview", action="store_true",
                     help="also render an interactive, rotatable HTML preview (requires plotly)")
-    v.add_argument("--thickness-axis", help="flat/box layup only: 'x', 'y', 'z', or 'dx,dy,dz'; "
+    v.add_argument("--thickness-axis", help="flat or stacked layup: 'x', 'y', 'z', or 'dx,dy,dz'; "
                                              "auto-detected from the host bounding box if omitted")
-    v.add_argument("--curved", choices=("flat", "cylindrical", "spherical"), default="flat",
-                    help="layup family: flat plate/box/cube (default), a plate curved about a single "
-                         "axis, or a spherically curved plate")
+    v.add_argument("--curved", choices=("flat", "stacked", "cylindrical", "spherical"), default="flat",
+                    help="layup family: flat plate/box/cube (default), translated stacked surface, "
+                         "single-axis cylinder, or spherical plate")
     v.add_argument("--curve-axis-point", type=_vec3, default=[0, 0, 0], help="cylindrical: a point on the curve axis, 'x,y,z'")
     v.add_argument("--curve-axis-dir", type=_vec3, default=[0, 0, 1], help="cylindrical: the curve axis direction, 'dx,dy,dz'")
     v.add_argument("--curve-center", type=_vec3, default=[0, 0, 0], help="spherical: the sphere center, 'x,y,z'")
