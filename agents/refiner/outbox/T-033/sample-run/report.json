@@ -1,0 +1,93 @@
+{
+  "plies": 4,
+  "thickness_min": 0.009999999999999998,
+  "thickness_mean": 0.01,
+  "thickness_max": 0.010000000000000002,
+  "resulting_ply_thickness": 0.0025,
+  "stack_vector": [
+    0.0,
+    0.01,
+    0.0
+  ],
+  "step": [
+    0.0,
+    0.0025,
+    0.0
+  ],
+  "mismatch_max": 1.734723475976807e-18,
+  "mismatch_mean": 8.628442289363806e-19,
+  "mismatch_p95": 1.734723475976807e-18,
+  "mismatch_tolerance": 0.00010398284838236746,
+  "expected_interface_gap_max": 0.0,
+  "stacked_top_residual_max": 1.734723475976807e-18,
+  "stacked_top_residual_mean": 8.628442289363806e-19,
+  "stacked_top_residual_p95": 1.734723475976807e-18,
+  "step_world": [
+    0.0,
+    1.5308084989341915e-19,
+    -0.0025000000000000005
+  ],
+  "old_instance_references": [],
+  "assembly_sets_rewritten": [
+    "*elset plate",
+    "*nset Outside"
+  ],
+  "impact_surface_elsets_left": [],
+  "warnings": [],
+  "layup": [
+    0.0,
+    90.0,
+    45.0,
+    -45.0
+  ],
+  "fibers_per_angle": {
+    "-45.0": 140,
+    "0.0": 99,
+    "45.0": 98,
+    "90.0": 99
+  },
+  "cohesion": {
+    "interaction": "Cohesion",
+    "pairs": 3
+  },
+  "ball_contact": {
+    "ball_instance": "Ball-1",
+    "plate_instances": [
+      "Ply-1",
+      "Ply-2",
+      "Ply-3",
+      "Ply-4"
+    ],
+    "plate_node_count": 19928,
+    "fiber_instances": [
+      "Fibers-Ply-1",
+      "Fibers-Ply-2",
+      "Fibers-Ply-3",
+      "Fibers-Ply-4"
+    ],
+    "fiber_node_count": 12479,
+    "host_median_edge_length": 0.0009986194154699463,
+    "host_edge_source": "part Plate, median of all 12 C3D8 edges",
+    "fiber_median_segment_length": 0.001284932661822079,
+    "plate_contact_thickness": 0.0004993097077349731,
+    "fiber_contact_thickness": 0.0004993097077349731,
+    "plate_thickness_ratio": 0.19972388309398925,
+    "thickness_note": "within ply thickness",
+    "interaction": "EMBMESH_CONTACT",
+    "interaction_reused": false,
+    "inclusion_pairs": [
+      [
+        "EMBMESH_PLATE_NODES",
+        "EMBMESH_BALL_SURF"
+      ],
+      [
+        "EMBMESH_FIBER_NODES",
+        "EMBMESH_BALL_SURF"
+      ]
+    ],
+    "existing_contact_extended": false,
+    "removed_old_references": [],
+    "stale_references_found": [],
+    "replaced_contact_inclusions": []
+  }
+}

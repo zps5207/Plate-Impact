@@ -1,0 +1,45 @@
+*Part, name=Plate
+*Node
+1, 0, 0, 0
+2, 0, 1, 0
+3, 1, 1, 0
+4, 1, 0, 0
+5, 0, 0, 0.002
+6, 0, 1, 0.002
+7, 1, 1, 0.002
+8, 1, 0, 0.002
+*Element, type=C3D8R
+1, 1, 2, 3, 4, 5, 6, 7, 8
+*Elset, elset=Plate
+1
+*Solid Section, elset=Plate, material=Matrix
+,
+*Elset, elset=PLY
+1
+*Surface, type=ELEMENT, name=PLY_BOTTOM
+1, S1
+*Surface, type=ELEMENT, name=PLY_TOP
+1, S2
+*End Part
+*Assembly, name=Assembly
+*Instance, name=Ply-1, part=Plate
+0, 0, 0
+*End Instance
+*Instance, name=Ply-2, part=Plate
+0, 0, 0.002
+*End Instance
+*Instance, name=Ply-3, part=Plate
+0, 0, 0.0040000000000000001
+*End Instance
+*Instance, name=Ply-4, part=Plate
+0, 0, 0.0060000000000000001
+*End Instance
+*Instance, name=Ply-5, part=Plate
+0, 0, 0.0080000000000000002
+*End Instance
+*Nset, nset=Fixture, instance=Plate-1
+1, 2
+*End Assembly
+*Material, name=Matrix
+*Elastic
+1, 0.3

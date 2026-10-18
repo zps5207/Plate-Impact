@@ -1,0 +1,22 @@
+{
+  "source_outer_projection_drift_max_m": 7.641946934349109e-05,
+  "source_outer_projection_drift_p95_m": 1.599281403951506e-05,
+  "source_outer_projection_drift_median_m": 2.482248158423733e-06,
+  "stack_vector_m": [
+    0,
+    -0.01,
+    0
+  ],
+  "stack_deviation_max_m": 0.0,
+  "cells": 2400,
+  "top_nodes": 2491,
+  "new_nodes": 4982,
+  "surface_faces": {
+    "1": 2400,
+    "5": 32,
+    "6": 50,
+    "4": 48,
+    "3": 50
+  },
+  "note": "Bottom face reconstructed by translating real top face; not the source bottom coordinates."
+}

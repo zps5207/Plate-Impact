@@ -1,0 +1,343 @@
+{
+  "plies": 8,
+  "thickness_min": 0.009999999949999998,
+  "thickness_mean": 0.009999999999916666,
+  "thickness_max": 0.010000000050000003,
+  "resulting_ply_thickness": 0.0012499999999895832,
+  "stack_vector": [
+    0.0,
+    0.01,
+    0.0
+  ],
+  "step": [
+    0.0,
+    0.00125,
+    0.0
+  ],
+  "mismatch_max": 5.0000002402295074e-11,
+  "mismatch_mean": 2.51666667513235e-11,
+  "mismatch_p95": 4.999999893284812e-11,
+  "mismatch_tolerance": 0.00010398284824126227,
+  "expected_interface_gap_max": 0.0,
+  "stacked_top_residual_max": 5.0000002402295074e-11,
+  "stacked_top_residual_mean": 2.51666667513235e-11,
+  "stacked_top_residual_p95": 4.999999893284812e-11,
+  "collapse": {
+    "instance": "Plate-1",
+    "part": "Plate",
+    "thickness_axis": [
+      0.0,
+      1.0,
+      0.0
+    ],
+    "columns": 2400,
+    "layers_per_column_min": 10,
+    "layers_per_column_max": 10,
+    "elements_before": 24000,
+    "elements_after": 2400,
+    "nodes_before": 27401,
+    "nodes_after": 4982,
+    "volume_before": 1.9633692481144763e-05,
+    "volume_after": 1.9633692481144763e-05,
+    "volume_ratio": 1.0,
+    "stack_vector": [
+      0.0,
+      0.01,
+      0.0
+    ],
+    "residual_max": 5.0000002402295074e-11,
+    "residual_mean": 2.51666667513235e-11,
+    "residual_p95": 4.999999893284812e-11,
+    "dropped_side_faces": {
+      "Surf-1": 1800
+    },
+    "surviving_faces": {
+      "Surf-1": {
+        "S1": 2400
+      }
+    },
+    "nsets_rewritten": [
+      "Outside (instance=Plate-1)",
+      "X (instance=Plate-1)",
+      "Y (instance=Plate-1)",
+      "plate (instance=Plate-1)"
+    ],
+    "elsets_rewritten": [
+      "Plate",
+      "plate (instance=Plate-1)"
+    ]
+  },
+  "step_world": [
+    0.0,
+    7.654042494670957e-20,
+    -0.0012499999999999994
+  ],
+  "old_instance_references": [],
+  "assembly_sets_rewritten": [
+    "*elset plate",
+    "*nset Outside",
+    "*nset X",
+    "*nset Y",
+    "*nset plate"
+  ],
+  "impact_surface_elsets_left": [
+    "*elset _Surf-1_S1"
+  ],
+  "warnings": [
+    "fiber volume fraction reaches or exceeds 1 in some hosts; VUEL floors remaining matrix fraction at 1e-6"
+  ],
+  "cohesive_interaction": {
+    "name": "Cohesion",
+    "material": "dyneema-hb26",
+    "rate": "ballistic",
+    "thickness_used": 0.0012499999999895832,
+    "units": "m",
+    "k": [
+      48000000000.40001,
+      28800000000.240005,
+      28800000000.240005
+    ],
+    "strength": [
+      1200000.0,
+      2600000.0,
+      2600000.0
+    ],
+    "fracture_energy": [
+      544.0,
+      1088.0,
+      1088.0
+    ],
+    "warnings": []
+  },
+  "vuel_ghost": {
+    "host_mode": "vuel-ghost",
+    "vuel_type": "VU1",
+    "vuel_nsvars": 107,
+    "fiber_volume_svar": 107,
+    "ghost_scale": 0.0001,
+    "ghost_ductile_failure_strain": 1e-06,
+    "ghost_label_min": 24001,
+    "ghost_label_max": 26400,
+    "ghost_diagnostic_elset": "EMBMESH_GHOST_DIAGNOSTICS",
+    "ghost_diagnostic_variables": [
+      "S",
+      "LE",
+      "PEEQ",
+      "SDEG",
+      "STATUS"
+    ],
+    "source_host_material": "Matrix",
+    "vuel_properties": [
+      5080000.0,
+      0.4,
+      980.0,
+      0.0,
+      0.06,
+      1.2,
+      0.113800332690901,
+      611000.0,
+      44500.0,
+      1.0,
+      0.05,
+      0.0,
+      0.0
+    ],
+    "expected_host_mass_ratio_including_ghost": 1.0001,
+    "vuel_elements_per_ply": 2400,
+    "ghost_elements_per_ply": 2400,
+    "total_vuel_elements": 19200,
+    "total_ghost_elements": 19200,
+    "per_ply_fractions": {
+      "Ply-1": {
+        "min": 0.0,
+        "max": 1.3502503371359682,
+        "mean": 0.5164030944258006,
+        "at_or_above_one": 19
+      },
+      "Ply-2": {
+        "min": 0.0,
+        "max": 1.5003234757770552,
+        "mean": 0.5163792982461338,
+        "at_or_above_one": 21
+      },
+      "Ply-3": {
+        "min": 0.0,
+        "max": 1.3502503371359682,
+        "mean": 0.5164030944258006,
+        "at_or_above_one": 19
+      },
+      "Ply-4": {
+        "min": 0.0,
+        "max": 1.5003234757770552,
+        "mean": 0.5163792982461338,
+        "at_or_above_one": 21
+      },
+      "Ply-5": {
+        "min": 0.0,
+        "max": 1.3502503371359682,
+        "mean": 0.5164030944258006,
+        "at_or_above_one": 19
+      },
+      "Ply-6": {
+        "min": 0.0,
+        "max": 1.5003234757770552,
+        "mean": 0.5163792982461338,
+        "at_or_above_one": 21
+      },
+      "Ply-7": {
+        "min": 0.0,
+        "max": 1.3502503371359682,
+        "mean": 0.5164030944258006,
+        "at_or_above_one": 19
+      },
+      "Ply-8": {
+        "min": 0.0,
+        "max": 1.5003234757770552,
+        "mean": 0.5163792982461338,
+        "at_or_above_one": 21
+      }
+    }
+  },
+  "fiber_symmetry_nodes_per_ply": {
+    "Ply-1": {
+      "X": 41
+    },
+    "Ply-2": {
+      "Y": 41
+    },
+    "Ply-3": {
+      "X": 41
+    },
+    "Ply-4": {
+      "Y": 41
+    },
+    "Ply-5": {
+      "X": 41
+    },
+    "Ply-6": {
+      "Y": 41
+    },
+    "Ply-7": {
+      "X": 41
+    },
+    "Ply-8": {
+      "Y": 41
+    }
+  },
+  "layup": [
+    0.0,
+    90.0,
+    0.0,
+    90.0,
+    0.0,
+    90.0,
+    0.0,
+    90.0
+  ],
+  "fibers_per_angle": {
+    "0.0": 41,
+    "90.0": 41
+  },
+  "ball_contact": {
+    "ball_instance": "Ball-1",
+    "plate_instances": [
+      "Ply-1",
+      "Ply-2",
+      "Ply-3",
+      "Ply-4",
+      "Ply-5",
+      "Ply-6",
+      "Ply-7",
+      "Ply-8"
+    ],
+    "plate_node_count": 39856,
+    "fiber_instances": [
+      "Fibers-Ply-1",
+      "Fibers-Ply-2",
+      "Fibers-Ply-3",
+      "Fibers-Ply-4",
+      "Fibers-Ply-5",
+      "Fibers-Ply-6",
+      "Fibers-Ply-7",
+      "Fibers-Ply-8"
+    ],
+    "fiber_node_count": 12912,
+    "host_median_edge_length": 0.0009986194112451443,
+    "host_edge_source": "part Plate, median of all 12 C3D8 edges",
+    "fiber_median_segment_length": 0.0010221857222809984,
+    "plate_contact_thickness": 0.0004993097056225722,
+    "fiber_contact_thickness": 0.0004993097056225722,
+    "plate_thickness_ratio": 0.3994477645013865,
+    "thickness_note": "within ply thickness",
+    "interaction": "General",
+    "interaction_reused": true,
+    "inclusion_pairs": [
+      [
+        "Surf-1",
+        "Surf-2"
+      ],
+      [
+        "Surf-2",
+        "Surf-1"
+      ],
+      [
+        "Surf-1",
+        ""
+      ],
+      [
+        "Surf-2",
+        ""
+      ],
+      [
+        "EMBMESH_PLATE_NODES",
+        "EMBMESH_BALL_SURF"
+      ],
+      [
+        "EMBMESH_FIBER_NODES",
+        "EMBMESH_BALL_SURF"
+      ]
+    ],
+    "existing_contact_extended": true,
+    "removed_old_references": [
+      "*Elset, elset=_Surf-1_S1, internal, instance=Plate-1, generate",
+      "21601, 24000, 1",
+      "*Surface, type=ELEMENT, name=Surf-1",
+      "_Surf-1_S1, S1",
+      "Surf-1 , Surf-2",
+      "Surf-2 , Surf-1",
+      "Surf-1 ,"
+    ],
+    "stale_references_found": [
+      "*Elset, elset=_Surf-1_S1, internal, instance=Plate-1, generate",
+      "21601, 24000, 1",
+      "*Surface, type=ELEMENT, name=Surf-1",
+      "_Surf-1_S1, S1",
+      "Surf-1 , Surf-2",
+      "Surf-2 , Surf-1",
+      "Surf-1 ,"
+    ],
+    "replaced_contact_inclusions": [
+      "*Contact Inclusions",
+      "Surf-2 ,",
+      "*Contact Property Assignment",
+      ",  , General"
+    ],
+    "element_contact": {
+      "surface_name": "Surf-1",
+      "target_instance": "Ply-8",
+      "target_side": "top",
+      "faces": [
+        "S1"
+      ],
+      "element_count": 2400,
+      "ghost_remapped": true,
+      "selection_reason": "Surf-1 faces sit on stack-top face (2400 faces); assigned to Ply-8_top",
+      "four_inclusion_lines_restored": true
+    }
+  },
+  "cohesion": {
+    "interaction": "Cohesion",
+    "pairs": 7,
+    "mechanism": "general contact (*Contact Property Assignment per interface)"
+  }
+}

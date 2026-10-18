@@ -1,0 +1,26 @@
+{
+  "command": [
+    "C:\\Users\\salas\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+    "-B",
+    "-m",
+    "embmesh.cli",
+    "visualize",
+    "C:\\Users\\salas\\OneDrive - The Pennsylvania State University\\Plate Impact\\Meshing\\Flatv2.inp",
+    "--instance",
+    "Plate-1",
+    "--diameter",
+    "0.001",
+    "--curved",
+    "stacked",
+    "--plate-node-contact",
+    "--fiber-node-contact",
+    "--ball-instance",
+    "Ball-1",
+    "--preview",
+    "--output",
+    "C:\\Users\\salas\\OneDrive - The Pennsylvania State University\\Plate Impact\\agents\\refiner\\outbox\\T-025\\flat_stacked"
+  ],
+  "exit_code": 1,
+  "wall_seconds": 357.51600000000326,
+  "peak_process_tree_rss_bytes": 204918784
+}

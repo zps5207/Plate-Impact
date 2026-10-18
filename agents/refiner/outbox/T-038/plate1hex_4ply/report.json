@@ -1,0 +1,115 @@
+{
+  "plies": 4,
+  "thickness_min": 0.009999999999999998,
+  "thickness_mean": 0.01,
+  "thickness_max": 0.010000000000000002,
+  "resulting_ply_thickness": 0.0025,
+  "stack_vector": [
+    0.0,
+    0.01,
+    0.0
+  ],
+  "step": [
+    0.0,
+    0.0025,
+    0.0
+  ],
+  "mismatch_max": 1.734723475976807e-18,
+  "mismatch_mean": 8.628442289363806e-19,
+  "mismatch_p95": 1.734723475976807e-18,
+  "mismatch_tolerance": 0.00010398284838236746,
+  "expected_interface_gap_max": 0.0,
+  "stacked_top_residual_max": 1.734723475976807e-18,
+  "stacked_top_residual_mean": 8.628442289363806e-19,
+  "stacked_top_residual_p95": 1.734723475976807e-18,
+  "step_world": [
+    0.0,
+    1.5308084989341915e-19,
+    -0.0025000000000000005
+  ],
+  "old_instance_references": [],
+  "assembly_sets_rewritten": [
+    "*elset plate",
+    "*nset Outside"
+  ],
+  "impact_surface_elsets_left": [],
+  "warnings": [],
+  "vuel_ghost": {
+    "host_mode": "vuel-ghost",
+    "vuel_type": "VU1",
+    "vuel_nsvars": 107,
+    "fiber_volume_svar": 107,
+    "ghost_scale": 0.0001,
+    "ghost_ductile_failure_strain": 0.25,
+    "ghost_label_min": 2401,
+    "ghost_label_max": 4800,
+    "ghost_diagnostic_elset": "EMBMESH_GHOST_DIAGNOSTICS",
+    "ghost_diagnostic_variables": [
+      "S",
+      "LE",
+      "PEEQ",
+      "SDEG",
+      "STATUS"
+    ],
+    "source_host_material": "Matrix",
+    "vuel_properties": [
+      5080000.0,
+      0.4,
+      980.0,
+      0.0,
+      0.06,
+      1.2,
+      0.25,
+      2000000.0,
+      10000000.0,
+      1.0,
+      0.05,
+      0.0,
+      0.0
+    ],
+    "expected_host_mass_ratio_including_ghost": 1.0001,
+    "vuel_elements_per_ply": 2400,
+    "ghost_elements_per_ply": 2400,
+    "total_vuel_elements": 9600,
+    "total_ghost_elements": 9600,
+    "per_ply_fractions": {
+      "Ply-1": {
+        "min": 0.0,
+        "max": 0.6752017762219213,
+        "mean": 0.24940327066140394
+      },
+      "Ply-2": {
+        "min": 0.0,
+        "max": 0.750124141711203,
+        "mean": 0.24937247150515507
+      },
+      "Ply-3": {
+        "min": 0.0,
+        "max": 0.6752017762219213,
+        "mean": 0.24940327066140394
+      },
+      "Ply-4": {
+        "min": 0.0,
+        "max": 0.750124141711203,
+        "mean": 0.24937247150515507
+      }
+    }
+  },
+  "fiber_symmetry_nodes_per_ply": {
+    "Ply-1": {},
+    "Ply-2": {},
+    "Ply-3": {},
+    "Ply-4": {}
+  },
+  "layup": [
+    0.0,
+    90.0,
+    0.0,
+    90.0
+  ],
+  "fibers_per_angle": {
+    "0.0": 40,
+    "90.0": 40
+  },
+  "ball_contact": null
+}

@@ -1,0 +1,33 @@
+*Heading
+** Synthetic 1-hex plate deck
+*Part, name=Plate
+*Node
+1, 0., 0., 0.
+2, 1., 0., 0.
+3, 1., 1., 0.
+4, 0., 1., 0.
+5, 0., 0., 0.01
+6, 1., 0., 0.01
+7, 1., 1., 0.01
+8, 0., 1., 0.01
+*Element, type=C3D8R
+1, 1, 2, 3, 4, 5, 6, 7, 8
+*Elset, elset=Plate
+1
+*Solid Section, elset=Plate, material=Matrix
+,
+*End Part
+*Assembly, name=Assembly
+*Instance, name=Plate-1, part=Plate
+*End Instance
+*End Assembly
+*Material, name=Matrix
+*Elastic
+1000., 0.3
+*Step, name=Step-1, nlgeom=YES
+*Dynamic, Explicit
+, 7e-05
+** INTERACTIONS
+** OUTPUT REQUESTS
+*Output, field
+*End Step

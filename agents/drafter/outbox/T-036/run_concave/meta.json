@@ -1,0 +1,101 @@
+{
+  "plies": 8,
+  "thickness_min": 0.009999999949999998,
+  "thickness_mean": 0.009999999999916666,
+  "thickness_max": 0.010000000050000003,
+  "resulting_ply_thickness": 0.0012499999999895832,
+  "stack_vector": [
+    0.0,
+    0.01,
+    0.0
+  ],
+  "step": [
+    0.0,
+    0.00125,
+    0.0
+  ],
+  "mismatch_max": 5.0000002402295074e-11,
+  "mismatch_mean": 2.51666667513235e-11,
+  "mismatch_p95": 4.999999893284812e-11,
+  "mismatch_tolerance": 0.00010398284824126227,
+  "expected_interface_gap_max": 0.0,
+  "stacked_top_residual_max": 5.0000002402295074e-11,
+  "stacked_top_residual_mean": 2.51666667513235e-11,
+  "stacked_top_residual_p95": 4.999999893284812e-11,
+  "collapse": {
+    "instance": "Plate-1",
+    "part": "Plate",
+    "thickness_axis": [
+      0.0,
+      1.0,
+      0.0
+    ],
+    "columns": 2400,
+    "layers_per_column_min": 10,
+    "layers_per_column_max": 10,
+    "elements_before": 24000,
+    "elements_after": 2400,
+    "nodes_before": 27401,
+    "nodes_after": 4982,
+    "volume_before": 1.9633692481144763e-05,
+    "volume_after": 1.9633692481144763e-05,
+    "volume_ratio": 1.0,
+    "stack_vector": [
+      0.0,
+      0.01,
+      0.0
+    ],
+    "residual_max": 5.0000002402295074e-11,
+    "residual_mean": 2.51666667513235e-11,
+    "residual_p95": 4.999999893284812e-11,
+    "dropped_side_faces": {
+      "Surf-1": 1800
+    },
+    "surviving_faces": {
+      "Surf-1": {
+        "S1": 2400
+      }
+    },
+    "nsets_rewritten": [
+      "Outside (instance=Plate-1)",
+      "X (instance=Plate-1)",
+      "Y (instance=Plate-1)",
+      "plate (instance=Plate-1)"
+    ],
+    "elsets_rewritten": [
+      "Plate",
+      "plate (instance=Plate-1)"
+    ]
+  },
+  "step_world": [
+    0.0,
+    7.654042494670957e-20,
+    -0.0012499999999999994
+  ],
+  "old_instance_references": [
+    "*Elset, elset=_Surf-1_S1, internal, instance=Plate-1, generate"
+  ],
+  "assembly_sets_rewritten": [
+    "*elset plate",
+    "*nset Outside",
+    "*nset X",
+    "*nset Y",
+    "*nset plate"
+  ],
+  "impact_surface_elsets_left": [
+    "*elset _Surf-1_S1"
+  ],
+  "warnings": [
+    "UNRESOLVABLE DECK: dangling old-instance impact surface references; enable --plate-node-contact"
+  ],
+  "ball_contact": null,
+  "dangling_impact_references": [
+    "*Elset, elset=_Surf-1_S1, internal, instance=Plate-1, generate",
+    "21601, 24000, 1",
+    "*Surface, type=ELEMENT, name=Surf-1",
+    "_Surf-1_S1, S1",
+    "Surf-1 , Surf-2",
+    "Surf-2 , Surf-1",
+    "Surf-1 ,"
+  ]
+}

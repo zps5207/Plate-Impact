@@ -149,7 +149,14 @@ def _augment_step_contact(lines, pairs, interaction, thicknesses):
                  not lines[i].lstrip().startswith("**") and
                  _keyword(lines[i])[0] == "contact property assignment"), None)
     if prop is None:
-        lines[end_step:end_step] = ["*Contact Property Assignment", f" ,  , {interaction}"] + thickness_lines
+        # keep the property assignment directly after *Contact Inclusions (not after later
+        # output requests), where Abaqus expects it
+        incl = next((i for i in range(contact + 1, end_step)
+                     if lines[i].lstrip().startswith("*") and
+                     not lines[i].lstrip().startswith("**") and
+                     _keyword(lines[i])[0] == "contact inclusions"), None)
+        at = end_step if incl is None else _block_data_end(lines, incl, end_step)
+        lines[at:at] = ["*Contact Property Assignment", f" ,  , {interaction}"] + thickness_lines
     else:
         insert_at = _block_data_end(lines, prop, end_step)
         lines[insert_at:insert_at] = thickness_lines

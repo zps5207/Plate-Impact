@@ -1,0 +1,4 @@
+PROGRESS 5 Reading Abaqus input deck
+PROGRESS 15 Selecting host elements
+PROGRESS 25 Generating fiber layout
+embmesh: stacked layup: face translation mismatch 0.00171493 exceeds 0.0001055 m

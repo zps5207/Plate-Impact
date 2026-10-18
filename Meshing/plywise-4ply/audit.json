@@ -1,0 +1,71 @@
+{
+  "deck": "Meshing\\plywise-4ply\\output.inp",
+  "ply_count": 4,
+  "target_segment_length_m": 0.0012865301681425046,
+  "total_fiber_nodes": 12479,
+  "total_fiber_nodes_outside": 0,
+  "total_fiber_midpoints": 12043,
+  "total_fiber_midpoints_outside": 0,
+  "overall_segments": 12043,
+  "overall_shortest_segment_m": 0.00021073078098412886,
+  "overall_median_segment_m": 0.001284932661822079,
+  "overall_longest_segment_m": 0.0017927556311082397,
+  "overall_total_length_m": 15.473950413530979,
+  "segment_length_over_target_min": 0.16379777653281344,
+  "segment_length_over_target_median": 0.9987582830469245,
+  "segment_length_over_target_max": 1.3934812222061024,
+  "per_ply": [
+    {
+      "ply_instance": "Ply-1",
+      "fiber_instance": "Fibers-Ply-1",
+      "fiber_part": "Fibers-0",
+      "fiber_nodes": 3121,
+      "nodes_outside": 0,
+      "fiber_segments": 3022,
+      "midpoints_outside": 0,
+      "shortest_segment_m": 0.0012086183147206558,
+      "median_segment_m": 0.0012839933087309442,
+      "longest_segment_m": 0.0013549797535662707,
+      "total_fiber_length_m": 3.881010091960919
+    },
+    {
+      "ply_instance": "Ply-2",
+      "fiber_instance": "Fibers-Ply-2",
+      "fiber_part": "Fibers-90",
+      "fiber_nodes": 3121,
+      "nodes_outside": 0,
+      "fiber_segments": 3022,
+      "midpoints_outside": 0,
+      "shortest_segment_m": 0.0012086183174191076,
+      "median_segment_m": 0.0012839932823895464,
+      "longest_segment_m": 0.0013549797484097236,
+      "total_fiber_length_m": 3.8810100913367434
+    },
+    {
+      "ply_instance": "Ply-3",
+      "fiber_instance": "Fibers-Ply-3",
+      "fiber_part": "Fibers-45",
+      "fiber_nodes": 3086,
+      "nodes_outside": 0,
+      "fiber_segments": 2988,
+      "midpoints_outside": 0,
+      "shortest_segment_m": 0.0007927556311082384,
+      "median_segment_m": 0.001285004480596153,
+      "longest_segment_m": 0.0017927556311082397,
+      "total_fiber_length_m": 3.842017048963995
+    },
+    {
+      "ply_instance": "Ply-4",
+      "fiber_instance": "Fibers-Ply-4",
+      "fiber_part": "Fibers--45",
+      "fiber_nodes": 3151,
+      "nodes_outside": 0,
+      "fiber_segments": 3011,
+      "midpoints_outside": 0,
+      "shortest_segment_m": 0.00021073078098412886,
+      "median_segment_m": 0.0012855182964881446,
+      "longest_segment_m": 0.001775835121172343,
+      "total_fiber_length_m": 3.8699131812693195
+    }
+  ]
+}

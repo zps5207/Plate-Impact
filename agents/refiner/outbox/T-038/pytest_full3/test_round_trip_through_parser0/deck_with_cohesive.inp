@@ -1,0 +1,48 @@
+*Heading
+** Test deck
+*Part, name=Plate
+*Node
+1, 0., 0., 0.
+2, 1., 0., 0.
+3, 1., 1., 0.
+4, 0., 1., 0.
+5, 0., 0., 1.
+6, 1., 0., 1.
+7, 1., 1., 1.
+8, 0., 1., 1.
+*Element, type=C3D8R
+1, 1, 2, 3, 4, 5, 6, 7, 8
+*End Part
+*Assembly, name=Assembly
+*Instance, name=Ply-1, part=Plate
+*End Instance
+*Instance, name=Ply-2, part=Plate
+0., 0., 1.
+*End Instance
+*Surface, type=ELEMENT, name=Ply-1_top
+Ply-1.1, S2
+*Surface, type=ELEMENT, name=Ply-2_bottom
+Ply-2.1, S1
+*End Assembly
+** INTERACTION PROPERTIES
+*Surface Interaction, name=Cohesion
+*Cohesive Behavior
+4.36e+11, 2.62e+11, 2.62e+11
+*Damage Initiation, criterion=MAXS
+1.2e+06, 1.8e+06, 1.8e+06
+*Damage Evolution, type=ENERGY, mixed mode behavior=POWER LAW, power=1.
+544., 1088., 1088.
+*Step, name=Step-1, nlgeom=YES
+*Dynamic, Explicit
+, 7e-05
+** 
+** INTERACTIONS
+** 
+** Interaction: cohesion_1
+*Contact Pair, interaction=Cohesion, mechanical constraint=KINEMATIC, cpset=cohesion_1
+Ply-1_top, Ply-2_bottom
+** OUTPUT REQUESTS
+*Output, field
+*Node Output
+U
+*End Step

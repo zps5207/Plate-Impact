@@ -1,0 +1,123 @@
+--- a/verification/roar/odb_viewer_web.py
++++ b/verification/roar/odb_viewer_web.py
+@@ -258,45 +258,57 @@
+                 pass
+ 
+     # Control functions
++    def schedule_still():
++        async def refresh_still():
++            await asyncio.sleep(0.05)
++            if not state.playing:
++                if args.rendering == "remote":
++                    html_view.stop_animation()
++                set_stream_quality(95, 1.0)
++                ctrl.view_update()
++        asyncio.create_task(refresh_still())
++
+     def toggle_play():
+-        viewer.is_playing = not state.playing
+-        if not viewer.is_playing:
+-            set_stream_quality(95, 1.0)
+-            ctrl.view_update()
+-        else:
+-            set_stream_quality(75, 0.5)
++        playing = not bool(state.playing)
++        viewer.is_playing = playing
+         with state:
+-            state.playing = not state.playing
+-            if state.playing and viewer.current_frame >= data.n_frames - 1 and not state.loop:
++            state.playing = playing
++            if playing and viewer.current_frame >= data.n_frames - 1 and not state.loop:
+                 viewer.set_frame(0)
+                 state.frame = 0
+                 state.time_label = format_time_label(data.times, 0, data.n_frames)
+                 viewer.plotter.render()
+                 ctrl.view_update()
++        if playing:
++            if args.rendering == "remote":
++                html_view.start_animation(fps=30, quality=args.play_quality, ratio=args.play_ratio)
++        else:
++            # Publish the stopped state before the expensive full-resolution still.
++            schedule_still()
+ 
+     def step_back():
+         viewer.is_playing = False
+-        set_stream_quality(95, 1.0)
++        with state:
++            state.playing = False
+         new_frame = (viewer.current_frame - 1) % data.n_frames
+         viewer.set_frame(new_frame)
+         with state:
+-            state.playing = False
+             state.frame = new_frame
+             state.time_label = format_time_label(data.times, new_frame, data.n_frames)
+         viewer.plotter.render()
+-        ctrl.view_update()
++        schedule_still()
+ 
+     def step_forward():
+         viewer.is_playing = False
+-        set_stream_quality(95, 1.0)
++        with state:
++            state.playing = False
+         new_frame = (viewer.current_frame + 1) % data.n_frames
+         viewer.set_frame(new_frame)
+         with state:
+-            state.playing = False
+             state.frame = new_frame
+             state.time_label = format_time_label(data.times, new_frame, data.n_frames)
+         viewer.plotter.render()
+-        ctrl.view_update()
++        schedule_still()
+ 
+     def cam_iso():
+         viewer.apply_preset("iso")
+@@ -646,7 +658,6 @@
+ 
+         while True:
+             if state.playing and data.n_frames > 1:
+-                set_stream_quality(75, 0.5)
+                 base_fps = float(viewer.fps) if viewer.fps > 0 else 30.0
+                 speed = max(0.1, float(viewer.speed))
+ 
+@@ -666,6 +677,8 @@
+                         next_frame = data.n_frames - 1
+                         state.playing = False
+                         viewer.is_playing = False
++                        if args.rendering == "remote":
++                            html_view.stop_animation()
+                         set_stream_quality(95, 1.0)
+                         ctrl.view_update()
+ 
+@@ -675,7 +688,8 @@
+                     state.frame = next_frame
+                     state.time_label = format_time_label(data.times, next_frame, data.n_frames)
+                 viewer.plotter.render()
+-                ctrl.view_update()
++                if args.rendering != "remote":
++                    ctrl.view_update()
+ 
+                 t_elapsed = time.perf_counter() - t_tick_start
+                 sleep_time = max(0.001, target_interval - t_elapsed)
+@@ -805,13 +819,20 @@
+         default=30.0,
+         help="Target animation frame rate (default: 30.0)",
+     )
++    parser.add_argument("--play-ratio", type=float, default=0.6,
++                        help="Playback image scale (0 < ratio <= 1; default: 0.6)")
++    parser.add_argument("--play-quality", type=int, default=85,
++                        help="Playback JPEG quality (1-99; default: 85)")
+     parser.add_argument(
+         "--no-loop",
+         action="store_true",
+         help="Disable continuous animation looping",
+     )
+ 
+-    return parser.parse_args()
++    args = parser.parse_args()
++    if not 0 < args.play_ratio <= 1 or not 1 <= args.play_quality <= 99:
++        parser.error("--play-ratio must be in (0, 1] and --play-quality in [1, 99]")
++    return args
+ 
+ 
+ # ---------------------------------------------------------------------------

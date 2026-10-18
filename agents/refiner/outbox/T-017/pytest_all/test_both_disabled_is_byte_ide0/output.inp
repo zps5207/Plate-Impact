@@ -1,0 +1,12 @@
+*Assembly, name=A
+*Instance, name=Plate-1, part=HOST
+*End Instance
+*Instance, name=Ball-1, part=BALL
+*End Instance
+*Instance, name=EMBFIB-1, part=EMBFIB
+*End Instance
+*End Assembly
+*Step
+*Dynamic, Explicit
+, 1e-3
+*End Step

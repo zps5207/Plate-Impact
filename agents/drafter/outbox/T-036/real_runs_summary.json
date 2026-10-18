@@ -1,0 +1,69 @@
+{
+  "Flatv2": {
+    "deck_name": "Flatv2",
+    "source_file": "Meshing\\Flatv2.inp",
+    "output_file": "agents\\drafter\\outbox\\T-036\\run_flatv2\\flatv2_plywise_8plies.inp",
+    "plies_created": 8,
+    "fiber_free_ply_count": 8,
+    "ball_instances": [
+      "Ball-1"
+    ],
+    "volume_before": 1.9633692100518202e-05,
+    "volume_after": 1.963369212756875e-05,
+    "volume_ratio": 1.0000000013777615,
+    "layers_per_column_min": 10,
+    "layers_per_column_max": 10,
+    "columns": 2400,
+    "residual_max": 7.677207065659095e-05,
+    "residual_mean": 4.385558590823524e-06,
+    "residual_p95": 1.661740413722743e-05,
+    "interface_max_gap": 6.938893903907228e-18,
+    "surviving_faces": {
+      "Surf-1": {
+        "S2": 2400,
+        "S1": 2400
+      }
+    },
+    "dropped_side_faces": {
+      "Surf-1": 1800
+    },
+    "nsets_rewritten_count": 5,
+    "elsets_rewritten_count": 5,
+    "assembly_sets_rewritten_by_plywise": 8,
+    "x_nsets_in_output": 9,
+    "y_nsets_in_output": 9
+  },
+  "concave_hostonly": {
+    "deck_name": "concave_hostonly",
+    "source_file": "Meshing\\Flat-concave-roar\\concave_hostonly.inp",
+    "output_file": "agents\\drafter\\outbox\\T-036\\run_concave\\concave_plywise_8plies.inp",
+    "plies_created": 8,
+    "fiber_free_ply_count": 8,
+    "ball_instances": [
+      "Ball-1"
+    ],
+    "volume_before": 1.9633692481144763e-05,
+    "volume_after": 1.9633692481144763e-05,
+    "volume_ratio": 1.0,
+    "layers_per_column_min": 10,
+    "layers_per_column_max": 10,
+    "columns": 2400,
+    "residual_max": 5.0000002402295074e-11,
+    "residual_mean": 2.51666667513235e-11,
+    "residual_p95": 4.999999893284812e-11,
+    "interface_max_gap": 1.939479807224432e-18,
+    "surviving_faces": {
+      "Surf-1": {
+        "S1": 2400
+      }
+    },
+    "dropped_side_faces": {
+      "Surf-1": 1800
+    },
+    "nsets_rewritten_count": 4,
+    "elsets_rewritten_count": 2,
+    "assembly_sets_rewritten_by_plywise": 5,
+    "x_nsets_in_output": 9,
+    "y_nsets_in_output": 9
+  }
+}

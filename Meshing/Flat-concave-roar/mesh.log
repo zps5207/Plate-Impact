@@ -1,0 +1,25 @@
+PROGRESS 5 Reading Abaqus input deck
+PROGRESS 15 Selecting host elements
+PROGRESS 25 Generating fiber layout
+PROGRESS 35 Calculating fiber volume in host elements
+PROGRESS 38.125 Calculating fiber volume (3000/24000 host elements)
+PROGRESS 41.25 Calculating fiber volume (6000/24000 host elements)
+PROGRESS 44.375 Calculating fiber volume (9000/24000 host elements)
+PROGRESS 47.5 Calculating fiber volume (12000/24000 host elements)
+PROGRESS 50.625 Calculating fiber volume (15000/24000 host elements)
+PROGRESS 53.75 Calculating fiber volume (18000/24000 host elements)
+PROGRESS 56.875 Calculating fiber volume (21000/24000 host elements)
+PROGRESS 60.0 Calculating fiber volume (24000/24000 host elements)
+PROGRESS 60 Writing volume results
+PROGRESS 75 Checking fiber embedding and symmetry
+PROGRESS 85 Writing visualization files
+PROGRESS 92 Writing embedded Abaqus deck
+PROGRESS 100 Meshing complete
+patched deck: Meshing/Flat-concave-roar/mesh/output.inp
+host/fiber VTK: Meshing/Flat-concave-roar/mesh/host_fibers.vtk
+preview: Meshing/Flat-concave-roar/mesh/preview.html
+fibers: 490; host elements: 24000
+ball contact: EMBMESH_PLATE_NODES, EMBMESH_FIBER_NODES -> EMBMESH_BALL_SURF
+contact nodes: plate=27401 fibers=20610
+contact thickness: plate=0.0004993097056225722 fibers=0.00047391107230779407
+contact interaction: General (reused)

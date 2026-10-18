@@ -1,0 +1,45 @@
+{
+  "host_count": 24000,
+  "ghost_count": 24000,
+  "ghost_range": [
+    24001,
+    48000
+  ],
+  "duplicate_labels": 0,
+  "missing_or_mismatched_pairs": 0,
+  "ghosts_outside_ghost_elset": 0,
+  "ghost_sections": [
+    [
+      "PLATE",
+      "EMBMESH_GHOST_HOST",
+      "EMBMESH_GHOST_MATERIAL",
+      "EMBMESH_GHOST_CONTROLS"
+    ]
+  ],
+  "surface_1_members": 6216,
+  "surface_1_host_labels": 0,
+  "surface_1_ghost_labels": 6216,
+  "embedded_host_members": 24000,
+  "embedded_ghost_members": 24000,
+  "islands": 58,
+  "near_alive": 85,
+  "islands_in_ghost": 58,
+  "islands_on_surface_1": 0,
+  "islands_in_embedded_host": 58,
+  "islands_with_bc_node": 0,
+  "islands_on_ball_surface": 0,
+  "island_label_mod40": {
+    "31": 2,
+    "32": 9,
+    "33": 7,
+    "34": 3,
+    "35": 6,
+    "36": 16,
+    "37": 15
+  },
+  "island_label_minmax": [
+    29392,
+    39997
+  ],
+  "island_host_pair_errors": 0
+}

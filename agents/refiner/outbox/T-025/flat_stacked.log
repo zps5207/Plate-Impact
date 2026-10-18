@@ -1,0 +1,48 @@
+PROGRESS 5 Reading Abaqus input deck
+PROGRESS 15 Selecting host elements
+PROGRESS 25 Generating fiber layout
+PROGRESS 35 Calculating fiber volume in host elements
+PROGRESS 38.125 Calculating fiber volume (3000/24000 host elements)
+PROGRESS 41.25 Calculating fiber volume (6000/24000 host elements)
+PROGRESS 44.375 Calculating fiber volume (9000/24000 host elements)
+PROGRESS 47.5 Calculating fiber volume (12000/24000 host elements)
+PROGRESS 50.625 Calculating fiber volume (15000/24000 host elements)
+PROGRESS 53.75 Calculating fiber volume (18000/24000 host elements)
+PROGRESS 56.875 Calculating fiber volume (21000/24000 host elements)
+PROGRESS 60.0 Calculating fiber volume (24000/24000 host elements)
+PROGRESS 60 Writing volume results
+PROGRESS 75 Checking fiber embedding and symmetry
+PROGRESS 85 Writing visualization files
+PROGRESS 92 Writing embedded Abaqus deck
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\salas\OneDrive - The Pennsylvania State University\Plate Impact\agents\refiner\outbox\T-025\embmesh\cli.py", line 141, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "C:\Users\salas\OneDrive - The Pennsylvania State University\Plate Impact\agents\refiner\outbox\T-025\embmesh\cli.py", line 103, in main
+    fibers, rows = mesh(a.deck, a.instance, a.diameter, a.output, elset=a.elset, gap=a.gap,
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\salas\OneDrive - The Pennsylvania State University\Plate Impact\agents\refiner\outbox\T-025\embmesh\generate.py", line 161, in mesh
+    write_report(out / 'report.json', **report_kw)
+  File "C:\Users\salas\OneDrive - The Pennsylvania State University\Plate Impact\agents\refiner\outbox\T-025\embmesh\writers.py", line 25, in write_report
+    def write_report(path, **data): Path(path).write_text(json.dumps(data,indent=2,sort_keys=True))
+                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\salas\AppData\Local\Programs\Python\Python312\Lib\json\__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "C:\Users\salas\AppData\Local\Programs\Python\Python312\Lib\json\encoder.py", line 202, in encode
+    chunks = list(chunks)
+             ^^^^^^^^^^^^
+  File "C:\Users\salas\AppData\Local\Programs\Python\Python312\Lib\json\encoder.py", line 432, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "C:\Users\salas\AppData\Local\Programs\Python\Python312\Lib\json\encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "C:\Users\salas\AppData\Local\Programs\Python\Python312\Lib\json\encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "C:\Users\salas\AppData\Local\Programs\Python\Python312\Lib\json\encoder.py", line 439, in _iterencode
+    o = _default(o)
+        ^^^^^^^^^^^
+  File "C:\Users\salas\AppData\Local\Programs\Python\Python312\Lib\json\encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type int64 is not JSON serializable

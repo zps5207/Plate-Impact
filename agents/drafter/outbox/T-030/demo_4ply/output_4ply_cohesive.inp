@@ -1,0 +1,113 @@
+*Heading
+** 4-ply cohesive demonstration deck built from stack.inp structure
+*Part, name=Plate
+*Node
+1, 0., 0., 0.
+2, 0.05, 0., 0.
+3, 0.05, 0.05, 0.
+4, 0., 0.05, 0.
+5, 0., 0., 0.0025
+6, 0.05, 0., 0.0025
+7, 0.05, 0.05, 0.0025
+8, 0., 0.05, 0.0025
+*Element, type=C3D8R
+1, 1, 2, 3, 4, 5, 6, 7, 8
+*End Part
+*Assembly, name=Assembly
+*Instance, name=Ply-1, part=Plate
+0., 0., 0
+*End Instance
+*Instance, name=Ply-2, part=Plate
+0., 0., 0.0025
+*End Instance
+*Instance, name=Ply-3, part=Plate
+0., 0., 0.005
+*End Instance
+*Instance, name=Ply-4, part=Plate
+0., 0., 0.0075
+*End Instance
+*Elset, elset=_Ply-1_bottom_S1, internal, instance=Ply-1
+1
+*Surface, type=ELEMENT, name=Ply-1_bottom
+_Ply-1_bottom_S1, S1
+*Elset, elset=_Ply-1_top_S2, internal, instance=Ply-1
+1
+*Surface, type=ELEMENT, name=Ply-1_top
+_Ply-1_top_S2, S2
+*Elset, elset=_Ply-2_bottom_S1, internal, instance=Ply-2
+1
+*Surface, type=ELEMENT, name=Ply-2_bottom
+_Ply-2_bottom_S1, S1
+*Elset, elset=_Ply-2_top_S2, internal, instance=Ply-2
+1
+*Surface, type=ELEMENT, name=Ply-2_top
+_Ply-2_top_S2, S2
+*Elset, elset=_Ply-3_bottom_S1, internal, instance=Ply-3
+1
+*Surface, type=ELEMENT, name=Ply-3_bottom
+_Ply-3_bottom_S1, S1
+*Elset, elset=_Ply-3_top_S2, internal, instance=Ply-3
+1
+*Surface, type=ELEMENT, name=Ply-3_top
+_Ply-3_top_S2, S2
+*Elset, elset=_Ply-4_bottom_S1, internal, instance=Ply-4
+1
+*Surface, type=ELEMENT, name=Ply-4_bottom
+_Ply-4_bottom_S1, S1
+*Elset, elset=_Ply-4_top_S2, internal, instance=Ply-4
+1
+*Surface, type=ELEMENT, name=Ply-4_top
+_Ply-4_top_S2, S2
+*End Assembly
+** 
+** INTERACTION PROPERTIES
+** 
+*Surface Interaction, name=Cohesion
+*Cohesive Behavior
+ 4.36e+11, 2.62e+11, 2.62e+11
+*Damage Initiation, criterion=MAXS
+ 1.2e+06, 1.8e+06, 1.8e+06
+*Damage Evolution, type=ENERGY, mixed mode behavior=POWER LAW, power=1.
+544.,1088.,1088.
+*Step, name=Step-1, nlgeom=YES
+*Dynamic, Explicit
+, 7e-05
+*Bulk Viscosity
+0.06, 1.2
+** 
+** INTERACTIONS
+** 
+** Interaction: cohesion_1
+*Contact Pair, interaction=Cohesion, mechanical constraint=KINEMATIC, cpset=cohesion_1
+Ply-1_top, Ply-2_bottom
+** Interaction: cohesion_2
+*Contact Pair, interaction=Cohesion, mechanical constraint=KINEMATIC, cpset=cohesion_2
+Ply-2_top, Ply-3_bottom
+** Interaction: cohesion_3
+*Contact Pair, interaction=Cohesion, mechanical constraint=KINEMATIC, cpset=cohesion_3
+Ply-3_top, Ply-4_bottom
+** Interaction: cohesion
+*Contact Pair, interaction=Cohesion, mechanical constraint=KINEMATIC, cpset=cohesion
+back, front2
+** Interaction: General
+*Contact, op=NEW
+*Contact Inclusions
+Surf-1 , Surf-2
+Surf-2 , Surf-1
+Surf-1 , 
+Surf-2 , 
+*Contact Property Assignment
+ ,  , General
+** 
+** OUTPUT REQUESTS
+** 
+*Restart, write, number interval=1, time marks=NO
+** 
+** FIELD OUTPUT: F-Output-1
+** 
+*Output, field, variable=PRESELECT, number interval=1000
+** 
+** HISTORY OUTPUT: H-Output-1
+** 
+*Output, history, variable=PRESELECT, time interval=7e-08
+*End Step

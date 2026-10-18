@@ -1,0 +1,28 @@
+{
+  "source_outer_projection_drift_max_m": 7.641946934349109e-05,
+  "source_outer_projection_drift_mean_m": 4.530932041259706e-06,
+  "source_outer_projection_drift_p95_m": 1.599281403951506e-05,
+  "source_outer_projection_drift_median_m": 2.482248158423733e-06,
+  "median_inplane_edge_m": 0.0009398543516746838,
+  "source_outer_projection_drift_max_over_median_edge": 0.08130990637785813,
+  "source_outer_projection_drift_mean_over_median_edge": 0.00482088744195975,
+  "source_outer_projection_drift_p95_over_median_edge": 0.017016268543118614,
+  "face_congruence_tolerance_m": 0.0001,
+  "stack_vector_m": [
+    0,
+    -0.01,
+    0
+  ],
+  "stack_deviation_max_m": 0.0,
+  "cells": 2400,
+  "top_nodes": 2491,
+  "new_nodes": 4982,
+  "surface_faces": {
+    "1": 2400,
+    "5": 32,
+    "6": 50,
+    "4": 48,
+    "3": 50
+  },
+  "note": "Bottom face reconstructed by translating real top face; not the source bottom coordinates."
+}

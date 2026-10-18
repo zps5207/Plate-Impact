@@ -1,0 +1,52 @@
+*Heading
+** Synthetic 1-hex plate deck
+*Part, name=Plate
+*Node
+1, 0, 0, 0
+2, 1, 0, 0
+3, 1, 1, 0
+4, 0, 1, 0
+5, 0, 0, 1
+6, 1, 0, 1
+7, 1, 1, 1
+8, 0, 1, 1
+*Element, type=C3D8R
+1, 1, 2, 3, 4, 5, 6, 7, 8
+*Elset, elset=Plate
+1
+*Solid Section, elset=Plate, material=Matrix
+,
+*Elset, elset=PLY
+1
+*End Part
+*Assembly, name=Assembly
+*Instance, name=Ply-1, part=Plate
+0, 0, 0
+*End Instance
+*Elset, elset=_Ply-1_bottom_S1, internal, instance=Ply-1
+1
+*Surface, type=ELEMENT, name=Ply-1_bottom
+_Ply-1_bottom_S1, S1
+*Elset, elset=_Ply-1_top_S2, internal, instance=Ply-1
+1
+*Surface, type=ELEMENT, name=Ply-1_top
+_Ply-1_top_S2, S2
+*End Assembly
+*Material, name=Matrix
+*Elastic
+1000., 0.3
+** Hazzard et al. 2018 (Dyneema HB26), t_SL = 1000 mm, quasi-static
+*Surface Interaction, name=Cohesion_Hazzard2018
+*Cohesive Behavior
+ 6e+07, 3.6e+07, 3.6e+07
+*Damage Initiation, criterion=MAXS
+ 1.2e+06, 1.8e+06, 1.8e+06
+*Damage Evolution, type=ENERGY, mixed mode behavior=POWER LAW, power=1
+544, 1088, 1088
+*Step, name=Step-1, nlgeom=YES
+*Dynamic, Explicit
+, 7e-05
+** INTERACTIONS
+** OUTPUT REQUESTS
+*Output, field
+*End Step

@@ -1,0 +1,37 @@
+{
+  "plies": 5,
+  "thickness_min": 0.01,
+  "thickness_mean": 0.01,
+  "thickness_max": 0.01,
+  "resulting_ply_thickness": 0.002,
+  "stack_vector": [
+    0.0,
+    0.0,
+    0.01
+  ],
+  "step": [
+    0.0,
+    0.0,
+    0.002
+  ],
+  "mismatch_max": 0.0,
+  "mismatch_mean": 0.0,
+  "mismatch_p95": 0.0,
+  "mismatch_tolerance": 0.11,
+  "expected_interface_gap_max": 0.0,
+  "stacked_top_residual_max": 0.0,
+  "stacked_top_residual_mean": 0.0,
+  "stacked_top_residual_p95": 0.0,
+  "step_world": [
+    0.0,
+    0.0,
+    0.002
+  ],
+  "old_instance_references": [],
+  "assembly_sets_rewritten": [
+    "*nset Fixture"
+  ],
+  "impact_surface_elsets_left": [],
+  "warnings": [],
+  "ball_contact": null
+}

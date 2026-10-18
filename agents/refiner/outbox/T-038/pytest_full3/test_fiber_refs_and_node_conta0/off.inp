@@ -1,0 +1,97 @@
+*Part, name=Plate
+*Node
+1, 0, 0, 0
+2, 0, 1, 0
+3, 1, 1, 0
+4, 1, 0, 0
+5, 0, 0, 0.0033333333333333335
+6, 0, 1, 0.0033333333333333335
+7, 1, 1, 0.0033333333333333335
+8, 1, 0, 0.0033333333333333335
+*Element, type=C3D8R
+1,1,2,3,4,5,6,7,8
+*Elset, elset=Plate
+1
+*Solid Section, elset=Plate, material=Matrix
+,
+*Elset, elset=PLY
+1
+*End Part
+*Part, name=Ball
+*Node
+1,0,0,.03
+2,1,0,.03
+3,1,1,.03
+4,0,1,.03
+5,0,0,.04
+6,1,0,.04
+7,1,1,.04
+8,0,1,.04
+*Element, type=C3D8R
+1,1,2,3,4,5,6,7,8
+*End Part
+*Part, name=Fibers
+*Node
+11,0,0,0
+12,1,0,0
+*Element, type=T3D2
+1,11,12
+*End Part
+*Assembly, name=Assembly
+*Instance, name=Ply-1, part=Plate
+0, 0, 0
+*End Instance
+*Instance, name=Ply-2, part=Plate
+0, 0, 0.0033333333333333335
+*End Instance
+*Instance, name=Ply-3, part=Plate
+0, 0, 0.0066666666666666671
+*End Instance
+*Instance, name=Ball-1, part=Ball
+0,0,0
+*End Instance
+*Instance, name=Fibers-0-1, part=Fibers
+0,0,0
+*End Instance
+*Instance, name=Fibers-90-2, part=Fibers
+0,0,0
+*End Instance
+*Elset, elset=_Surf-1_S2, internal, instance=Plate-1
+1
+*Surface, type=ELEMENT, name=Surf-1
+_Surf-1_S2, S2
+*Elset, elset=_Ply-1_bottom_S1, internal, instance=Ply-1
+1
+*Surface, type=ELEMENT, name=Ply-1_bottom
+_Ply-1_bottom_S1, S1
+*Elset, elset=_Ply-1_top_S2, internal, instance=Ply-1
+1
+*Surface, type=ELEMENT, name=Ply-1_top
+_Ply-1_top_S2, S2
+*Elset, elset=_Ply-2_bottom_S1, internal, instance=Ply-2
+1
+*Surface, type=ELEMENT, name=Ply-2_bottom
+_Ply-2_bottom_S1, S1
+*Elset, elset=_Ply-2_top_S2, internal, instance=Ply-2
+1
+*Surface, type=ELEMENT, name=Ply-2_top
+_Ply-2_top_S2, S2
+*Elset, elset=_Ply-3_bottom_S1, internal, instance=Ply-3
+1
+*Surface, type=ELEMENT, name=Ply-3_bottom
+_Ply-3_bottom_S1, S1
+*Elset, elset=_Ply-3_top_S2, internal, instance=Ply-3
+1
+*Surface, type=ELEMENT, name=Ply-3_top
+_Ply-3_top_S2, S2
+*End Assembly
+*Material, name=Matrix
+*Elastic
+1, .3
+*Surface Interaction, name=Cohesion
+*Cohesive Behavior
+1,1,1
+*Step, name=Step-1
+*Dynamic, Explicit
+, .01
+*End Step

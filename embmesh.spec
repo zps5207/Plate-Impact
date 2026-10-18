@@ -13,6 +13,9 @@ from PyInstaller.utils.hooks import collect_data_files
 # static import analysis (via the hiddenimport below) already follows fine.
 datas = collect_data_files('plotly')
 hiddenimports = ['embmesh.visualize', 'plotly.graph_objects',
+    'embmesh.plywise', 'embmesh.plywise_contact', 'embmesh.plyfibers',
+    'embmesh.plycohesive', 'embmesh.plywise_preview',
+    'embmesh.cohesive_materials', 'embmesh.collapse',
     # multiprocessing.freeze_support() (see embmesh_entry.py) needs the spawn
     # bootstrap importable inside the frozen exe for ProcessPoolExecutor to work.
     'multiprocessing.popen_spawn_win32',

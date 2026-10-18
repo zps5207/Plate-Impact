@@ -1,0 +1,105 @@
+{
+  "parts": {
+    "Ball": {
+      "nodes": 3642,
+      "elements": 3312
+    },
+    "Plate": {
+      "nodes": 27401,
+      "elements": 24000
+    },
+    "EMBFIB": {
+      "nodes": 25770,
+      "elements": 25260
+    }
+  },
+  "sets": 61,
+  "surfaces": 5,
+  "embedded_blocks": 10,
+  "sections": [
+    [
+      "Ball",
+      "_I1",
+      "\"Mild Steel\""
+    ],
+    [
+      "Ball",
+      "_I2",
+      "\"Mild Steel\""
+    ],
+    [
+      "Plate",
+      "PLY_1",
+      "Matrix"
+    ],
+    [
+      "Plate",
+      "PLY_2",
+      "Matrix"
+    ],
+    [
+      "Plate",
+      "PLY_3",
+      "Matrix"
+    ],
+    [
+      "Plate",
+      "PLY_4",
+      "Matrix"
+    ],
+    [
+      "Plate",
+      "PLY_5",
+      "Matrix"
+    ],
+    [
+      "Plate",
+      "PLY_6",
+      "Matrix"
+    ],
+    [
+      "Plate",
+      "PLY_7",
+      "Matrix"
+    ],
+    [
+      "Plate",
+      "PLY_8",
+      "Matrix"
+    ],
+    [
+      "Plate",
+      "PLY_9",
+      "Matrix"
+    ],
+    [
+      "Plate",
+      "PLY_10",
+      "Matrix"
+    ],
+    [
+      "EMBFIB",
+      "EMBMESH_FIBERS_T0",
+      "Fiber"
+    ],
+    [
+      "EMBFIB",
+      "EMBMESH_FIBERS_T90",
+      "Fiber"
+    ]
+  ],
+  "duplicate_labels_or_names": [],
+  "missing_references": 0,
+  "sampled_fiber_points": 126300,
+  "sampled_fiber_points_outside_ply": 0,
+  "segments_below_5pct_local_edge": 0,
+  "minimum_segment_m": 2.8550664434058797e-05,
+  "minimum_segment_over_local_edge": 0.050132688651804695,
+  "minimum_normal_clearance_m": 0.0004891164921220215,
+  "minimum_endpoint_outline_clearance_m": 0.00048,
+  "half_diameter_m": 0.00048,
+  "merge": {
+    "merged_short_segments": 320,
+    "dropped_isolated_segments": 0
+  }
+}

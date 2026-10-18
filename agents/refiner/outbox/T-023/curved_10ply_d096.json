@@ -1,0 +1,47 @@
+{
+  "hosts": 24000,
+  "host_nodes": 27401,
+  "fiber_nodes": 25770,
+  "fiber_segments": 25260,
+  "fiber_runs": 510,
+  "per_ply_segments": [
+    2529,
+    2523,
+    2529,
+    2523,
+    2529,
+    2523,
+    2529,
+    2523,
+    2529,
+    2523
+  ],
+  "per_ply_fibers": [
+    51,
+    51,
+    51,
+    51,
+    51,
+    51,
+    51,
+    51,
+    51,
+    51
+  ],
+  "fiber_length_m": 19.89030109811688,
+  "fiber_volume_m3": 1.43970563652556e-05,
+  "min_segment_m": 2.8550664381913172e-05,
+  "median_segment_m": 0.0008995697416994105,
+  "diameter_m": 0.00096,
+  "merge": {
+    "merged_short_segments": 320,
+    "dropped_isolated_segments": 0
+  },
+  "boundary_nodes": {
+    "Outside": 891,
+    "X": 561,
+    "Y": 561
+  },
+  "contact_thickness_plate_m": 0.0005000000000000219,
+  "contact_thickness_fiber_m": 0.00044978487084970523
+}

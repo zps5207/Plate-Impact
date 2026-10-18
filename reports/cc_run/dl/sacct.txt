@@ -1,0 +1,27 @@
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+* * * * * * * * * *  W A R N I N G  * * * * * * * * * *
+
+This computer system is the property of the Pennsylvania State University.  It
+is for authorized use only.  By using this system, all users acknowledge notice
+of, and agree to comply with, the Institute for Computational and Data Science 
+Account Usage Policies, Data Policies, and relevant University Policies.
+
+Unauthorized or improper use of this system may result in administrative
+disciplinary action, civil charges/criminal penalties, and/or other sanctions
+as set forth in University Policies.  By continuing to use this system
+you indicate your awareness of and consent to these terms and conditions of
+use.
+
+LOG OFF IMMEDIATELY if you do not agree to the conditions stated in
+this warning.
+
+NOTICE: Microsoft MFA enabled users will get a silent push to your two factor
+device. After you enter your password please check your two factor device.
+
+* * * * * * * * * *  W A R N I N G  * * * * * * * * * *
+JobID             State    Elapsed ExitCode 
+------------ ---------- ---------- -------- 
+56514878      COMPLETED   00:06:25      0:0 
+56514879      COMPLETED   00:05:25      0:0 

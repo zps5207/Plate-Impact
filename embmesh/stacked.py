@@ -7,6 +7,13 @@ from .fibers import Fiber, _layer_positions, flat_disc_fibers, _parse_axis
 from .layup import orthogonal_directions
 from .geometry import hex_volume
 
+_SIGNS = np.array([[-1,-1,1],[-1,1,1],[1,1,1],[1,-1,1],[-1,-1,-1],[-1,1,-1],[1,1,-1],[1,-1,-1]], float)
+_AXIS_FACES = {
+    0: ((4, 0, 1, 5), (7, 3, 2, 6)),  # xi: -1 and +1
+    1: ((4, 7, 3, 0), (5, 6, 2, 1)),  # eta: -1 and +1
+    2: ((4, 5, 6, 7), (0, 1, 2, 3)),  # zeta: -1 and +1
+}
+
 
 def _resample_by_arclength(path, target_length):
     """Arc-length stations, refined for equal straight truss chord lengths.
@@ -60,6 +67,30 @@ def _segment_statistics(fibers, target_length, short_runs):
                 short_fiber_run_count=int(short_runs))
 
 
+def oriented_hex_faces(h, axis, conn=None):
+    """Return (bottom_pts, top_pts, bottom_ids, top_ids) for one hex."""
+    best_ax = None
+    best_comp = -1.0
+    best_lo, best_hi = None, None
+    for ax in (0, 1, 2):
+        lo_idx, hi_idx = _AXIS_FACES[ax]
+        vec = h[list(hi_idx)].mean(0) - h[list(lo_idx)].mean(0)
+        comp = abs(float(np.dot(vec, axis)))
+        if comp > best_comp:
+            best_comp = comp
+            best_ax = ax
+            best_lo, best_hi = lo_idx, hi_idx
+
+    lo_pts = h[list(best_lo)]
+    hi_pts = h[list(best_hi)]
+    lo_ids = tuple(conn[i] for i in best_lo) if conn is not None else tuple(best_lo)
+    hi_ids = tuple(conn[i] for i in best_hi) if conn is not None else tuple(best_hi)
+
+    if np.dot(hi_pts.mean(0) - lo_pts.mean(0), axis) < 0:
+        return hi_pts, lo_pts, hi_ids, lo_ids
+    return lo_pts, hi_pts, lo_ids, hi_ids
+
+
 def stacked_surface_fibers(elems, nodes, diameter, thickness_axis=None, gap=0.,
                            reference=(1, 0, 0), end_inset=0., return_meta=False):
     coords = np.asarray(list(nodes.values()), float)
@@ -67,25 +98,52 @@ def stacked_surface_fibers(elems, nodes, diameter, thickness_axis=None, gap=0.,
     lookup = {label: i for i, label in enumerate(nodes)}
     hexes = coords[np.vectorize(lookup.__getitem__)(conns)]
     target_length=float(np.cbrt(np.median([hex_volume(h) for h in hexes])))
-    delta = hexes[:, 4:, :].mean(1) - hexes[:, :4, :].mean(1)
+
     axis = _parse_axis(thickness_axis)
     if axis is None:
-        # Paired local hex faces reveal the stack direction even when a rotated
-        # plate's overall bounding box is thicker than its in-plane extents.
-        direction=np.median(delta,axis=0)
-        axis=np.eye(3)[int(np.argmax(np.abs(direction)))]
+        # Determine overall stack direction from the hex face pairs
+        # Find dominant Cartesian axis among all opposite face pairs
+        face_vecs = []
+        for h in hexes:
+            for ax in (0, 1, 2):
+                lo_idx, hi_idx = _AXIS_FACES[ax]
+                face_vecs.append(h[list(hi_idx)].mean(0) - h[list(lo_idx)].mean(0))
+        face_vecs = np.asarray(face_vecs)
+        # Find Cartesian axis with strongest median absolute projection
+        projections = np.median(np.abs(face_vecs), axis=0)
+        axis = np.eye(3)[int(np.argmax(projections))]
+
     t0, t1 = orthogonal_directions(reference, axis)
-    sign = 1 if np.median(delta @ axis) > 0 else -1
+
+    # Determine oriented faces and node pairings per hex
+    face0_list = []
+    face1_list = []
+    face0_ids_list = []
+    face1_ids_list = []
+    for h, conn in zip(hexes, conns):
+        bot_p, top_p, bot_id, top_id = oriented_hex_faces(h, axis, conn)
+        face0_list.append(bot_p)
+        face1_list.append(top_p)
+        face0_ids_list.append(bot_id)
+        face1_ids_list.append(top_id)
+
+    face0 = np.asarray(face0_list)  # (N, 4, 3)
+    face1 = np.asarray(face1_list)  # (N, 4, 3)
+    face0_ids = np.asarray(face0_ids_list)  # (N, 4)
+    face1_ids = np.asarray(face1_ids_list)  # (N, 4)
+
+    delta = face1.mean(1) - face0.mean(1)
     spans = np.abs(delta @ axis)
     local_step = np.median(spans)
     if local_step < 1e-12:
         raise ValueError('stacked layup: degenerate stack vector')
-    # The same edge pairing must describe a translation for every element.
+
     step_vec = np.median(delta, axis=0)
-    mismatch = np.linalg.norm(hexes[:, 4:, :] - hexes[:, :4, :] - step_vec, axis=2)
-    edge_lengths = np.linalg.norm(np.roll(hexes[:, :4, :], -1, axis=1)-hexes[:, :4, :], axis=2)
+    mismatch = np.linalg.norm(face1 - face0 - step_vec, axis=2)
+    edge_lengths = np.linalg.norm(np.roll(face0, -1, axis=1) - face0, axis=2)
     inplane_edge = float(np.median(edge_lengths))
     tolerance = max(1e-8, .11 * inplane_edge)
+
     # A legacy flat deck may have independent meshing on its two plane faces.
     # Its node pairs need not be congruent; preserve the established flat path
     # byte for byte when all thickness coordinates occupy discrete planes.
@@ -106,21 +164,23 @@ def stacked_surface_fibers(elems, nodes, diameter, thickness_axis=None, gap=0.,
         return (fibers,meta) if return_meta else fibers
     if float(mismatch.max()) > tolerance:
         raise ValueError(f'stacked layup: face translation mismatch {mismatch.max():.6g} exceeds {tolerance:.6g} m')
-    # Pick one face from each reference-surface hex. The whole deck may have
-    # many layers; paired faces at the minimum signed coordinate define bottom.
-    face0 = hexes[:, :4, :] if sign > 0 else hexes[:, 4:, :]
-    face1 = hexes[:, 4:, :] if sign > 0 else hexes[:, :4, :]
-    face0_ids=conns[:,:4] if sign>0 else conns[:,4:]
-    face1_ids=conns[:,4:] if sign>0 else conns[:,:4]
+
     upper_faces={frozenset(row) for row in face1_ids}
     on_bottom=np.asarray([frozenset(row) not in upper_faces for row in face0_ids])
     surf = face0[on_bottom]
     if not len(surf):
         raise ValueError('stacked layup: no reference face')
+
     # Face heights may vary due to sag. Layer thickness is found by matching
     # paired projected vertices: this avoids treating surface sag as thickness.
     thickness = float(np.ptp(coords @ axis) - np.ptp(surf @ axis))
-    n_layers = len(_layer_positions(0., thickness, diameter, gap))
+    pitch = diameter + gap
+    n_candidate = round(thickness / pitch)
+    if n_candidate > 0 and abs(thickness - n_candidate * pitch) <= diameter * 1e-4:
+        effective_thickness = n_candidate * pitch
+    else:
+        effective_thickness = thickness
+    n_layers = len(_layer_positions(0., effective_thickness, diameter, gap))
     if not n_layers:
         raise ValueError(f'stacked layup: no layer fits; diameter={diameter:.6g}, thickness={thickness:.6g}, gap={gap:.6g} m')
     projected = np.stack((surf @ t0, surf @ t1, surf @ axis), axis=2)
@@ -186,7 +246,7 @@ def stacked_surface_fibers(elems, nodes, diameter, thickness_axis=None, gap=0.,
     boundary_eps=max(float(np.linalg.norm(coords.max(0)-coords.min(0))),diameter)*1e-6
     # Each scanline is intersected with all projected quads in a vectorized
     # pass. An interval stores both edge crossings and their interpolated height.
-    for layer,t in enumerate(_layer_positions(0.,thickness,diameter,gap)):
+    for layer,t in enumerate(_layer_positions(0.,effective_thickness,diameter,gap)):
         along,across=(0,1) if layer%2==0 else (1,0)
         q=projected if along==0 else projected[:,:,[1,0,2]]
         lo,hi=float(q[:,:,1].min()),float(q[:,:,1].max())

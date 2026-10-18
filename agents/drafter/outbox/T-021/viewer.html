@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plate Impact 3D Client-Side WebGL Viewer</title>
+  <style>
+    :root {
+      --bg-header: #202428;
+      --bg-drawer: #2a2f35;
+      --text-main: #f0f2f5;
+      --text-muted: #9aa0a6;
+      --accent: #1976d2;
+      --accent-hover: #1565c0;
+      --danger: #d32f2f;
+      --border-color: #3e444c;
+      --input-bg: #1e2226;
+      --slider-track: #4e5560;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #ffffff;
+      color: var(--text-main);
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+
+    /* Top Toolbar */
+    #toolbar {
+      height: 52px;
+      background-color: var(--bg-header);
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      gap: 8px;
+      border-bottom: 1px solid var(--border-color);
+      z-index: 10;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: #323840;
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      background: #3e4650;
+      border-color: #555d68;
+    }
+
+    .btn:active {
+      background: #282d33;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+    }
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      border-color: var(--danger);
+      color: #ffffff;
+    }
+    .btn-danger:hover {
+      background: #b71c1c;
+      border-color: #b71c1c;
+    }
+
+    .btn-icon {
+      padding: 6px 8px;
+    }
+
+    .btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .divider {
+      width: 1px;
+      height: 24px;
+      background-color: var(--border-color);
+      margin: 0 4px;
+    }
+
+    .spacer {
+      flex: 1;
+    }
+
+    /* Scrubber Slider */
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 220px;
+      max-width: 380px;
+      flex: 1;
+    }
+
+    .slider-container span {
+      font-size: 12px;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--slider-track);
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+      transition: transform 0.1s;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    .badge-time {
+      font-family: "Courier New", Courier, monospace;
+      font-size: 13px;
+      font-weight: 700;
+      color: #ffffff;
+      background: #14171a;
+      padding: 4px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+      white-space: nowrap;
+    }
+
+    select {
+      background: var(--input-bg);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      padding: 5px 8px;
+      border-radius: 4px;
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* Main Content Area */
+    #main-container {
+      flex: 1;
+      position: relative;
+      display: flex;
+      overflow: hidden;
+    }
+
+    #viewport-container {
+      flex: 1;
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    #webgl-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Drawer Sidebar */
+    #drawer {
+      width: 310px;
+      background-color: var(--bg-drawer);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      z-index: 5;
+      transition: transform 0.2s ease;
+      box-shadow: 2px 0 6px rgba(0,0,0,0.2);
+    }
+
+    #drawer.collapsed {
+      transform: translateX(-310px);
+      position: absolute;
+      bottom: 0;
+      top: 0;
+    }
+
+    .drawer-section {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .drawer-section h3 {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .control-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 13px;
+    }
+
+    .control-row label {
+      font-weight: 500;
+      color: #d1d5db;
+    }
+
+    .color-swatch-group {
+      display: flex;
+      gap: 4px;
+      margin-top: 4px;
+    }
+
+    .swatch {
+      width: 20px;
+      height: 20px;
+      border-radius: 3px;
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .swatch:hover {
+      transform: scale(1.15);
+    }
+
+    input[type="color"] {
+      -webkit-appearance: none;
+      border: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      cursor: pointer;
+      background: none;
+    }
+    input[type="color"]::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+    input[type="color"]::-webkit-color-swatch {
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+    }
+
+    /* On-Screen HUD Overlay */
+    #hud-overlay {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(20, 24, 28, 0.75);
+      color: #ffffff;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-family: "Courier New", Courier, monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      pointer-events: none;
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 2;
+    }
+
+    #hud-bottom {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: rgba(20, 24, 28, 0.7);
+      color: #a0aec0;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* Modal / Dialog */
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: var(--bg-drawer);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      width: 440px;
+      max-width: 90vw;
+      padding: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: #1e2226;
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 14px 0 8px 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+
+    /* Loading Screen */
+    #loading-screen {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #1a1e22;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      z-index: 50;
+      transition: opacity 0.3s;
+    }
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid #333a42;
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Toolbar -->
+  <div id="toolbar">
+    <button class="btn btn-icon" id="btn-toggle-drawer" title="Toggle Options Drawer (d)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+    </button>
+
+    <div class="divider"></div>
+
+    <button class="btn btn-primary" id="btn-play">
+      <svg id="icon-play" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      <svg id="icon-pause" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+      <span id="lbl-play">Play</span>
+    </button>
+
+    <button class="btn btn-icon" id="btn-step-back" title="Step Back 1 Frame (Left Arrow)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+    </button>
+
+    <button class="btn btn-icon" id="btn-step-forward" title="Step Forward 1 Frame (Right Arrow)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+    </button>
+
+    <div class="slider-container">
+      <span id="lbl-frame">Frame</span>
+      <input type="range" id="scrubber" min="0" max="149" value="0">
+    </div>
+
+    <span class="badge-time" id="lbl-time">0.00 &mu;s (Frame 1/150)</span>
+
+    <div style="display:flex; align-items:center; gap:4px;">
+      <span style="font-size:12px; color:var(--text-muted);">Speed</span>
+      <select id="sel-speed">
+        <option value="0.25">0.25x</option>
+        <option value="0.5">0.5x</option>
+        <option value="1" selected>1x</option>
+        <option value="2">2x</option>
+        <option value="4">4x</option>
+        <option value="8">8x</option>
+      </select>
+    </div>
+
+    <button class="btn btn-icon active" id="btn-loop" title="Toggle Loop (l)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+    </button>
+
+    <div class="divider"></div>
+
+    <button class="btn" id="btn-cam-iso" title="Isometric Camera Preset (1)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M21 16.5l-9 5.2-9-5.2V7.5l9-5.2 9 5.2v9zM12 4.1L5.3 8 12 11.9 18.7 8 12 4.1zM4.5 9.7v6.6l6.5 3.8v-6.6L4.5 9.7zm8.5 10.4l6.5-3.8V9.7L13 13.5v6.6z"/></svg>
+      Iso
+    </button>
+
+    <button class="btn" id="btn-cam-sym" title="Symmetry Plane Preset (2)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2v20m-9-9l9 9 9-9" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+      Symmetry
+    </button>
+
+    <button class="btn" id="btn-cam-reset" title="Reset Camera View (r / 3)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+      Reset
+    </button>
+
+    <div class="spacer"></div>
+
+    <button class="btn" id="btn-snapshot" title="Save PNG Screenshot (s)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9.4 4l-.6 2H5c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-3.8l-.6-2H9.4zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.65 0-3 1.35-3 3s1.35 3 3 3 3-1.35 3-3-1.35-3-3-3z"/></svg>
+      Snapshot
+    </button>
+
+    <button class="btn btn-danger" id="btn-record" title="Record MP4/WebM Video">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+      Record
+    </button>
+  </div>
+
+  <!-- Main View Area -->
+  <div id="main-container">
+    <!-- Left Drawer -->
+    <div id="drawer">
+      <div class="drawer-section">
+        <h3>Display Modes</h3>
+        <div class="control-row">
+          <label for="sel-host-mode">Host Mode</label>
+          <select id="sel-host-mode">
+            <option value="wireframe" selected>wireframe</option>
+            <option value="solid">solid</option>
+            <option value="hidden">hidden</option>
+          </select>
+        </div>
+
+        <div class="control-row">
+          <label for="chk-fibers-only">Fibers Only</label>
+          <input type="checkbox" id="chk-fibers-only">
+        </div>
+
+        <div class="control-row">
+          <label for="sel-ball-mode">Ball Mode</label>
+          <select id="sel-ball-mode">
+            <option value="wireframe" selected>wireframe</option>
+            <option value="solid">solid</option>
+            <option value="hidden">hidden</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="drawer-section">
+        <h3>Host Solid Style</h3>
+        <div class="control-row">
+          <label for="slider-host-opacity">Opacity: <span id="lbl-host-opacity">1.0</span></label>
+          <input type="range" id="slider-host-opacity" min="0" max="1" step="0.05" value="1.0" style="width:120px;">
+        </div>
+
+        <div class="control-row">
+          <label for="chk-host-edges">Show Host Edges</label>
+          <input type="checkbox" id="chk-host-edges">
+        </div>
+      </div>
+
+      <div class="drawer-section">
+        <h3>Colors</h3>
+        <div class="control-row">
+          <label>Host Color</label>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <input type="color" id="col-host" value="#8C8C8C">
+            <span id="lbl-col-host" style="font-size:11px; font-family:monospace;">#8C8C8C</span>
+          </div>
+        </div>
+        <div class="color-swatch-group" id="swatches-host"></div>
+
+        <div class="control-row" style="margin-top:10px;">
+          <label>Fiber Color</label>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <input type="color" id="col-fiber" value="#0033CC">
+            <span id="lbl-col-fiber" style="font-size:11px; font-family:monospace;">#0033CC</span>
+          </div>
+        </div>
+        <div class="color-swatch-group" id="swatches-fiber"></div>
+
+        <div class="control-row" style="margin-top:10px;">
+          <label>Ball Color</label>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <input type="color" id="col-ball" value="#606060">
+            <span id="lbl-col-ball" style="font-size:11px; font-family:monospace;">#606060</span>
+          </div>
+        </div>
+        <div class="color-swatch-group" id="swatches-ball"></div>
+
+        <div class="control-row" style="margin-top:10px;">
+          <label>Background</label>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <input type="color" id="col-bg" value="#FFFFFF">
+            <span id="lbl-col-bg" style="font-size:11px; font-family:monospace;">#FFFFFF</span>
+          </div>
+        </div>
+        <div class="color-swatch-group" id="swatches-bg"></div>
+      </div>
+
+      <div class="drawer-section">
+        <h3>Line Widths</h3>
+        <div class="control-row">
+          <label for="slider-fiber-lw">Fibers: <span id="lbl-fiber-lw">1.0</span> px</label>
+          <input type="range" id="slider-fiber-lw" min="0.5" max="10.0" step="0.5" value="1.0" style="width:120px;">
+        </div>
+
+        <div class="control-row">
+          <label for="slider-host-lw">Host: <span id="lbl-host-lw">1.0</span> px</label>
+          <input type="range" id="slider-host-lw" min="0.5" max="10.0" step="0.5" value="1.0" style="width:120px;">
+        </div>
+
+        <div class="control-row">
+          <label for="slider-ball-lw">Ball: <span id="lbl-ball-lw">1.0</span> px</label>
+          <input type="range" id="slider-ball-lw" min="0.5" max="10.0" step="0.5" value="1.0" style="width:120px;">
+        </div>
+      </div>
+
+      <div class="drawer-section" style="font-size:11px; color:var(--text-muted); line-height:1.6;">
+        <h3 style="margin-bottom:6px;">Hotkeys</h3>
+        <div><b>Space / p</b>: Play/Pause</div>
+        <div><b>Left / Right</b>: Step frame</div>
+        <div><b>1 / 2 / 3</b>: Iso / Symmetry / Reset</div>
+        <div><b>h</b>: Host mode cycle</div>
+        <div><b>f</b>: Toggle fibers only</div>
+        <div><b>b</b>: Ball mode cycle</div>
+        <div><b>o</b>: Cycle host opacity</div>
+        <div><b>e</b>: Toggle host edges</div>
+        <div><b>s</b>: Screenshot</div>
+        <div><b>d</b>: Toggle drawer</div>
+      </div>
+    </div>
+
+    <!-- 3D Canvas Container -->
+    <div id="viewport-container">
+      <div id="hud-overlay">
+        <div id="hud-line1">Time: 0.00 &mu;s | Frame: 1/150 | Speed: 1.00x [PAUSED]</div>
+        <div id="hud-line2">Host: wireframe | Fibers: ON | Ball: wireframe</div>
+      </div>
+      <div id="hud-bottom">[Mouse Drag] Orbit | [Shift+Drag / Right Drag] Pan | [Wheel] Zoom</div>
+      <canvas id="webgl-canvas"></canvas>
+
+      <!-- Loading Splash -->
+      <div id="loading-screen">
+        <div class="spinner"></div>
+        <h3 id="loading-title">Loading simulation data...</h3>
+        <p id="loading-detail" style="font-size:13px; color:#888;">Fetching manifest.json</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Record Modal Dialog -->
+  <div class="modal-backdrop" id="modal-record">
+    <div class="modal-card">
+      <div class="modal-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--danger)"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+        Record Animation Video
+      </div>
+      <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px;">
+        Captures the current viewport view at the chosen frame rate directly on your GPU using canvas.captureStream.
+      </p>
+
+      <div class="control-row">
+        <label>Framerate (FPS)</label>
+        <select id="rec-fps">
+          <option value="15">15 FPS</option>
+          <option value="24">24 FPS</option>
+          <option value="30" selected>30 FPS</option>
+          <option value="60">60 FPS</option>
+        </select>
+      </div>
+
+      <div class="control-row">
+        <label>Start Frame</label>
+        <input type="number" id="rec-start" value="1" min="1" max="150" style="width:70px; background:var(--input-bg); color:#fff; border:1px solid var(--border-color); padding:4px;">
+      </div>
+
+      <div class="control-row">
+        <label>End Frame</label>
+        <input type="number" id="rec-end" value="150" min="1" max="150" style="width:70px; background:var(--input-bg); color:#fff; border:1px solid var(--border-color); padding:4px;">
+      </div>
+
+      <div id="rec-progress-container" style="display:none; margin-top:14px;">
+        <div style="display:flex; justify-content:space-between; font-size:12px; color:#fff;">
+          <span id="rec-status-text">Recording...</span>
+          <span id="rec-pct-text">0%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="rec-progress-fill"></div>
+        </div>
+      </div>
+
+      <div id="rec-download-container" style="display:none; margin-top:14px; text-align:center;">
+        <a id="rec-download-link" class="btn btn-primary" download="impact_animation.webm" href="#" style="text-decoration:none;">Download Video</a>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:18px;">
+        <button class="btn" id="btn-rec-cancel">Close</button>
+        <button class="btn btn-danger" id="btn-rec-start">Start Recording</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pinned Three.js Dependencies -->
+  <script src="three.min.js"></script>
+  <script src="OrbitControls.js"></script>
+  <script src="LineSegmentsGeometry.js"></script>
+  <script src="LineMaterial.js"></script>
+  <script src="LineSegments2.js"></script>
+
+  <!-- Client-Side Viewer Application Logic -->
+  <script src="viewer.js"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "hosts": 24000,
+  "fibers": 450,
+  "fiber_nodes": 19161,
+  "fiber_segments": 18711,
+  "vertices_outside": 0,
+  "midpoints_outside": 0,
+  "first_bad_vertices": [],
+  "first_bad_midpoints": [],
+  "total_fiber_length_m": 17.67573880562523,
+  "shortest_segment_m": 0.0009181175834999996,
+  "section_area_m2": 7.853981633974482e-07,
+  "fiber_volume_m3": 1.388249279463106e-05
+}

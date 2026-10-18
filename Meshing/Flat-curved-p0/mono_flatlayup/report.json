@@ -1,0 +1,15 @@
+{
+  "curve_meta": {},
+  "curved": "flat",
+  "embedded_endpoint_total": 4028,
+  "embedded_endpoints_inside": 3994,
+  "estimated_stable_time_increment": 0.0008386238303101194,
+  "fiber_count": 2014,
+  "host_count": 24000,
+  "host_mode": "native",
+  "propagated_symmetry_nodes": {},
+  "symmetry_constraints": {},
+  "total_fiber_volume": 1.5377531526980834e-05,
+  "volume_fraction_max": 2.5155844055276813,
+  "volume_fraction_min": 0.0
+}

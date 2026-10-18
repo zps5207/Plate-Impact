@@ -1,0 +1,43 @@
+*Part, name=Plate
+*Node
+1, 0.0, 0.0, 0.0
+2, 0.0, 0.018, 0.0
+3, 0.012, 0.018, 0.0
+4, 0.012, 0.0, 0.0
+5, 0.0, 0.0, 0.01
+6, 0.0, 0.018, 0.01
+7, 0.012, 0.018, 0.01
+8, 0.012, 0.0, 0.01
+*Element, type=C3D8R
+1, 1, 2, 3, 4, 5, 6, 7, 8
+*Elset, elset=Plate
+1
+*Solid Section, elset=Plate, material=Matrix
+,
+*End Part
+*Assembly, name=Assembly
+*Instance, name=Plate-1, part=Plate
+0, 0, 0
+*End Instance
+*End Assembly
+*Material, name=Matrix
+*Density
+1000
+*Elastic
+2e9, 0.3
+*Plastic
+2e6, 0
+3e6, 0.1
+*Damage Initiation, criterion=DUCTILE
+0.25, 0, 0
+*Damage Evolution, type=DISPLACEMENT
+0.001
+*Material, name=Fiber
+*Density
+1000
+*Elastic
+2e9, 0.3
+*Step
+*Dynamic, Explicit
+, 0.001
+*End Step

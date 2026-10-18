@@ -1,0 +1,37 @@
+{
+  "host_count": 24000,
+  "source_host_count": 2400,
+  "host_nodes": 27401,
+  "source_nodes": 4982,
+  "world_bbox_min": [
+    0.0,
+    6.123233750807406e-19,
+    -0.015051025799999998
+  ],
+  "world_bbox_max": [
+    0.0500000007,
+    0.0500000007,
+    4.0000000013640236e-10
+  ],
+  "source_world_bbox_min": [
+    0.0,
+    6.123233750807406e-19,
+    -0.015051025799999998
+  ],
+  "source_world_bbox_max": [
+    0.0500000007,
+    0.0500000007,
+    4.0000000013640236e-10
+  ],
+  "bbox_max_abs_difference_m": 0.0,
+  "plate_nsets": {
+    "Outside": 891,
+    "X": 561,
+    "Y": 561
+  },
+  "assembly_set_lines": {
+    "Outside": 1,
+    "X": 1,
+    "Y": 1
+  }
+}

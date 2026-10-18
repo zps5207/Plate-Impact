@@ -1,0 +1,16 @@
+*Part, name=Ply
+*End Part
+*Assembly, name=Assembly
+*Instance, name=Ply-1, part=Ply
+0.0, 0.0, 0.0
+*End Instance
+*Instance, name=Ply-2, part=Ply
+0.0, 0.0, 1.0
+*End Instance
+*Instance, name=Ply-3, part=Ply
+0.0, 0.0, 2.0
+*End Instance
+*Instance, name=Ply-4, part=Ply
+0.0, 0.0, 3.0
+*End Instance
+*End Assembly

@@ -9,3 +9,32 @@ __pycache__/
 outputs/
 *.egg-info/
 build/
+
+# --- heavy generated data (regenerate from the scripts; GitHub rejects files > 100 MB) ---
+*.npz
+*.tar
+*.tar.gz
+*.whl
+*.mp4
+*.f32
+*.u32
+*.i32
+*.u8
+*.vtk
+# render frames and viewer bundles
+frames/
+frames_video/
+frames_more/
+viewer_*/
+data_v*/
+# ROAR upload packages and downloaded results, worker scratch
+Meshing/plywise-500/results/
+Meshing/plywise-500/roar/pw_*/
+Meshing/plywise-500/roar/post/
+agents/*/scratch/
+agents/*/.work/
+agents/*/*/_verification/
+agents/*/*/pytest_full_tmp/
+agents/*/*/*/pytest_full_tmp/
+# third-party paper (not ours to redistribute)
+1-s2.0-*.pdf

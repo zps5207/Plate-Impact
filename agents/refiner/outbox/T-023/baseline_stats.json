@@ -1,0 +1,23 @@
+{
+  "part_nodes": {
+    "Ball": 3642,
+    "Plate": 27401,
+    "EMBFIB": 14192
+  },
+  "element_counts": {
+    "Ball/C3D8R": 2992,
+    "Ball/C3D6": 320,
+    "Plate/VU1": 24000,
+    "Plate/C3D8R": 24000,
+    "EMBFIB/T3D2": 13864
+  },
+  "fiber_segments": 13864,
+  "fiber_length_m": 13.086633336189342,
+  "minimum_fiber_segment_m": 0.0009331931068999981,
+  "fiber_section_area_m2": 7.85398163397448e-07,
+  "fiber_volume_m3": 1.0278217787298928e-05,
+  "fiber_elsets": [
+    "EMBMESH_FIBERS_T0",
+    "EMBMESH_FIBERS_T90"
+  ]
+}

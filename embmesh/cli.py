@@ -20,6 +20,49 @@ def build_parser():
     p = argparse.ArgumentParser(prog="embmesh")
     sub = p.add_subparsers(dest="cmd", required=True)
     q = sub.add_parser("list"); q.add_argument("deck")
+    w = sub.add_parser("plywise", help="split a one-hex-thick plate into translated ply instances")
+    w.add_argument("deck"); w.add_argument("--instance", required=True); w.add_argument("--output", required=True)
+    w.add_argument("--plywise", action="store_true", help="explicitly select plywise output")
+    w.add_argument("--preview", action="store_true", help="render an interactive plywise HTML preview")
+    w.add_argument("--thickness-axis", help="stack direction in the part frame: 'x', 'y', 'z' or 'dx,dy,dz'; default = shortest bbox extent")
+    w.add_argument("--collapse-layers", action="store_true",
+                   help="collapse multi-layer plate mesh to 1 hex through thickness before splitting into plies")
+    w.add_argument("--layup", type=lambda s: [float(x) for x in s.split(",")], help="per-ply fiber angles, e.g. 0,90,45,-45")
+    w.add_argument("--layup-symmetric", action="store_true"); w.add_argument("--layup-repeat", type=int, default=1)
+    w.add_argument("--fiber-diameter", type=float); w.add_argument("--fiber-gap", type=float, default=0.0)
+    w.add_argument("--fiber-type", choices=("truss", "beam"), default="truss"); w.add_argument("--fiber-material", default="Fiber")
+    w.add_argument("--host-mode", choices=("native", "vuel-ghost"), default="native")
+    w.add_argument("--ghost-scale", type=float, default=1e-4)
+    w.add_argument("--ghost-ductile-failure-strain", type=float)
+    w.add_argument("--vuel-eps-fail", type=float)
+    w.add_argument("--vuel-yield-stress", type=float)
+    w.add_argument("--vuel-hardening-modulus", type=float)
+    w.add_argument("--vuel-jac-fail", type=float, default=0.05)
+    w.add_argument("--vuel-degrade-time", type=float, default=0.0)
+    w.add_argument("--vuel-compression-residual", type=float, default=0.0)
+    w.add_argument("--cohesion", nargs="?", const="Cohesion", metavar="INTERACTION",
+                   help="add cohesive general contact per ply interface using this *Surface Interaction (default Cohesion)")
+    w.add_argument("--cohesive-material", choices=("dyneema-hb26",),
+                   help="generate cohesive *Surface Interaction from preset (e.g. dyneema-hb26)")
+    w.add_argument("--cohesive-rate", choices=("quasi-static", "ballistic"), default="quasi-static",
+                   help="strain rate for cohesive strength (default: quasi-static)")
+    w.add_argument("--cohesive-name",
+                   help="name for the generated *Surface Interaction (default from preset)")
+    w.add_argument("--length-units", choices=("m", "mm"), default="m",
+                   help="model length units: 'm' (SI) or 'mm' (default: m)")
+    w.add_argument("--cohesive-overwrite", action="store_true",
+                   help="overwrite existing *Surface Interaction if name collides")
+    count = w.add_mutually_exclusive_group(required=True)
+    count.add_argument("--plies", type=int)
+    count.add_argument("--ply-thickness", type=float)
+    w.add_argument("--plate-node-contact", action="store_true", help="contact ball with nodes of every Ply-k instance")
+    w.add_argument("--fiber-node-contact", action="store_true", help="accepted for future plywise fiber instances; currently has no effect without them")
+    w.add_argument("--ball-instance", help="ball assembly instance; required with active node contact")
+    w.add_argument("--contact-thickness", default="auto", help="node contact thickness in deck units or auto")
+    w.add_argument("--ball-interaction", help="noncohesive surface interaction for ball contact; default first noncohesive interaction")
+    c = sub.add_parser("collapse", help="collapse multi-layer plate mesh to 1 hex through thickness")
+    c.add_argument("deck"); c.add_argument("--output", required=True); c.add_argument("--instance", default="Plate-1")
+    c.add_argument("--thickness-axis", help="stack direction in part frame: 'x', 'y', 'z' or 'dx,dy,dz'")
     v = sub.add_parser("visualize", help="mesh fibers, preserve the deck, and render host/fiber geometry")
     v.add_argument("deck"); v.add_argument("--instance", required=True); v.add_argument("--diameter", type=float, required=True)
     v.add_argument("--output", required=True); v.add_argument("--elset"); v.add_argument("--gap", type=float, default=0.0)
@@ -79,7 +122,46 @@ def main(argv=None):
     p = build_parser()
     a = p.parse_args(argv)
     try:
-        if a.cmd == "list":
+        if a.cmd == "plywise":
+            from .plywise import write_plywise_deck
+            vuel_options = VuelGhostOptions(
+                ghost_scale=a.ghost_scale,
+                ghost_ductile_failure_strain=a.ghost_ductile_failure_strain,
+                eps_fail=a.vuel_eps_fail, sigy0=a.vuel_yield_stress,
+                hardening_modulus=a.vuel_hardening_modulus,
+                jac_fail=a.vuel_jac_fail, degrade_time=a.vuel_degrade_time,
+                compression_residual_bulk_fraction=a.vuel_compression_residual)
+            report = write_plywise_deck(a.deck, a.output, instance=a.instance,
+                                        plies=a.plies, ply_thickness=a.ply_thickness,
+                                        thickness_axis=a.thickness_axis,
+                                        plate_node_contact=a.plate_node_contact,
+                                        fiber_node_contact=a.fiber_node_contact,
+                                        ball_instance=a.ball_instance,
+                                        contact_thickness=a.contact_thickness,
+                                        ball_interaction=a.ball_interaction, layup=a.layup,
+                                        layup_symmetric=a.layup_symmetric, layup_repeat=a.layup_repeat,
+                                        fiber_diameter=a.fiber_diameter, fiber_gap=a.fiber_gap,
+                                        fiber_type=a.fiber_type, fiber_material=a.fiber_material,
+                                        cohesion=a.cohesion, 
+                                        cohesive_material=a.cohesive_material,
+                                        cohesive_rate=a.cohesive_rate,
+                                        cohesive_name=a.cohesive_name,
+                                        length_units=a.length_units,
+                                        cohesive_overwrite=a.cohesive_overwrite,
+                                        collapse_layers=a.collapse_layers,
+                                        host_mode=a.host_mode, vuel_ghost_options=vuel_options)
+            report_json = json.dumps(report, indent=2)
+            Path(a.output).with_name('report.json').write_text(report_json + '\n')
+            if a.preview:
+                from .plywise_preview import plot_plywise
+                plot_plywise(a.output, Path(a.output).with_name('preview.html'))
+            print(report_json)
+        elif a.cmd == "collapse":
+            from .collapse import collapse_deck
+            report = collapse_deck(a.deck, a.output, instance=a.instance,
+                                   thickness_axis=a.thickness_axis)
+            print(json.dumps(report, indent=2))
+        elif a.cmd == "list":
             d = parse_deck(a.deck)
             for n, part in d.parts.items():
                 types = {}
