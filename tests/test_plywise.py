@@ -133,3 +133,12 @@ def test_rotated_instance_and_assembly_sets(tmp_path):
     assert '*Elset, elset=_Surf-1_S2, internal, instance=Plate-1' in written
     assert meta['expected_interface_gap_max'] == 0
     assert meta['impact_surface_elsets_left'] == ['*elset _Surf-1_S2']
+
+
+def test_instance_boundary_rows_are_repeated_for_every_ply():
+    from embmesh.plywise import _expand_instance_boundaries
+    lines = ["*Step", "*Boundary", "Plate-1.fix, ENCASTRE", "X, XSYMM", "*End Step"]
+    out, done = _expand_instance_boundaries(lines, "Plate-1", 3)
+    assert out == ["*Step", "*Boundary", "Ply-1.fix, ENCASTRE", "Ply-2.fix, ENCASTRE", "Ply-3.fix, ENCASTRE",
+                   "X, XSYMM", "*End Step"]
+    assert done == ["Plate-1.fix, ENCASTRE"]

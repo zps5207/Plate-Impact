@@ -114,3 +114,53 @@ def test_vuel_ghost_validation_rejects_nonpositive_scale():
         assert "ghost-scale" in str(exc)
     else:
         raise AssertionError("nonpositive ghost scale was accepted")
+
+
+DAMAGE_DECK = DECK.replace("""*Damage Initiation, criterion=DUCTILE
+0.25, 0., 0.
+*Damage Evolution, type=DISPLACEMENT
+0.
+""", """*Damage Initiation, criterion=DUCTILE
+0.1, 0.333333, 0.01
+*Damage Evolution, type=ENERGY
+1460.
+""").replace("""*Plastic
+2e6, 0.
+3e6, 0.1
+""", """*Plastic, rate=0.01
+7e7, 0.
+*Plastic, rate=1000.
+9e7, 0.
+""")
+
+
+def test_ductile_damage_matrix_model_emits_39_props_159_svars_and_instant_ghost():
+    deck = parse_deck(DAMAGE_DECK)
+    lines, _, meta = convert_to_vuel_ghost(
+        DAMAGE_DECK.splitlines(), deck, "HOST-1", deck.parts["HOST"].elements,
+        {10: 0.25}, VuelGhostOptions(matrix_model="ductile-damage", bulk_viscosity_linear=0.06))
+    text = "\n".join(lines)
+    assert "properties=39, variables=159" in text
+    assert "user=VUEL_material.for" in text
+    index = lines.index("*UEL Property, elset=EMBMESH_VUEL_HOST")
+    rows = [[float(x) for x in lines[index + 1 + k].split(",")] for k in range(5)]
+    assert [len(r) for r in rows] == [8, 8, 8, 8, 7]
+    props = [x for r in rows for x in r]
+    assert props[13] == 1.0 and props[14] == 0.0          # MAT_MODEL, RATE_MODE
+    assert props[15] == 1460.0 and props[17] == 2.0 and props[18] == 1.0
+    assert props[19:23] == [0.01, 7e7, 1000.0, 9e7]       # yield table, plastic strain rate
+    assert props[29:31] == [0.01, 0.1]                    # fracture strain table
+    assert "*Damage Evolution, type=DISPLACEMENT\n0." in text.split("*Material, name=EMBMESH_GHOST_MATERIAL")[1]
+    assert meta["vuel_nsvars"] == 159 and meta["user_subroutine"] == "VUEL_material.for"
+    assert meta["ghost_ductile_failure_strain"] > 0.1
+    start = lines.index("HOST-1.10, 0, 0, 0, 0, 0, 0, 0")
+    block = lines[start:start + 20]
+    assert sum(len(r.split(",")) for r in block[:1]) - 1 + sum(len(r.split(",")) for r in block[1:20]) >= 159
+
+
+def test_ductile_damage_matrix_model_rejects_hardening_and_missing_gf():
+    import pytest
+    deck = parse_deck(DECK)       # hardening table and DISPLACEMENT evolution
+    with pytest.raises(ValueError):
+        convert_to_vuel_ghost(DECK.splitlines(), deck, "HOST-1", deck.parts["HOST"].elements,
+                              {10: 0.0}, VuelGhostOptions(matrix_model="ductile-damage"))

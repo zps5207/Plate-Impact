@@ -306,3 +306,21 @@ def test_tk_smoke_test_toggles_new_controls(tmp_path):
             assert 'enter a ply thickness or load a deck' not in app.cohesive_readout.get()
     finally:
         root.destroy()
+
+
+def test_matrix_model_flag(tmp_path):
+    from embmesh_desktop import MATRIX_MODEL_LABELS
+    v = values(tmp_path)
+    v.update(host_mode='vuel-ghost', ghost_scale='1e-4')
+    assert '--matrix-model' not in build_plywise_command(v)          # legacy is the default
+    v['matrix_model'] = 'ductile-damage'
+    args = build_plywise_command(v)
+    assert args[args.index('--matrix-model') + 1] == 'ductile-damage'
+    v['matrix_model'] = MATRIX_MODEL_LABELS['ductile-damage']        # dropdown label
+    args = build_plywise_command(v)
+    assert args[args.index('--matrix-model') + 1] == 'ductile-damage'
+    v['matrix_model'] = 'nonsense'
+    with pytest.raises(ValueError, match='matrix property type'):
+        build_plywise_command(v)
+    v.update(host_mode='native', matrix_model='ductile-damage')      # only applies to VUEL hosts
+    assert '--matrix-model' not in build_plywise_command(v)

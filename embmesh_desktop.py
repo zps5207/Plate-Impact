@@ -25,6 +25,13 @@ from embmesh.cohesive_materials import (
     cohesive_interaction,
 )
 
+MATRIX_MODEL_LABELS = {
+    'legacy': 'Legacy: elastic-plastic, strain failure',
+    'ductile-damage': 'Rate-dependent plastic + ductile damage (Stage 8)',
+}
+MATRIX_MODEL_KEYS = {**{k: k for k in MATRIX_MODEL_LABELS},
+                     **{v.lower(): k for k, v in MATRIX_MODEL_LABELS.items()}}
+
 EXISTING_DECK_INTERACTION = "Existing deck interaction"
 
 
@@ -268,6 +275,11 @@ def build_plywise_command(values: dict) -> list[str]:
         if not (0.0 < scale_val < 1.0) or not math.isfinite(scale_val):
             raise ValueError('Ghost scale must be strictly between 0 and 1.')
         command += ['--host-mode', 'vuel-ghost', '--ghost-scale', str(ghost_scale).strip()]
+        matrix_model = MATRIX_MODEL_KEYS.get(str(values.get('matrix_model', 'legacy')).strip().lower())
+        if matrix_model is None:
+            raise ValueError(f"Unknown matrix property type: {values.get('matrix_model')}")
+        if matrix_model != 'legacy':
+            command += ['--matrix-model', matrix_model]
     elif host_mode and host_mode != 'native':
         raise ValueError(f"Unknown host mode: {values.get('host_mode')}")
 
@@ -372,6 +384,7 @@ class DesktopApp(ttk.Frame):
 
         self.collapse_layers = tk.BooleanVar(value=False)
         self.host_mode = tk.StringVar(value='native')
+        self.matrix_model = tk.StringVar(value=MATRIX_MODEL_LABELS['legacy'])
         self.ghost_scale = tk.StringVar(value='1e-4')
 
         self.cohesion = tk.BooleanVar(value=False)
@@ -454,6 +467,13 @@ class DesktopApp(ttk.Frame):
                                             state='readonly', width=14)
         self.host_mode_combo.pack(side='left', padx=(6, 12))
         self.host_mode_combo.bind('<<ComboboxSelected>>', lambda *_: self._update_host_mode_controls())
+
+        self.matrix_model_frame = ttk.Frame(host_row)
+        ttk.Label(self.matrix_model_frame, text='Property type').pack(side='left')
+        self.matrix_model_combo = ttk.Combobox(self.matrix_model_frame, textvariable=self.matrix_model,
+                                               values=tuple(MATRIX_MODEL_LABELS.values()),
+                                               state='readonly', width=44)
+        self.matrix_model_combo.pack(side='left', padx=(6, 12))
 
         self.ghost_scale_frame = ttk.Frame(host_row)
         ttk.Label(self.ghost_scale_frame, text='Ghost scale').pack(side='left')
@@ -549,8 +569,10 @@ class DesktopApp(ttk.Frame):
 
     def _update_host_mode_controls(self) -> None:
         if self.host_mode.get() in ('vuel-ghost', 'vuel + ghost'):
+            self.matrix_model_frame.pack(side='left', padx=(6, 0))
             self.ghost_scale_frame.pack(side='left', padx=(6, 0))
         else:
+            self.matrix_model_frame.pack_forget()
             self.ghost_scale_frame.pack_forget()
 
     def _update_ply_mode(self) -> None:
@@ -850,6 +872,7 @@ class DesktopApp(ttk.Frame):
                               collapse_layers=self.collapse_layers.get(),
                               host_mode=self.host_mode.get(),
                               ghost_scale=self.ghost_scale.get(),
+                              matrix_model=self.matrix_model.get(),
                               plate_node_contact=self.plate_node_contact.get(),
                               fiber_node_contact=self.fiber_node_contact.get(), ball_instance=self.ball_instance.get(),
                               contact_thickness=self.contact_thickness.get(), ball_interaction=self.ball_interaction.get())

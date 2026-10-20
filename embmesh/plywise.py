@@ -286,6 +286,28 @@ def _insert_or_replace_surface_interaction(
     return lines[:insert_pos] + interaction_lines + lines[insert_pos:]
 
 
+def _expand_instance_boundaries(lines, instance, plies):
+    """Repeat *Boundary rows that name `instance.<set>` for every Ply-k instance.
+
+    The ply Part keeps the source part's node sets, so e.g. `Plate-1.fix, ENCASTRE`
+    becomes `Ply-1.fix` ... `Ply-N.fix`.
+    """
+    pattern = re.compile(r'^\s*' + re.escape(instance) + r'\.([^,\s]+)\s*(,.*)$', re.I)
+    result, expanded, active = [], [], False
+    for line in lines:
+        stripped = line.strip()
+        if stripped.startswith('*') and not stripped.startswith('**'):
+            active = _keyword(line) == '*boundary'
+        elif active and not stripped.startswith('**'):
+            match = pattern.match(line)
+            if match:
+                result.extend(f'Ply-{k}.{match.group(1)}{match.group(2)}' for k in range(1, plies + 1))
+                expanded.append(stripped)
+                continue
+        result.append(line)
+    return result, expanded
+
+
 def write_plywise_deck(source, output, instance='Plate-1', plies=None, ply_thickness=None,
                        thickness_axis=None, plate_node_contact=False, fiber_node_contact=False,
                        ball_instance=None, contact_thickness='auto', ball_interaction=None,
@@ -348,6 +370,8 @@ def write_plywise_deck(source, output, instance='Plate-1', plies=None, ply_thick
         replacement.append('*End Instance')
     lines = lines[:inst_start] + replacement + lines[inst_end + 1:]
     lines, rewritten, left = _rewrite_assembly_sets(lines, instance, meta['plies'])
+    lines, expanded = _expand_instance_boundaries(lines, instance, meta['plies'])
+    meta['boundaries_expanded'] = expanded
     assembly_end = next(i for i, s in enumerate(lines) if _keyword(s) == '*end assembly')
     surfaces = []
     for k in range(1, meta['plies'] + 1):

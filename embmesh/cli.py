@@ -40,6 +40,9 @@ def build_parser():
     w.add_argument("--vuel-jac-fail", type=float, default=0.05)
     w.add_argument("--vuel-degrade-time", type=float, default=0.0)
     w.add_argument("--vuel-compression-residual", type=float, default=0.0)
+    w.add_argument("--matrix-model", choices=("legacy", "ductile-damage"), default="legacy")
+    w.add_argument("--matrix-rate-mode", choices=("plastic", "total"), default="plastic")
+    w.add_argument("--matrix-gf", type=float)
     w.add_argument("--cohesion", nargs="?", const="Cohesion", metavar="INTERACTION",
                    help="add cohesive general contact per ply interface using this *Surface Interaction (default Cohesion)")
     w.add_argument("--cohesive-material", choices=("dyneema-hb26",),
@@ -107,6 +110,13 @@ def build_parser():
                    help="VU1 post-trigger linear degradation time (default: immediate)")
     v.add_argument("--vuel-compression-residual", type=float, default=0.0,
                    help="VU1 residual compression-only bulk fraction, 0..1 (default: 0)")
+    v.add_argument("--matrix-model", choices=("legacy", "ductile-damage"), default="legacy",
+                   help="VU1 matrix property type: legacy elastic-plastic with strain failure, or the Stage 8 "
+                        "rate-dependent plastic + energy-based ductile damage model (needs user=VUEL_material.for)")
+    v.add_argument("--matrix-rate-mode", choices=("plastic", "total"), default="plastic",
+                   help="strain rate used by the Stage 8 rate tables (default: plastic strain rate, as Abaqus)")
+    v.add_argument("--matrix-gf", type=float,
+                   help="override the matrix fracture energy (J/m^2); default: host *Damage Evolution, type=ENERGY")
     v.add_argument("--plate-node-contact", action="store_true",
                    help="contact the ball with a node surface over every host-instance node")
     v.add_argument("--fiber-node-contact", action="store_true",
@@ -130,7 +140,8 @@ def main(argv=None):
                 eps_fail=a.vuel_eps_fail, sigy0=a.vuel_yield_stress,
                 hardening_modulus=a.vuel_hardening_modulus,
                 jac_fail=a.vuel_jac_fail, degrade_time=a.vuel_degrade_time,
-                compression_residual_bulk_fraction=a.vuel_compression_residual)
+                compression_residual_bulk_fraction=a.vuel_compression_residual,
+                matrix_model=a.matrix_model, rate_mode=a.matrix_rate_mode, gf=a.matrix_gf)
             report = write_plywise_deck(a.deck, a.output, instance=a.instance,
                                         plies=a.plies, ply_thickness=a.ply_thickness,
                                         thickness_axis=a.thickness_axis,
@@ -181,7 +192,8 @@ def main(argv=None):
                 eps_fail=a.vuel_eps_fail,
                 sigy0=a.vuel_yield_stress, hardening_modulus=a.vuel_hardening_modulus,
                 jac_fail=a.vuel_jac_fail, degrade_time=a.vuel_degrade_time,
-                compression_residual_bulk_fraction=a.vuel_compression_residual)
+                compression_residual_bulk_fraction=a.vuel_compression_residual,
+                matrix_model=a.matrix_model, rate_mode=a.matrix_rate_mode, gf=a.matrix_gf)
             fibers, rows = mesh(a.deck, a.instance, a.diameter, a.output, elset=a.elset, gap=a.gap,
                                  fiber_type=a.fiber_type, preview=a.preview, thickness_axis=a.thickness_axis,
                                  curved=a.curved, curve_axis_point=a.curve_axis_point, curve_axis_dir=a.curve_axis_dir,

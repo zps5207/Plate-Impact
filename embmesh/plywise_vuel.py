@@ -78,7 +78,7 @@ def convert_plywise_hosts(lines, ply, angles, fibers_by_angle, diameter, options
         result.append(line)
         if line.lower().startswith('*end assembly'):
             for k, angle in enumerate(angles[1:], start=2):
-                result.extend(_initial_solution_lines(f'Ply-{k}', fractions_by_angle[angle]))
+                result.extend(_initial_solution_lines(f'Ply-{k}', fractions_by_angle[angle], metadata['vuel_nsvars']))
         i += 1
     metadata['vuel_elements_per_ply'] = len(ghost_by_host)
     metadata['ghost_elements_per_ply'] = len(ghost_by_host)
