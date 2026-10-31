@@ -30,6 +30,7 @@
   let ballMode = 'wireframe';   // 'wireframe', 'solid', 'hidden'
   let hostOpacity = 1.0;
   let hostEdges = false;
+  let plyOutlines = false;
 
   // Colors
   let hostColor = '#8C8C8C';
@@ -50,10 +51,15 @@
   let hostFaceE1 = null;        // Uint32Array  [n_faces]
   let hostFaceE2 = null;        // Int32Array   [n_faces]
   let hostFaceTris = null;      // Uint32Array  [n_faces, 6]
-  let hostFaceEdges = null;     // Uint32Array  [n_faces, 8]
+  let hostFaceEdges = null;
+  let hostFaceCap = null;        // Uint8Array [n_faces], 1 = ply cap face
+  let plyWireGeom, plyWireIndices, plyWireMesh, plyWireMaterial;     // Uint32Array  [n_faces, 8]
   let ballFacesTris = null;     // Uint32Array
   let ballFacesEdges = null;    // Uint32Array
   let fiberLines = null;        // Uint32Array
+  let fiberStatusData = null;   // Uint8Array [frames, n_fiber_segments], 1 = alive (null for old datasets)
+  let fiberAlive = null;        // Uint8Array view of the current frame's status
+  let fiberIndices = null;      // Uint32Array, alive segment node pairs for the thin line mesh
 
   // Counts
   let n_host_nodes = 0;
@@ -111,6 +117,7 @@
   const sliderHostOpacity = document.getElementById('slider-host-opacity');
   const lblHostOpacity = document.getElementById('lbl-host-opacity');
   const chkHostEdges = document.getElementById('chk-host-edges');
+  const chkPlyOutlines = document.getElementById('chk-ply-outlines');
 
   const colHost = document.getElementById('col-host');
   const colFiber = document.getElementById('col-fiber');
@@ -302,9 +309,11 @@
       fetchBuffer(`${dataDir}/${files.host_faces_e2.filename}`, 'host_faces_e2.i32').then(b => hostFaceE2 = new Int32Array(b)),
       fetchBuffer(`${dataDir}/${files.host_faces_tris.filename}`, 'host_faces_tris.u32').then(b => hostFaceTris = new Uint32Array(b)),
       fetchBuffer(`${dataDir}/${files.host_faces_edges.filename}`, 'host_faces_edges.u32').then(b => hostFaceEdges = new Uint32Array(b)),
+      files.host_faces_cap ? fetchBuffer(`${dataDir}/${files.host_faces_cap.filename}`, 'host_faces_cap.u8').then(b => hostFaceCap = new Uint8Array(b)) : Promise.resolve(),
       fetchBuffer(`${dataDir}/${files.ball_faces_tris.filename}`, 'ball_faces_tris.u32').then(b => ballFacesTris = new Uint32Array(b)),
       fetchBuffer(`${dataDir}/${files.ball_faces_edges.filename}`, 'ball_faces_edges.u32').then(b => ballFacesEdges = new Uint32Array(b)),
       fetchBuffer(`${dataDir}/${files.fiber_lines.filename}`, 'fiber_lines.u32').then(b => fiberLines = new Uint32Array(b)),
+      files.fiber_status ? fetchBuffer(`${dataDir}/${files.fiber_status.filename}`, 'fiber_status.u8').then(b => fiberStatusData = new Uint8Array(b)) : Promise.resolve(),
     ];
 
     await Promise.all(fetchPromises);
@@ -330,7 +339,8 @@
       roughness: 0.6,
       metalness: 0.1,
       side: THREE.DoubleSide,
-      transparent: true,
+      flatShading: true,   // geometry has no normals; derive them per pixel (missing normals made solid mode flicker black)
+      transparent: hostOpacity < 1,
       opacity: hostOpacity,
       polygonOffset: true,
       polygonOffsetFactor: 1,
@@ -353,6 +363,18 @@
     hostWireMesh = new THREE.LineSegments(hostWireGeom, hostWireMaterial);
     scene.add(hostWireMesh);
 
+    // Ply outlines (perimeter of ply cap faces), solid mode only
+    plyWireGeom = new THREE.BufferGeometry();
+    plyWireGeom.setAttribute('position', hostSolidPosAttr);
+    plyWireIndices = new Uint32Array(n_host_faces * 8);
+    const plyWireIndexAttr = new THREE.BufferAttribute(plyWireIndices, 1);
+    plyWireIndexAttr.setUsage(THREE.DynamicDrawUsage);
+    plyWireGeom.setIndex(plyWireIndexAttr);
+    plyWireMaterial = new THREE.LineBasicMaterial({ color: new THREE.Color('#000000') });
+    plyWireMesh = new THREE.LineSegments(plyWireGeom, plyWireMaterial);
+    plyWireMesh.visible = false;
+    scene.add(plyWireMesh);
+
     // 2. Ball Geometries (Static Exterior Topology)
     ballPosAttr = new THREE.BufferAttribute(new Float32Array(n_ball_nodes * 3), 3);
     ballPosAttr.setUsage(THREE.DynamicDrawUsage);
@@ -366,6 +388,7 @@
       roughness: 0.5,
       metalness: 0.2,
       side: THREE.DoubleSide,
+      flatShading: true,
     });
     ballSolidMesh = new THREE.Mesh(ballSolidGeom, ballSolidMaterial);
     scene.add(ballSolidMesh);
@@ -386,7 +409,11 @@
 
     fiberGeom = new THREE.BufferGeometry();
     fiberGeom.setAttribute('position', fiberPosAttr);
-    fiberGeom.setIndex(new THREE.BufferAttribute(fiberLines, 1));
+    fiberIndices = new Uint32Array(fiberLines.length);
+    fiberIndices.set(fiberLines);
+    const fiberIndexAttr = new THREE.BufferAttribute(fiberIndices, 1);
+    fiberIndexAttr.setUsage(THREE.DynamicDrawUsage);
+    fiberGeom.setIndex(fiberIndexAttr);
     fiberMaterial = new THREE.LineBasicMaterial({
       color: new THREE.Color(fiberColor),
     });
@@ -431,6 +458,7 @@
     const fiberOffset = frame * n_fiber_nodes * 3;
     fiberPosAttr.array.set(fiberPosData.subarray(fiberOffset, fiberOffset + n_fiber_nodes * 3));
     fiberPosAttr.needsUpdate = true;
+    updateFiberAlive(frame);
 
     // If using fat lines
     if (fiberFatMesh && fiberFatMesh.visible) {
@@ -458,8 +486,10 @@
 
     let triCount = 0;
     let edgeCount = 0;
+    let plyCount = 0;
 
     const needTris = hostSolidMesh.visible;
+    const needPly = plyWireMesh.visible && hostFaceCap !== null;
     const needEdges = hostWireMesh.visible;
 
     for (let i = 0; i < n_host_faces; i++) {
@@ -486,6 +516,10 @@
           hostSolidIndices[triCount++] = hostFaceTris[src + 4];
           hostSolidIndices[triCount++] = hostFaceTris[src + 5];
         }
+        if (needPly && hostFaceCap[i]) {
+          const src = i * 8;
+          for (let k = 0; k < 8; k++) plyWireIndices[plyCount++] = hostFaceEdges[src + k];
+        }
         if (needEdges) {
           const src = i * 8;
           hostWireIndices[edgeCount++] = hostFaceEdges[src];
@@ -504,10 +538,29 @@
       hostSolidGeom.setDrawRange(0, triCount);
       hostSolidGeom.index.needsUpdate = true;
     }
+    if (needPly) {
+      plyWireGeom.setDrawRange(0, plyCount);
+      plyWireGeom.index.needsUpdate = true;
+    }
     if (needEdges) {
       hostWireGeom.setDrawRange(0, edgeCount);
       hostWireGeom.index.needsUpdate = true;
     }
+  }
+
+  // Hide deleted fiber segments (their orphaned nodes keep flying and would draw stretched ghost lines)
+  function updateFiberAlive(frame) {
+    if (!fiberStatusData) return;
+    fiberAlive = fiberStatusData.subarray(frame * n_fiber_segments, (frame + 1) * n_fiber_segments);
+    let k = 0;
+    for (let i = 0; i < n_fiber_segments; i++) {
+      if (fiberAlive[i]) {
+        fiberIndices[k++] = fiberLines[i * 2];
+        fiberIndices[k++] = fiberLines[i * 2 + 1];
+      }
+    }
+    fiberGeom.setDrawRange(0, k);
+    fiberGeom.index.needsUpdate = true;
   }
 
   function updateFiberFatPositions() {
@@ -515,6 +568,7 @@
     const pos = fiberPosAttr.array;
     let dst = 0;
     for (let i = 0; i < n_fiber_segments; i++) {
+      if (fiberAlive && !fiberAlive[i]) continue;
       const n0 = fiberLines[i * 2] * 3;
       const n1 = fiberLines[i * 2 + 1] * 3;
       fiberFatPositions[dst++] = pos[n0];
@@ -524,7 +578,7 @@
       fiberFatPositions[dst++] = pos[n1 + 1];
       fiberFatPositions[dst++] = pos[n1 + 2];
     }
-    fiberFatGeom.setPositions(fiberFatPositions);
+    fiberFatGeom.setPositions(dst === fiberFatPositions.length ? fiberFatPositions : fiberFatPositions.slice(0, dst));
   }
 
   function updateMeshVisibilities() {
@@ -532,14 +586,20 @@
     if (fibersOnly || hostMode === 'hidden') {
       hostSolidMesh.visible = false;
       hostWireMesh.visible = false;
+      plyWireMesh.visible = false;
     } else if (hostMode === 'wireframe') {
       hostSolidMesh.visible = false;
+      plyWireMesh.visible = false;
       hostWireMesh.visible = true;
       hostWireMaterial.color.set(hostColor);
     } else if (hostMode === 'solid') {
       hostSolidMesh.visible = true;
       hostSolidMaterial.color.set(hostColor);
       hostSolidMaterial.opacity = hostOpacity;
+      hostSolidMaterial.transparent = hostOpacity < 1;
+      const wasPly = plyWireMesh.visible;
+      plyWireMesh.visible = plyOutlines && hostFaceCap !== null;
+      if (plyWireMesh.visible && !wasPly) lastStatusFrame = -1;   // rebuild ply index list
       if (hostEdges) {
         hostWireMesh.visible = true;
         hostWireMaterial.color.set('#303030');
@@ -923,6 +983,13 @@
       hostOpacity = parseFloat(e.target.value);
       lblHostOpacity.textContent = hostOpacity.toFixed(2);
       updateMeshVisibilities();
+    });
+
+    chkPlyOutlines.addEventListener('change', e => {
+      plyOutlines = e.target.checked;
+      updateMeshVisibilities();
+      updateHostVisibility(currentFrame);
+      requestRender();
     });
 
     chkHostEdges.addEventListener('change', e => {

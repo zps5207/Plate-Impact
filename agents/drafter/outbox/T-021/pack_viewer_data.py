@@ -12,9 +12,11 @@ Converts an animation .npz file (with host, ball, fiber roles) into:
      - host_faces_e2.i32:   Int32   [n_host_faces] (neighbor element, -1 if exterior)
      - host_faces_tris.u32: Uint32  [n_host_faces, 6] (2 triangles per face)
      - host_faces_edges.u32:Uint32  [n_host_faces, 8] (4 perimeter edges per face)
+     - host_faces_cap.u8:   Uint8   [n_host_faces] (1 = ply cap face; perimeter drawn as ply outline)
      - ball_faces_tris.u32: Uint32  [n_ball_tris * 3] (static exterior triangles)
      - ball_faces_edges.u32:Uint32  [n_ball_edges * 2] (static exterior edges)
      - fiber_lines.u32:     Uint32  [n_fiber_segments, 2] (static line segments)
+     - fiber_status.u8:     Uint8   [n_frames, n_fiber_segments] (1 = alive, 0 = deleted)
 
 Usage:
   python pack_viewer_data.py <file.npz> [--output <dir>]
@@ -110,19 +112,33 @@ def compute_symmetry_camera(
     R = np.zeros(3, dtype=np.float64)
     R[thick] = travel_sign
 
-    # 4. Vertical screen direction U points along plate lateral axis
+    # 4. Pick the lateral axis normal to the symmetry plane: the axis whose
+    #    host extent ends closest to zero (quarter/half models are cut at 0).
     lateral = [a for a in range(3) if a != thick]
-    other = lateral[0]  # Vertical axis on screen (e.g. X)
-    normal = lateral[1] # Axis facing into screen (e.g. Y)
+    normal = lateral[1]
+    side = 1.0   # sign of the mesh relative to the plane along `normal`
+    if host_coords0 is not None and len(host_coords0) > 0:
+        lo = host_coords0.min(axis=0)
+        hi = host_coords0.max(axis=0)
+        best = None
+        for a in lateral:
+            span = max(float(hi[a] - lo[a]), 1e-12)
+            gap = min(abs(float(lo[a])), abs(float(hi[a]))) / span
+            if best is None or gap < best[0] - 1e-9 or (abs(gap - best[0]) <= 1e-9 and a == lateral[1]):
+                best = (gap, a)
+        normal = best[1]
+        side = 1.0 if abs(float(lo[normal])) <= abs(float(hi[normal])) else -1.0
+    other = [a for a in lateral if a != normal][0]
 
+    # 5. The camera sits OUTSIDE the mesh, on the far side of the flat symmetry
+    #    plane, looking into the model: view direction V points toward the mesh.
+    #    Screen-right R stays along ball travel; U (screen-up) is chosen so U x R = V.
+    V = np.zeros(3, dtype=np.float64)
+    V[normal] = side
     U = np.zeros(3, dtype=np.float64)
     U[other] = 1.0
-
-    # 5. View direction into screen V = U x R (so R = V x U)
-    V = cross_product(U, R)
-    v_norm = np.linalg.norm(V)
-    if v_norm > 1e-9:
-        V /= v_norm
+    if float(np.dot(cross_product(U, R), V)) < 0.0:
+        U[other] = -1.0
 
     # 6. Fit extents with margin
     v_min, v_max = bounds_min[other], bounds_max[other]
@@ -142,6 +158,8 @@ def compute_symmetry_camera(
     target[other] = v_center
     target[thick] = h_center
     target[normal] = 0.0
+    if host_coords0 is not None and len(host_coords0) > 0:
+        target[normal] = float(host_coords0.min(axis=0)[normal] if side > 0 else host_coords0.max(axis=0)[normal])
 
     extent = float(np.max(bounds_max - bounds_min))
     distance = 3.0 * extent
@@ -248,6 +266,7 @@ def pack_data(npz_path: str | Path, output_dir: str | Path) -> dict[str, Any]:
     host_conn_keys = sorted([k for k in raw.files if k.startswith("host_conn_")])
     elem_offset = 0
     face_dict: dict[tuple[int, ...], list[tuple[int, list[int]]]] = {}
+    elem_face_keys: dict[int, list[tuple[int, ...]]] = {}
 
     for k in host_conn_keys:
         elem_type = k.replace("host_conn_", "")
@@ -261,6 +280,7 @@ def pack_data(npz_path: str | Path, output_dir: str | Path) -> dict[str, Any]:
                 f_nodes = [int(elem_nodes[idx]) for idx in f_indices]
                 canonical_key = tuple(sorted(f_nodes))
                 face_dict.setdefault(canonical_key, []).append((elem_id, f_nodes))
+                elem_face_keys.setdefault(elem_id, []).append(canonical_key)
         elem_offset += n_elems
 
     total_host_elements = elem_offset
@@ -275,6 +295,19 @@ def pack_data(npz_path: str | Path, output_dir: str | Path) -> dict[str, Any]:
     host_e2 = np.empty(n_host_faces, dtype=np.int32)
     host_tris = np.empty((n_host_faces, 6), dtype=np.uint32)
     host_edges = np.empty((n_host_faces, 8), dtype=np.uint32)
+    # Ply cap faces: unshared faces whose opposite face in the same hex is also unshared (one-hex-thick plies
+    # are separate instances, so a ply's top and bottom faces are both exterior). Their perimeter edges are the ply outlines.
+    host_cap = np.zeros(n_host_faces, dtype=np.uint8)
+    face_index = {key: i for i, key in enumerate(face_dict)}
+    for keys in elem_face_keys.values():
+        if len(keys) != 6:
+            continue
+        for a in keys:
+            if len(face_dict[a]) != 1:
+                continue
+            for b in keys:
+                if b is not a and not (set(a) & set(b)) and len(face_dict[b]) == 1:
+                    host_cap[face_index[a]] = 1
 
     for idx, (canonical_key, occ) in enumerate(face_dict.items()):
         e1 = occ[0][0]
@@ -367,6 +400,12 @@ def pack_data(npz_path: str | Path, output_dir: str | Path) -> dict[str, Any]:
             for row in conn:
                 fiber_segments_list.extend([int(row[0]), int(row[1])])
     fiber_lines = np.array(fiber_segments_list, dtype=np.uint32)
+    n_fiber_segs = len(fiber_segments_list) // 2
+    # per-frame fiber element STATUS (1 = alive); absent in older exports -> all alive
+    if "fiber_status" in raw:
+        fiber_status = np.asarray(raw["fiber_status"], dtype=np.uint8)
+    else:
+        fiber_status = np.ones((n_frames, n_fiber_segs), dtype=np.uint8)
 
     # 5. Global Animation Bounds (excluding debris from deleted elements, matching odb_viewer.py)
     mins, maxs = [], []
@@ -412,7 +451,18 @@ def pack_data(npz_path: str | Path, output_dir: str | Path) -> dict[str, Any]:
 
     # Camera presets
     cam_iso = compute_iso_camera(bounds_min, bounds_max)
-    cam_sym = compute_symmetry_camera(bounds_min, bounds_max, host_coords0 if has_host else None, ball_pos if has_ball else None)
+    sym_mins, sym_maxs = [], []
+    if has_host and len(host_coords0) > 0:
+        sym_mins.append(host_coords0.min(axis=0)); sym_maxs.append(host_coords0.max(axis=0))
+    if has_ball and len(ball_pos) > 0:
+        # ball at start, and the start shape carried by the mean ball motion
+        # (individual ball nodes can fly off once elements erode)
+        shift = np.median(ball_pos[-1] - ball_pos[0], axis=0)
+        for off in (0.0, shift):
+            sym_mins.append(ball_pos[0].min(axis=0) + off); sym_maxs.append(ball_pos[0].max(axis=0) + off)
+    sym_min = np.min(sym_mins, axis=0).astype(np.float64) if sym_mins else bounds_min
+    sym_max = np.max(sym_maxs, axis=0).astype(np.float64) if sym_maxs else bounds_max
+    cam_sym = compute_symmetry_camera(sym_min, sym_max, host_coords0 if has_host else None, ball_pos if has_ball else None)
     cam_reset = compute_reset_camera(bounds_min, bounds_max)
 
     camera_presets = {
@@ -432,9 +482,11 @@ def pack_data(npz_path: str | Path, output_dir: str | Path) -> dict[str, Any]:
         "host_faces_e2": ("host_faces_e2.i32", host_e2.astype("<i4")),
         "host_faces_tris": ("host_faces_tris.u32", host_tris.astype("<u4")),
         "host_faces_edges": ("host_faces_edges.u32", host_edges.astype("<u4")),
+        "host_faces_cap": ("host_faces_cap.u8", host_cap.astype("u1")),
         "ball_faces_tris": ("ball_faces_tris.u32", ball_tris.astype("<u4")),
         "ball_faces_edges": ("ball_faces_edges.u32", ball_edges.astype("<u4")),
         "fiber_lines": ("fiber_lines.u32", fiber_lines.astype("<u4")),
+        "fiber_status": ("fiber_status.u8", fiber_status.astype("u1")),
     }
 
     file_manifest: dict[str, dict[str, Any]] = {}
