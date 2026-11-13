@@ -1,0 +1,3 @@
+host: p-bc-5403  date: Wed Oct 21 14:04:33 EDT 2026  job=t046_chk2  mode=datacheck  inp=test2_single_host_pull.inp 
+abaqus rc=0
+done Wed Oct 21 14:04:43 EDT 2026

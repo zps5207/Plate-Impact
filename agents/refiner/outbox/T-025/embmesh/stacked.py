@@ -57,7 +57,7 @@ def _segment_statistics(fibers, target_length, short_runs):
                 segment_length_over_target_median=float(np.median(all_lengths)/target_length) if len(all_lengths) else None,
                 segment_length_over_target_max=float(all_lengths.max()/target_length) if len(all_lengths) else None,
                 per_fiber_segment_spread_max_relative=max(spreads, default=0.),
-                short_fiber_run_count=short_runs)
+                short_fiber_run_count=int(short_runs))
 
 
 def stacked_surface_fibers(elems, nodes, diameter, thickness_axis=None, gap=0.,

@@ -1,0 +1,238 @@
+Analysis initiated from SIMULIA established products
+Abaqus JOB t046_sol1
+Abaqus 2024
+USING MEMORY DOUG-LEA ALLOCATOR
+Abaqus License Manager checked out the following licenses:
+Abaqus/Explicit checked out 5 tokens from Flexnet server license2.2e.hpc.psu.edu.
+<260 out of 300 licenses remain available>.
+Begin Analysis Input File Processor
+Wed 21 Oct 2026 12:44:22 PM EDT
+Run pre
+Wed 21 Oct 2026 12:44:22 PM EDT
+End Analysis Input File Processor
+Begin Abaqus/Explicit Packager
+Wed 21 Oct 2026 12:44:22 PM EDT
+PAC_NUM_THREADS VALUE: 1
+Run package
+Abaqus/Explicit 2024                             DATE 21-Oct-2026  TIME 12:44:23
+-------------------------------------------------------------------------------
+ PREPROCESSOR WARNING MESSAGES
+-------------------------------------------------------------------------------
+
+
+***WARNING: There are 2 warning messages in the data (.dat) file.  Please
+            check the data file for possible errors in the input file.
+
+
+-------------------------------------------------------------------------------
+ MODEL INFORMATION (IN GLOBAL X-Y COORDINATES)
+-------------------------------------------------------------------------------
+
+   Total mass in model = 3.07746E-07
+   Center of mass of model = ( 5.000000E-04, 0.000000E+00, 0.000000E+00)
+
+    Moments of Inertia :
+                 About Center of Mass              About Origin
+      I(XX)          0.000000E+00                  0.000000E+00
+      I(YY)          7.693665E-14                  1.538733E-13
+      I(ZZ)          7.693665E-14                  1.538733E-13
+      I(XY)          0.000000E+00                  0.000000E+00
+      I(YZ)          0.000000E+00                  0.000000E+00
+      I(ZX)          0.000000E+00                  0.000000E+00
+
+-------------------------------------------------------------------------------
+ STABLE TIME INCREMENT INFORMATION
+-------------------------------------------------------------------------------
+
+
+  The stable time increment estimate for each element is based on
+  linearization about the initial state.
+
+
+   Initial time increment = 8.43923E-08
+
+   Statistics for all elements:
+      Mean = 8.43923E-08
+      Standard deviation = 0.0000
+
+   Most critical elements:
+    Element number   Rank    Time increment   Increment ratio
+   ----------------------------------------------------------
+           1          1       8.439231E-08      1.000000E+00
+
+Wed 21 Oct 2026 12:44:24 PM EDT
+End Abaqus/Explicit Packager
+Begin Abaqus/Explicit Analysis
+Wed 21 Oct 2026 12:44:24 PM EDT
+Run explicit
+
+Abaqus/Explicit 2024                             DATE 21-Oct-2026  TIME 12:44:25
+
+The single precision Abaqus/Explicit executable will be used in this analysis.
+
+
+-------------------------------------------------------------------------------
+ SOLUTION PROGRESS
+-------------------------------------------------------------------------------
+
+ STEP 1  ORIGIN 0.0000
+
+  Total memory used for step 1 is approximately 0.9 megabytes.
+  Global time estimation algorithm will be used.
+  Scaling factor:  1.0000
+              STEP     TOTAL      WALL      STABLE    CRITICAL    KINETIC      TOTAL
+INCREMENT     TIME      TIME      TIME   INCREMENT     ELEMENT     ENERGY     ENERGY
+        0  0.000E+00 0.000E+00  00:00:00 8.439E-08           1  0.000E+00  0.000E+00
+Output Field Frame Number     0, with time interval 1.000E-06, at step time 0.000E+00 of 1.000E-04
+       12  1.013E-06 1.013E-06  00:00:00 8.439E-08           1  7.024E-13  4.732E-15
+Output Field Frame Number     1, with time interval 1.000E-06, at step time 1.013E-06 of 1.000E-04
+       24  2.025E-06 2.025E-06  00:00:00 8.439E-08           1  1.075E-11  1.786E-14
+Output Field Frame Number     2, with time interval 1.000E-06, at step time 2.025E-06 of 1.000E-04
+       36  3.038E-06 3.038E-06  00:00:00 8.440E-08           1  5.217E-11  3.942E-14
+Output Field Frame Number     3, with time interval 1.000E-06, at step time 3.038E-06 of 1.000E-04
+       48  4.051E-06 4.051E-06  00:00:00 8.440E-08           1  1.581E-10  8.601E-14
+Output Field Frame Number     4, with time interval 1.000E-06, at step time 4.051E-06 of 1.000E-04
+       60  5.064E-06 5.064E-06  00:00:00 8.441E-08           1  3.699E-10  1.602E-13
+Output Field Frame Number     5, with time interval 1.000E-06, at step time 5.064E-06 of 1.000E-04
+       72  6.077E-06 6.077E-06  00:00:00 8.442E-08           1  7.348E-10  3.906E-13
+Output Field Frame Number     6, with time interval 1.000E-06, at step time 6.077E-06 of 1.000E-04
+       83  7.005E-06 7.005E-06  00:00:00 8.443E-08           1  1.247E-09  7.077E-13
+Output Field Frame Number     7, with time interval 1.000E-06, at step time 7.005E-06 of 1.000E-04
+       95  8.019E-06 8.019E-06  00:00:00 8.445E-08           1  2.049E-09  2.142E-12
+Output Field Frame Number     8, with time interval 1.000E-06, at step time 8.019E-06 of 1.000E-04
+      107  9.032E-06 9.032E-06  00:00:00 8.447E-08           1  3.156E-09  4.965E-12
+Output Field Frame Number     9, with time interval 1.000E-06, at step time 9.032E-06 of 1.000E-04
+      119  1.005E-05 1.005E-05  00:00:00 8.450E-08           1  4.618E-09  9.851E-12
+Output Field Frame Number    10, with time interval 1.000E-06, at step time 1.005E-05 of 1.000E-04
+      131  1.106E-05 1.106E-05  00:00:00 8.453E-08           1  6.483E-09  2.496E-11
+Output Field Frame Number    11, with time interval 1.000E-06, at step time 1.106E-05 of 1.000E-04
+      143  1.207E-05 1.207E-05  00:00:00 8.457E-08           1  8.797E-09  4.953E-11
+Output Field Frame Number    12, with time interval 1.000E-06, at step time 1.207E-05 of 1.000E-04
+      154  1.301E-05 1.301E-05  00:00:00 8.461E-08           1  1.135E-08  9.117E-11
+Output Field Frame Number    13, with time interval 1.000E-06, at step time 1.301E-05 of 1.000E-04
+      166  1.402E-05 1.402E-05  00:00:00 8.467E-08           1  1.462E-08  1.628E-10
+Output Field Frame Number    14, with time interval 1.000E-06, at step time 1.402E-05 of 1.000E-04
+      178  1.504E-05 1.504E-05  00:00:00 8.472E-08           1  1.845E-08  2.146E-10
+Output Field Frame Number    15, with time interval 1.000E-06, at step time 1.504E-05 of 1.000E-04
+      190  1.605E-05 1.605E-05  00:00:00 8.479E-08           1  2.284E-08  2.659E-10
+Output Field Frame Number    16, with time interval 1.000E-06, at step time 1.605E-05 of 1.000E-04
+      202  1.707E-05 1.707E-05  00:00:00 8.486E-08           1  2.782E-08  4.232E-10
+Output Field Frame Number    17, with time interval 1.000E-06, at step time 1.707E-05 of 1.000E-04
+      213  1.801E-05 1.801E-05  00:00:00 8.494E-08           1  3.290E-08  5.218E-10
+Output Field Frame Number    18, with time interval 1.000E-06, at step time 1.801E-05 of 1.000E-04
+      225  1.903E-05 1.903E-05  00:00:00 8.502E-08           1  3.900E-08  7.864E-10
+Output Field Frame Number    19, with time interval 1.000E-06, at step time 1.903E-05 of 1.000E-04
+      237  2.005E-05 2.005E-05  00:00:00 8.512E-08           1  4.569E-08  9.749E-10
+Output Field Frame Number    20, with time interval 1.000E-06, at step time 2.005E-05 of 1.000E-04
+      249  2.107E-05 2.107E-05  00:00:00 8.522E-08           1  5.295E-08  1.396E-09
+Output Field Frame Number    21, with time interval 1.000E-06, at step time 2.107E-05 of 1.000E-04
+      260  2.201E-05 2.201E-05  00:00:00 8.532E-08           1  6.009E-08  1.783E-09
+Output Field Frame Number    22, with time interval 1.000E-06, at step time 2.201E-05 of 1.000E-04
+      272  2.303E-05 2.303E-05  00:00:00 8.544E-08           1  6.837E-08  2.275E-09
+Output Field Frame Number    23, with time interval 1.000E-06, at step time 2.303E-05 of 1.000E-04
+      284  2.406E-05 2.406E-05  00:00:01 8.557E-08           1  7.714E-08  2.923E-09
+Output Field Frame Number    24, with time interval 1.000E-06, at step time 2.406E-05 of 1.000E-04
+      296  2.508E-05 2.508E-05  00:00:01 8.570E-08           1  8.635E-08  3.757E-09
+Output Field Frame Number    25, with time interval 1.000E-06, at step time 2.508E-05 of 1.000E-04
+      307  2.603E-05 2.603E-05  00:00:01 8.583E-08           1  9.515E-08  4.122E-09
+Output Field Frame Number    26, with time interval 1.000E-06, at step time 2.603E-05 of 1.000E-04
+      319  2.706E-05 2.706E-05  00:00:01 8.598E-08           1  1.051E-07  5.342E-09
+Output Field Frame Number    27, with time interval 1.000E-06, at step time 2.706E-05 of 1.000E-04
+      330  2.800E-05 2.800E-05  00:00:01 8.613E-08           1  1.144E-07  6.493E-09
+Output Field Frame Number    28, with time interval 1.000E-06, at step time 2.800E-05 of 1.000E-04
+      342  2.904E-05 2.904E-05  00:00:01 8.629E-08           1  1.249E-07  7.623E-09
+Output Field Frame Number    29, with time interval 1.000E-06, at step time 2.904E-05 of 1.000E-04
+      354  3.008E-05 3.008E-05  00:00:01 8.646E-08           1  1.354E-07  8.951E-09
+Output Field Frame Number    30, with time interval 1.000E-06, at step time 3.008E-05 of 1.000E-04
+      365  3.103E-05 3.103E-05  00:00:01 8.663E-08           1  1.452E-07  1.041E-08
+Output Field Frame Number    31, with time interval 1.000E-06, at step time 3.103E-05 of 1.000E-04
+      377  3.207E-05 3.207E-05  00:00:01 8.681E-08           1  1.559E-07  1.275E-08
+Output Field Frame Number    32, with time interval 1.000E-06, at step time 3.207E-05 of 1.000E-04
+      388  3.302E-05 3.302E-05  00:00:01 8.699E-08           1  1.657E-07  1.383E-08
+Output Field Frame Number    33, with time interval 1.000E-06, at step time 3.302E-05 of 1.000E-04
+      400  3.407E-05 3.407E-05  00:00:01 8.719E-08           1  1.763E-07  1.718E-08
+Output Field Frame Number    34, with time interval 1.000E-06, at step time 3.407E-05 of 1.000E-04
+      411  3.503E-05 3.503E-05  00:00:01 8.738E-08           1  1.858E-07  1.965E-08
+Output Field Frame Number    35, with time interval 1.000E-06, at step time 3.503E-05 of 1.000E-04
+      423  3.608E-05 3.608E-05  00:00:01 8.759E-08           1  1.959E-07  1.831E-08
+Output Field Frame Number    36, with time interval 1.000E-06, at step time 3.608E-05 of 1.000E-04
+      434  3.707E-05 3.707E-05  00:00:01 9.002E-08           1  2.050E-07  2.125E-08
+Output Field Frame Number    37, with time interval 1.000E-06, at step time 3.707E-05 of 1.000E-04
+      445  3.804E-05 3.804E-05  00:00:01 8.801E-08           1  2.137E-07  2.413E-08
+Output Field Frame Number    38, with time interval 1.000E-06, at step time 3.804E-05 of 1.000E-04
+      456  3.901E-05 3.901E-05  00:00:01 8.821E-08           1  2.219E-07  2.580E-08
+Output Field Frame Number    39, with time interval 1.000E-06, at step time 3.901E-05 of 1.000E-04
+
+ STEP 1  ORIGIN 0.0000
+
+              STEP     TOTAL      WALL      STABLE    CRITICAL    KINETIC      TOTAL
+INCREMENT     TIME      TIME      TIME   INCREMENT     ELEMENT     ENERGY     ENERGY
+      468  4.007E-05 4.007E-05  00:00:01 8.846E-08           1  2.302E-07  3.253E-08
+Output Field Frame Number    40, with time interval 1.000E-06, at step time 4.007E-05 of 1.000E-04
+      479  4.104E-05 4.104E-05  00:00:01 9.045E-08           1  2.374E-07  3.271E-08
+Output Field Frame Number    41, with time interval 1.000E-06, at step time 4.104E-05 of 1.000E-04
+      488  4.206E-05 4.206E-05  00:00:01 1.312E-07           1  2.442E-07  3.724E-08
+Output Field Frame Number    42, with time interval 1.000E-06, at step time 4.206E-05 of 1.000E-04
+      496  4.311E-05 4.311E-05  00:00:01 1.313E-07           1  2.505E-07  4.060E-08
+Output Field Frame Number    43, with time interval 1.000E-06, at step time 4.311E-05 of 1.000E-04
+      503  4.403E-05 4.403E-05  00:00:01 1.314E-07           1  2.554E-07  4.115E-08
+Output Field Frame Number    44, with time interval 1.000E-06, at step time 4.403E-05 of 1.000E-04
+      511  4.508E-05 4.508E-05  00:00:01 1.315E-07           1  2.602E-07  4.352E-08
+Output Field Frame Number    45, with time interval 1.000E-06, at step time 4.508E-05 of 1.000E-04
+      518  4.600E-05 4.600E-05  00:00:01 1.316E-07           1  2.636E-07  4.635E-08
+Output Field Frame Number    46, with time interval 1.000E-06, at step time 4.600E-05 of 1.000E-04
+      526  4.706E-05 4.706E-05  00:00:01 1.318E-07           1  2.667E-07  4.536E-08
+Output Field Frame Number    47, with time interval 1.000E-06, at step time 4.706E-05 of 1.000E-04
+      534  4.814E-05 4.814E-05  00:00:01 1.899E-07           0  2.690E-07  3.115E-08
+Output Field Frame Number    48, with time interval 1.000E-06, at step time 4.814E-05 of 1.000E-04
+      538  4.916E-05 4.916E-05  00:00:01 3.937E-07           0  2.702E-07  3.113E-08
+Output Field Frame Number    49, with time interval 1.000E-06, at step time 4.916E-05 of 1.000E-04
+      540  5.002E-05 5.002E-05  00:00:01 5.669E-07           0  2.704E-07  3.112E-08
+Output Field Frame Number    50, with time interval 1.000E-06, at step time 5.002E-05 of 1.000E-04
+      542  5.127E-05 5.127E-05  00:00:01 8.163E-07           0  2.697E-07  3.108E-08
+Output Field Frame Number    51, with time interval 1.000E-06, at step time 5.127E-05 of 1.000E-04
+      543  5.209E-05 5.209E-05  00:00:01 9.796E-07           0  2.685E-07  3.105E-08
+Output Field Frame Number    52, with time interval 1.000E-06, at step time 5.209E-05 of 1.000E-04
+      544  5.307E-05 5.307E-05  00:00:01 1.176E-06           0  2.663E-07  3.101E-08
+Output Field Frame Number    53, with time interval 1.000E-06, at step time 5.307E-05 of 1.000E-04
+      545  5.424E-05 5.424E-05  00:00:01 1.411E-06           0  2.626E-07  3.096E-08
+Output Field Frame Number    54, with time interval 1.000E-06, at step time 5.424E-05 of 1.000E-04
+      546  5.565E-05 5.565E-05  00:00:01 1.693E-06           0  2.567E-07  3.088E-08
+Output Field Frame Number    55, with time interval 1.000E-06, at step time 5.565E-05 of 1.000E-04
+      547  5.734E-05 5.734E-05  00:00:01 2.031E-06           0  2.475E-07  3.077E-08
+Output Field Frame Number    56, with time interval 1.000E-06, at step time 5.734E-05 of 1.000E-04
+      548  5.938E-05 5.938E-05  00:00:01 2.438E-06           0  2.339E-07  3.064E-08
+Output Field Frame Number    57, with time interval 1.000E-06, at step time 5.938E-05 of 1.000E-04
+      549  6.181E-05 6.181E-05  00:00:01 2.925E-06           0  2.143E-07  3.048E-08
+Output Field Frame Number    58, with time interval 1.000E-06, at step time 6.181E-05 of 1.000E-04
+      550  6.474E-05 6.474E-05  00:00:01 3.510E-06           0  1.872E-07  3.033E-08
+Output Field Frame Number    59, with time interval 1.000E-06, at step time 6.474E-05 of 1.000E-04
+      551  6.825E-05 6.825E-05  00:00:01 4.212E-06           0  1.518E-07  3.021E-08
+Output Field Frame Number    60, with time interval 1.000E-06, at step time 6.825E-05 of 1.000E-04
+      552  7.170E-05 7.170E-05  00:00:01 5.055E-06           0  1.169E-07  3.046E-08
+Output Field Frame Number    61, with time interval 1.000E-06, at step time 7.170E-05 of 1.000E-04
+      553  7.509E-05 7.509E-05  00:00:01 6.066E-06           0  8.453E-08  3.066E-08
+Output Field Frame Number    62, with time interval 1.000E-06, at step time 7.509E-05 of 1.000E-04
+      554  7.841E-05 7.841E-05  00:00:01 7.279E-06           0  5.678E-08  3.080E-08
+Output Field Frame Number    63, with time interval 1.000E-06, at step time 7.841E-05 of 1.000E-04
+      555  8.168E-05 8.168E-05  00:00:01 8.734E-06           0  3.480E-08  3.086E-08
+Output Field Frame Number    64, with time interval 1.000E-06, at step time 8.168E-05 of 1.000E-04
+      556  8.489E-05 8.489E-05  00:00:01 1.048E-05           0  1.892E-08  3.085E-08
+Output Field Frame Number    65, with time interval 1.000E-06, at step time 8.489E-05 of 1.000E-04
+      557  8.803E-05 8.803E-05  00:00:01 1.258E-05           0  8.705E-09  3.079E-08
+Output Field Frame Number    66, with time interval 1.000E-06, at step time 8.803E-05 of 1.000E-04
+      558  1.000E-04 1.000E-04  00:00:01 1.509E-05           0  1.086E-09  2.843E-08
+Restart Number  1 at 1.00000E-04
+Output Field Frame Number    67, with time interval 1.000E-06, at step time 1.000E-04 of 1.000E-04
+  EXPLICIT EXECUTABLE TIME SUMMARY
+       USER TIME (SEC)      =  0.21000
+       SYSTEM TIME (SEC)    =  4.00000E-02
+       WALLCLOCK TIME (SEC) =            1
+              INIT (SEC) =          0
+              MAIN (SEC) =          1
+
+  THE ANALYSIS HAS COMPLETED SUCCESSFULLY
+
+Wed 21 Oct 2026 12:44:27 PM EDT
+End Abaqus/Explicit Analysis
+Abaqus JOB t046_sol1 COMPLETED

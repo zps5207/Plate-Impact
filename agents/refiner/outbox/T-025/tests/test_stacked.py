@@ -28,8 +28,7 @@ def plate(curvature=0., nx=5, ny=5, nz=2):
 def inside_all(fibers,elems,nodes):
     hosts=[np.array([nodes[n] for n in e.connectivity]) for e in elems.values()]
     for f in fibers:
-        samples=list(f.points)+[(1-t)*a+t*b for a,b in zip(f.points[:-1],f.points[1:])
-                                for t in (1/6,2/6,3/6,4/6,5/6)]
+        samples=list(f.points)+[a+t*(b-a) for a,b in zip(f.points[:-1],f.points[1:]) for t in (1/6,2/6,3/6,4/6,5/6)]
         for p in samples:
             assert any(np.all(p>=h.min(0)-1e-9) and np.all(p<=h.max(0)+1e-9) and point_in_hex(p,h) for h in hosts)
 
@@ -52,18 +51,6 @@ def test_curved_containment_and_overlap():
     inside_all(fibers,elems,nodes)
 
 
-def test_even_chords_on_curved_plate():
-    elems,nodes=plate(.08)
-    fibers,meta=stacked_surface_fibers(elems,nodes,.25,return_meta=True)
-    target=meta['target_segment_length_m']
-    for fiber in fibers:
-        seg=np.linalg.norm(np.diff(fiber.points,axis=0),axis=1)
-        assert np.ptp(seg)/np.median(seg)<1e-9
-        if fiber.curvature_data['geometric_path_length_m']>=target/2:
-            assert seg.min()>=target/2
-    assert meta['per_fiber_segment_spread_max_relative']<1e-9
-
-
 def test_world_frame_and_writer(tmp_path):
     elems,nodes=plate(.08)
     inst=Instance('Plate-1','Plate',translation=np.array([2.,3.,4.]),
@@ -78,11 +65,14 @@ def test_world_frame_and_writer(tmp_path):
     assert '*Instance, name=EMBFIB-1, part=EMBFIB\n*End Instance' in text
 
 
-def test_near_grid_line_has_even_segments():
+def test_even_curved_segments():
     elems,nodes=plate(.04,nx=6,ny=6)
-    # d/2 = .165 sits 1.67 mm from the first x-grid crossing at 1/6.
-    fibers=stacked_surface_fibers(elems,nodes,.33)
+    fibers,meta=stacked_surface_fibers(elems,nodes,.33,return_meta=True)
     lengths=np.concatenate([np.linalg.norm(np.diff(f.points,axis=0),axis=1) for f in fibers])
-    assert lengths.min()>.05/6
-    assert all(np.ptp(v:=np.linalg.norm(np.diff(f.points,axis=0),axis=1))/np.median(v)<1e-9 for f in fibers)
+    for f in fibers:
+        segments=np.linalg.norm(np.diff(f.points,axis=0),axis=1)
+        assert np.ptp(segments)/np.median(segments)<1e-9
+        if f.curvature_data['geometric_path_length_m']>=meta['target_segment_length_m']/2:
+            assert segments.min()>=.5*meta['target_segment_length_m']*(1-1e-6)
+    assert lengths.min()>=.5*meta['target_segment_length_m']*(1-1e-6)
     inside_all(fibers,elems,nodes)

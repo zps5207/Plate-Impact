@@ -1,0 +1,161 @@
+{
+  "total_unique_hosts": 217500,
+  "total_vuel_plus_ghost_entries_odb": 435000,
+  "first_increment_failed_count": 27293,
+  "first_increment_time_s": 3.7981881e-08,
+  "dead_at_0p49us_frame1": 795,
+  "dead_at_0p99us_frame2": 28521,
+  "dead_at_100us_frame199": 97668,
+  "initial_contact_overclosure": {
+    "overclosed_pairs_count": 354859,
+    "maximum_overclosure_m": 0.000211671,
+    "maximum_contact_adjustment_m": 0.000211834,
+    "contact_thickness_assigned_m": 0.000211666664166667,
+    "sublayer_thickness_m": 0.00042333332833333336,
+    "induced_engineering_strain_pct": 50.039
+  },
+  "sublayer_2_total_dead_across_all_20_plies_at_0p99us": 0,
+  "ply_breakdown_0p99us": {
+    "Ply-1": {
+      "block_index": 0,
+      "total_dead": 206,
+      "sublayer_0_bottom": 15,
+      "sublayer_1_middle": 191,
+      "sublayer_2_top": 0
+    },
+    "Ply-2": {
+      "block_index": 11,
+      "total_dead": 1579,
+      "sublayer_0_bottom": 808,
+      "sublayer_1_middle": 771,
+      "sublayer_2_top": 0
+    },
+    "Ply-3": {
+      "block_index": 13,
+      "total_dead": 1565,
+      "sublayer_0_bottom": 818,
+      "sublayer_1_middle": 747,
+      "sublayer_2_top": 0
+    },
+    "Ply-4": {
+      "block_index": 14,
+      "total_dead": 1581,
+      "sublayer_0_bottom": 809,
+      "sublayer_1_middle": 772,
+      "sublayer_2_top": 0
+    },
+    "Ply-5": {
+      "block_index": 15,
+      "total_dead": 1565,
+      "sublayer_0_bottom": 818,
+      "sublayer_1_middle": 747,
+      "sublayer_2_top": 0
+    },
+    "Ply-6": {
+      "block_index": 16,
+      "total_dead": 1581,
+      "sublayer_0_bottom": 809,
+      "sublayer_1_middle": 772,
+      "sublayer_2_top": 0
+    },
+    "Ply-7": {
+      "block_index": 17,
+      "total_dead": 1565,
+      "sublayer_0_bottom": 819,
+      "sublayer_1_middle": 746,
+      "sublayer_2_top": 0
+    },
+    "Ply-8": {
+      "block_index": 18,
+      "total_dead": 1581,
+      "sublayer_0_bottom": 808,
+      "sublayer_1_middle": 773,
+      "sublayer_2_top": 0
+    },
+    "Ply-9": {
+      "block_index": 19,
+      "total_dead": 1565,
+      "sublayer_0_bottom": 818,
+      "sublayer_1_middle": 747,
+      "sublayer_2_top": 0
+    },
+    "Ply-10": {
+      "block_index": 1,
+      "total_dead": 1581,
+      "sublayer_0_bottom": 809,
+      "sublayer_1_middle": 772,
+      "sublayer_2_top": 0
+    },
+    "Ply-11": {
+      "block_index": 2,
+      "total_dead": 1565,
+      "sublayer_0_bottom": 819,
+      "sublayer_1_middle": 746,
+      "sublayer_2_top": 0
+    },
+    "Ply-12": {
+      "block_index": 3,
+      "total_dead": 1581,
+      "sublayer_0_bottom": 808,
+      "sublayer_1_middle": 773,
+      "sublayer_2_top": 0
+    },
+    "Ply-13": {
+      "block_index": 4,
+      "total_dead": 1565,
+      "sublayer_0_bottom": 819,
+      "sublayer_1_middle": 746,
+      "sublayer_2_top": 0
+    },
+    "Ply-14": {
+      "block_index": 5,
+      "total_dead": 1581,
+      "sublayer_0_bottom": 809,
+      "sublayer_1_middle": 772,
+      "sublayer_2_top": 0
+    },
+    "Ply-15": {
+      "block_index": 6,
+      "total_dead": 1565,
+      "sublayer_0_bottom": 818,
+      "sublayer_1_middle": 747,
+      "sublayer_2_top": 0
+    },
+    "Ply-16": {
+      "block_index": 7,
+      "total_dead": 1581,
+      "sublayer_0_bottom": 808,
+      "sublayer_1_middle": 773,
+      "sublayer_2_top": 0
+    },
+    "Ply-17": {
+      "block_index": 8,
+      "total_dead": 1565,
+      "sublayer_0_bottom": 819,
+      "sublayer_1_middle": 746,
+      "sublayer_2_top": 0
+    },
+    "Ply-18": {
+      "block_index": 9,
+      "total_dead": 1581,
+      "sublayer_0_bottom": 808,
+      "sublayer_1_middle": 773,
+      "sublayer_2_top": 0
+    },
+    "Ply-19": {
+      "block_index": 10,
+      "total_dead": 1567,
+      "sublayer_0_bottom": 774,
+      "sublayer_1_middle": 793,
+      "sublayer_2_top": 0
+    },
+    "Ply-20": {
+      "block_index": 12,
+      "total_dead": 1,
+      "sublayer_0_bottom": 1,
+      "sublayer_1_middle": 0,
+      "sublayer_2_top": 0
+    }
+  },
+  "claude_ply13_myth_explanation": "Claude observed 1 dead element in Block 12 (0-indexed block 12 = 13th block). In alphabetical order, Block 12 is Ply-20 (the top ply facing the ball, z = -1.27 to 0.0 mm). Ply-13 is Block 4, which actually had 1,565 dead elements like all other interior 0-degree plies."
+}

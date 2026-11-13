@@ -20,7 +20,7 @@
     "--output",
     "C:\\Users\\salas\\OneDrive - The Pennsylvania State University\\Plate Impact\\agents\\refiner\\outbox\\T-025\\flat_stacked"
   ],
-  "exit_code": 1,
-  "wall_seconds": 357.51600000000326,
-  "peak_process_tree_rss_bytes": 204918784
+  "exit_code": 0,
+  "wall_seconds": 345.7969999999623,
+  "peak_process_tree_rss_bytes": 208367616
 }

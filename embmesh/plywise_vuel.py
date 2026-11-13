@@ -5,7 +5,7 @@ import re
 import numpy as np
 
 from .parser import parse_deck
-from .volume import fiber_volume_rows
+from .volume import fiber_volume_rows, fiber_volume_rows_precise
 from .symmetry import boundary_symmetry_sets, fiber_nodes_on_symmetry
 from .geometry import boundary_faces
 from .plyfibers import _oriented_hex_faces
@@ -51,14 +51,51 @@ def remap_surface_elsets(lines, ghost_by_host, skip_first_ply=False):
     return result
 
 
-def convert_plywise_hosts(lines, ply, angles, fibers_by_angle, diameter, options=None):
-    """Convert the common Part once, then emit fields/sets for every instance."""
+def smear_through_thickness(fractions, elements, nodes, decimals=9):
+    """Replace each host's fiber fraction by the mean over the hexes stacked in the same column.
+
+    Columns are found by the (x, y) of the hex centroid in the ply part (the through-thickness layers of
+    one column share it; layers are equal-height, so the plain mean is the volume-weighted mean). The sum
+    of fraction x volume over the column, and so the fiber volume, is unchanged. Apply to UNCAPPED fractions.
+    """
+    columns = {}
+    for label, e in elements.items():
+        c = np.mean([nodes[i] for i in e.connectivity[:8]], axis=0)
+        columns.setdefault((round(float(c[0]), decimals), round(float(c[1]), decimals)), []).append(label)
+    out = {}
+    for labels in columns.values():
+        mean = float(np.mean([fractions[l] for l in labels]))
+        for l in labels:
+            out[l] = mean
+    return out
+
+
+def convert_plywise_hosts(lines, ply, angles, fibers_by_angle, diameter, options=None, precise=False, smear=False):
+    """Convert the common Part once, then emit fields/sets for every instance.
+
+    precise=True (used when a ply carries several hex layers): each host's fiber volume is the true
+    cross-section-weighted cylinder/hex intersection, so a fiber thicker than one hex layer is shared
+    between the layers it physically overlaps, and every host's fraction is capped at 1. The default
+    centerline-length x area volume is unchanged.
+
+    smear=True (needs precise): the uncapped fractions are first averaged over the hexes of each
+    through-thickness column, then capped at 1, so every layer of the column carries the column mean.
+    """
     options = options or VuelGhostOptions()
-    fractions_by_angle = {
-        angle: {row[0]: row[3] for row in fiber_volume_rows(
-            ply.elements, ply.nodes, fibers_by_angle[angle], diameter)}
-        for angle in sorted(set(angles))
-    }
+    if smear and not precise:
+        raise ValueError('smear requires precise fractions (through-thickness > 1)')
+    if precise:
+        def _fractions(angle):
+            rows = fiber_volume_rows_precise(ply.elements, ply.nodes, fibers_by_angle[angle], diameter, n_jobs=4)
+            raw = {row[0]: row[3] for row in rows}
+            if smear:
+                raw = smear_through_thickness(raw, ply.elements, ply.nodes)
+            return {label: min(v, 1.0) for label, v in raw.items()}
+    else:
+        def _fractions(angle):
+            return {row[0]: row[3] for row in fiber_volume_rows(
+                ply.elements, ply.nodes, fibers_by_angle[angle], diameter)}
+    fractions_by_angle = {angle: _fractions(angle) for angle in sorted(set(angles))}
     deck = parse_deck('\n'.join(lines))
     first = 'Ply-1'
     converted, ghost_by_host, metadata = convert_to_vuel_ghost(

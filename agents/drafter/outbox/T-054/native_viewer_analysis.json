@@ -1,0 +1,505 @@
+{
+  "question_1_spatial_temporal": {
+    "total_elements": 217500,
+    "deleted_70us": 16864,
+    "deleted_100us": 22520,
+    "radial_breakdown_100us": {
+      "footprint_r_le_4p76mm": {
+        "count": 5856,
+        "pct_of_deleted": 26.00355239786856,
+        "total_in_zone": 5880,
+        "zone_deletion_rate_pct": 99.59183673469387
+      },
+      "annulus_4p76_to_5p72mm": {
+        "count": 2008,
+        "pct_of_deleted": 8.91651865008881,
+        "total_in_zone": 2640,
+        "zone_deletion_rate_pct": 76.06060606060606
+      },
+      "outer_r_gt_5p72mm": {
+        "count": 14656,
+        "pct_of_deleted": 65.07992895204264,
+        "total_in_zone": 208980,
+        "zone_deletion_rate_pct": 7.013111302516987
+      },
+      "max_radius_deleted_mm": 21.210773624381023
+    },
+    "sublayer_breakdown_100us": {
+      "Layer 0 (Bottom)": {
+        "deleted": 8101,
+        "total": 72500,
+        "rate_pct": 11.173793103448276
+      },
+      "Layer 1 (Middle / Fiber-bearing)": {
+        "deleted": 6676,
+        "total": 72500,
+        "rate_pct": 9.208275862068966
+      },
+      "Layer 2 (Top)": {
+        "deleted": 7743,
+        "total": 72500,
+        "rate_pct": 10.68
+      }
+    },
+    "per_ply_breakdown_100us": {
+      "Ply_20": {
+        "depth_range_mm": [
+          0.0,
+          1.27
+        ],
+        "deleted": 1097,
+        "total": 10875,
+        "rate_pct": 10.08735632183908,
+        "by_sublayer_0_1_2": [
+          372,
+          398,
+          327
+        ]
+      },
+      "Ply_19": {
+        "depth_range_mm": [
+          1.27,
+          2.54
+        ],
+        "deleted": 1160,
+        "total": 10875,
+        "rate_pct": 10.666666666666666,
+        "by_sublayer_0_1_2": [
+          386,
+          392,
+          382
+        ]
+      },
+      "Ply_18": {
+        "depth_range_mm": [
+          2.54,
+          3.81
+        ],
+        "deleted": 1105,
+        "total": 10875,
+        "rate_pct": 10.160919540229886,
+        "by_sublayer_0_1_2": [
+          364,
+          374,
+          367
+        ]
+      },
+      "Ply_17": {
+        "depth_range_mm": [
+          3.81,
+          5.08
+        ],
+        "deleted": 1166,
+        "total": 10875,
+        "rate_pct": 10.72183908045977,
+        "by_sublayer_0_1_2": [
+          444,
+          371,
+          351
+        ]
+      },
+      "Ply_16": {
+        "depth_range_mm": [
+          5.08,
+          6.35
+        ],
+        "deleted": 1117,
+        "total": 10875,
+        "rate_pct": 10.271264367816093,
+        "by_sublayer_0_1_2": [
+          349,
+          365,
+          403
+        ]
+      },
+      "Ply_15": {
+        "depth_range_mm": [
+          6.35,
+          7.62
+        ],
+        "deleted": 1256,
+        "total": 10875,
+        "rate_pct": 11.549425287356321,
+        "by_sublayer_0_1_2": [
+          519,
+          353,
+          384
+        ]
+      },
+      "Ply_14": {
+        "depth_range_mm": [
+          7.62,
+          8.89
+        ],
+        "deleted": 1147,
+        "total": 10875,
+        "rate_pct": 10.547126436781609,
+        "by_sublayer_0_1_2": [
+          357,
+          365,
+          425
+        ]
+      },
+      "Ply_13": {
+        "depth_range_mm": [
+          8.89,
+          10.16
+        ],
+        "deleted": 1253,
+        "total": 10875,
+        "rate_pct": 11.52183908045977,
+        "by_sublayer_0_1_2": [
+          522,
+          341,
+          390
+        ]
+      },
+      "Ply_12": {
+        "depth_range_mm": [
+          10.16,
+          11.43
+        ],
+        "deleted": 1135,
+        "total": 10875,
+        "rate_pct": 10.436781609195402,
+        "by_sublayer_0_1_2": [
+          345,
+          361,
+          429
+        ]
+      },
+      "Ply_11": {
+        "depth_range_mm": [
+          11.43,
+          12.7
+        ],
+        "deleted": 1248,
+        "total": 10875,
+        "rate_pct": 11.475862068965517,
+        "by_sublayer_0_1_2": [
+          540,
+          345,
+          363
+        ]
+      },
+      "Ply_10": {
+        "depth_range_mm": [
+          12.7,
+          13.97
+        ],
+        "deleted": 1068,
+        "total": 10875,
+        "rate_pct": 9.820689655172414,
+        "by_sublayer_0_1_2": [
+          320,
+          337,
+          411
+        ]
+      },
+      "Ply_9": {
+        "depth_range_mm": [
+          13.97,
+          15.24
+        ],
+        "deleted": 1283,
+        "total": 10875,
+        "rate_pct": 11.797701149425288,
+        "by_sublayer_0_1_2": [
+          557,
+          337,
+          389
+        ]
+      },
+      "Ply_8": {
+        "depth_range_mm": [
+          15.24,
+          16.51
+        ],
+        "deleted": 1069,
+        "total": 10875,
+        "rate_pct": 9.829885057471264,
+        "by_sublayer_0_1_2": [
+          321,
+          337,
+          411
+        ]
+      },
+      "Ply_7": {
+        "depth_range_mm": [
+          16.51,
+          17.78
+        ],
+        "deleted": 1197,
+        "total": 10875,
+        "rate_pct": 11.006896551724138,
+        "by_sublayer_0_1_2": [
+          529,
+          317,
+          351
+        ]
+      },
+      "Ply_6": {
+        "depth_range_mm": [
+          17.78,
+          19.05
+        ],
+        "deleted": 1036,
+        "total": 10875,
+        "rate_pct": 9.526436781609195,
+        "by_sublayer_0_1_2": [
+          325,
+          319,
+          392
+        ]
+      },
+      "Ply_5": {
+        "depth_range_mm": [
+          19.05,
+          20.32
+        ],
+        "deleted": 1128,
+        "total": 10875,
+        "rate_pct": 10.372413793103448,
+        "by_sublayer_0_1_2": [
+          484,
+          297,
+          347
+        ]
+      },
+      "Ply_4": {
+        "depth_range_mm": [
+          20.32,
+          21.59
+        ],
+        "deleted": 1009,
+        "total": 10875,
+        "rate_pct": 9.27816091954023,
+        "by_sublayer_0_1_2": [
+          295,
+          291,
+          423
+        ]
+      },
+      "Ply_3": {
+        "depth_range_mm": [
+          21.59,
+          22.86
+        ],
+        "deleted": 1084,
+        "total": 10875,
+        "rate_pct": 9.967816091954022,
+        "by_sublayer_0_1_2": [
+          459,
+          274,
+          351
+        ]
+      },
+      "Ply_2": {
+        "depth_range_mm": [
+          22.86,
+          24.13
+        ],
+        "deleted": 1106,
+        "total": 10875,
+        "rate_pct": 10.170114942528736,
+        "by_sublayer_0_1_2": [
+          415,
+          288,
+          403
+        ]
+      },
+      "Ply_1": {
+        "depth_range_mm": [
+          24.13,
+          25.4
+        ],
+        "deleted": 856,
+        "total": 10875,
+        "rate_pct": 7.871264367816092,
+        "by_sublayer_0_1_2": [
+          198,
+          214,
+          444
+        ]
+      }
+    },
+    "timeline": [
+      {
+        "t_us": 0.9875287787508569,
+        "total_deleted": 0,
+        "under_ball": 0,
+        "annulus": 0,
+        "outer": 0,
+        "max_r_mm": 0.0,
+        "max_depth_mm": 0.0
+      },
+      {
+        "t_us": 2.0504860458459007,
+        "total_deleted": 72,
+        "under_ball": 72,
+        "annulus": 0,
+        "outer": 0,
+        "max_r_mm": 3.165563099031976,
+        "max_depth_mm": 1.0583336115814745
+      },
+      {
+        "t_us": 5.048706952948123,
+        "total_deleted": 606,
+        "under_ball": 597,
+        "annulus": 9,
+        "outer": 0,
+        "max_r_mm": 4.875893964140277,
+        "max_depth_mm": 3.5983335692435503
+      },
+      {
+        "t_us": 10.099383871420287,
+        "total_deleted": 1948,
+        "under_ball": 1572,
+        "annulus": 306,
+        "outer": 70,
+        "max_r_mm": 6.579848654355066,
+        "max_depth_mm": 7.835578716670474
+      },
+      {
+        "t_us": 15.1508556882618,
+        "total_deleted": 3579,
+        "under_ball": 2479,
+        "annulus": 617,
+        "outer": 483,
+        "max_r_mm": 8.056930570571552,
+        "max_depth_mm": 11.645578197203577
+      },
+      {
+        "t_us": 20.12638287851587,
+        "total_deleted": 5528,
+        "under_ball": 3277,
+        "annulus": 884,
+        "outer": 1367,
+        "max_r_mm": 10.118852190482201,
+        "max_depth_mm": 15.441728393650719
+      },
+      {
+        "t_us": 30.191697078407742,
+        "total_deleted": 9804,
+        "under_ball": 4645,
+        "annulus": 1330,
+        "outer": 3829,
+        "max_r_mm": 16.544986536717644,
+        "max_depth_mm": 20.90208325535059
+      },
+      {
+        "t_us": 39.76041261921637,
+        "total_deleted": 13230,
+        "under_ball": 5557,
+        "annulus": 1656,
+        "outer": 6017,
+        "max_r_mm": 21.203447237919672,
+        "max_depth_mm": 25.188333354890347
+      },
+      {
+        "t_us": 49.86244675819762,
+        "total_deleted": 14795,
+        "under_ball": 5838,
+        "annulus": 1802,
+        "outer": 7155,
+        "max_r_mm": 21.210773624381023,
+        "max_depth_mm": 25.188333354890347
+      },
+      {
+        "t_us": 59.85131792840548,
+        "total_deleted": 15966,
+        "under_ball": 5851,
+        "annulus": 1888,
+        "outer": 8227,
+        "max_r_mm": 21.210773624381023,
+        "max_depth_mm": 25.188333354890347
+      },
+      {
+        "t_us": 70.0,
+        "total_deleted": 16864,
+        "under_ball": 5852,
+        "annulus": 1926,
+        "outer": 9086,
+        "max_r_mm": 21.210773624381023,
+        "max_depth_mm": 25.188333354890347
+      },
+      {
+        "t_us": 80.19441242533503,
+        "total_deleted": 17902,
+        "under_ball": 5855,
+        "annulus": 1981,
+        "outer": 10066,
+        "max_r_mm": 21.210773624381023,
+        "max_depth_mm": 25.188333354890347
+      },
+      {
+        "t_us": 89.83670699701179,
+        "total_deleted": 20449,
+        "under_ball": 5856,
+        "annulus": 1997,
+        "outer": 12596,
+        "max_r_mm": 21.210773624381023,
+        "max_depth_mm": 25.188333354890347
+      },
+      {
+        "t_us": 99.99999924213625,
+        "total_deleted": 22520,
+        "under_ball": 5856,
+        "annulus": 2008,
+        "outer": 14656,
+        "max_r_mm": 21.210773624381023,
+        "max_depth_mm": 25.188333354890347
+      }
+    ]
+  },
+  "question_3_fiber_mechanics": {
+    "10us": {
+      "t_us": 10.099383871420287,
+      "alive_count": 524180,
+      "deleted_count": 0,
+      "strain_min": -0.012960875406861305,
+      "strain_median": 0.0,
+      "strain_max": 0.024733571335673332,
+      "tensile_count_gt_0p001": 1744,
+      "high_tension_gt_0p01": 24,
+      "yielded_gt_0p026": 0,
+      "compressive_count_lt_m0p001": 568
+    },
+    "20us": {
+      "t_us": 20.12638287851587,
+      "alive_count": 524180,
+      "deleted_count": 0,
+      "strain_min": -0.010474277660250664,
+      "strain_median": 0.0,
+      "strain_max": 0.011267485097050667,
+      "tensile_count_gt_0p001": 5765,
+      "high_tension_gt_0p01": 4,
+      "yielded_gt_0p026": 0,
+      "compressive_count_lt_m0p001": 452
+    },
+    "70us": {
+      "t_us": 70.0,
+      "alive_count": 524180,
+      "deleted_count": 0,
+      "strain_min": -0.004548448603600264,
+      "strain_median": 0.0,
+      "strain_max": 0.011343351565301418,
+      "tensile_count_gt_0p001": 19547,
+      "high_tension_gt_0p01": 15,
+      "yielded_gt_0p026": 0,
+      "compressive_count_lt_m0p001": 680
+    },
+    "100us": {
+      "t_us": 99.99999924213625,
+      "alive_count": 524157,
+      "deleted_count": 23,
+      "strain_min": -0.0075609260238707066,
+      "strain_median": 0.0,
+      "strain_max": 0.018797796219587326,
+      "tensile_count_gt_0p001": 24277,
+      "high_tension_gt_0p01": 29,
+      "yielded_gt_0p026": 0,
+      "compressive_count_lt_m0p001": 1540
+    }
+  }
+}

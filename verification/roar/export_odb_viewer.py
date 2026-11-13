@@ -10,7 +10,8 @@ Writes one compressed .npz with three roles, each with its own node list:
     fiber - the fiber elements (element sets EMBMESH_FIBERS_T0 / _T90 of EMBFIB-1)
 Per role: <role>_coords0 (n,3), <role>_pos (frames,n,3) deformed positions,
 <role>_types (element type names), <role>_conn_<TYPE> (elements,k) node indices into the
-role's node list. The host also has host_status (frames, elements) uint8, 1 = alive.
+role's node list. The host also has host_status (frames, elements) uint8, 1 = alive; fiber_status (frames, fiber elements) likewise,
+so the viewer can skip deleted fiber segments instead of stretching them between flying nodes.
 """
 from __future__ import print_function
 
@@ -108,8 +109,16 @@ def main():
 
         root = odb.rootAssembly
         host_by_instance = {}
-        for element in flatten_elements(root.elementSets[GHOST_ELSET].elements):
-            host_by_instance.setdefault(element.instanceName, []).append(element)
+        if GHOST_ELSET in root.elementSets.keys():
+            for element in flatten_elements(root.elementSets[GHOST_ELSET].elements):
+                host_by_instance.setdefault(element.instanceName, []).append(element)
+        else:
+            # native plywise ODB (no ghosts): the host is every element of each Ply-k instance's PLY set
+            for inst_name in sorted(root.instances.keys()):
+                if inst_name.startswith("PLY-"):
+                    elements = flatten_elements(root.instances[inst_name].elementSets["PLY"].elements)
+                    host_by_instance[inst_name] = sorted(elements, key=lambda el: el.label)
+            print("native plywise ODB: %d host plies" % len(host_by_instance))
         ball_by_instance = {BALL_INSTANCE: list(root.instances[BALL_INSTANCE].elements)}
         if FIBER_INSTANCE in root.instances.keys():
             fiber_inst = root.instances[FIBER_INSTANCE]
@@ -143,6 +152,10 @@ def main():
         for i, (inst_name, label, _t) in enumerate(host["element_order"]):
             host_index[(inst_name, label)] = i
         status = np.ones((len(selected), len(host_index)), dtype=np.uint8)
+        fiber_index = {}
+        for i, (inst_name, label, _t) in enumerate(roles[2]["element_order"]):
+            fiber_index[(inst_name, label)] = i
+        fiber_status = np.ones((len(selected), len(fiber_index)), dtype=np.uint8)
 
         status_seen = False
         for f_out, frame_index in enumerate(selected):
@@ -177,12 +190,14 @@ def main():
                 for key, value in frame_status.items():
                     if key in host_index:
                         status[f_out, host_index[key]] = 1 if value >= 0.5 else 0
+                    elif key in fiber_index:
+                        fiber_status[f_out, fiber_index[key]] = 1 if value >= 0.5 else 0
             if f_out % 25 == 0 or f_out + 1 == len(selected):
                 print("frame %d/%d (t=%.3e)" % (f_out + 1, len(selected), frame.frameValue))
         if not status_seen:
             print("WARNING: no STATUS field in the selected frames; all host elements stay alive")
 
-        out = {"times": times, "host_status": status,
+        out = {"times": times, "host_status": status, "fiber_status": fiber_status,
                "meta": np.array(json.dumps({
                    "odb": args.odb, "step": args.step, "frames": selected,
                    "roles": [r["name"] for r in roles],

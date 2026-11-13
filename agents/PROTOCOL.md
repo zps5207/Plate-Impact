@@ -40,3 +40,6 @@ Be honest in not_verified: list everything you did not actually check.
 6. Work serially by default. Give two workers briefs at the same time only if their files do not overlap.
 
 If the project has its own AGENTS.md, CLAUDE.md or delegation docs, follow them. They override this file where they conflict.
+
+## Questions are not tasks
+If the human asks a question ("why...", "can't we...", "what changed...") answer it and stop. Do not edit code, build decks, submit jobs or write briefs unless they ask for that action. Propose the change in words and wait. This applies to the Hub and to every worker. An explicit request to display something ("load it in the html") is the only action in such a message.

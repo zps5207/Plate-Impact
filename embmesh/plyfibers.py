@@ -124,8 +124,21 @@ def _resample_by_arclength(path, target_length):
     return points, total, arc_spread
 
 
+def _centered_layer_positions(lo, hi, diameter, gap):
+    """Like fibers._layer_positions, but the leftover span (less than one pitch) is split evenly between both ends
+    instead of all falling at `hi`. Which end that is depends on the fiber angle (it is the far side of the across
+    axis), so for some angles the whole gap would sit on a symmetry plane and leave the hosts there fiber-free."""
+    base = _layer_positions(lo, hi, diameter, gap)
+    if not base:
+        return base
+    pitch = diameter + gap
+    leftover = (hi - lo) - ((len(base) - 1) * pitch + diameter)
+    return [p + leftover / 2.0 for p in base]
+
+
 def ply_fibers(ply_part_hexes, nodes, angle, diameter, gap=0.0, reference=(1, 0, 0),
-               end_inset=0.0, thickness_axis=None, ply_index=0, return_meta=False):
+               end_inset=0.0, thickness_axis=None, ply_index=0, return_meta=False,
+               ply_thickness=None, center_grid=False):
     """Generate unidirectional fibers on the mid-surface of a single-hex-thick ply Part.
 
     Parameters:
@@ -139,6 +152,7 @@ def ply_fibers(ply_part_hexes, nodes, angle, diameter, gap=0.0, reference=(1, 0,
         thickness_axis: stack axis override (optional)
         ply_index: 0-based ply index
         return_meta: whether to return metadata dict
+        center_grid: split the leftover span evenly between both lateral ends (default: all at the far end)
 
     Returns:
         list[Fiber] (and meta dict if return_meta=True)
@@ -177,17 +191,18 @@ def ply_fibers(ply_part_hexes, nodes, angle, diameter, gap=0.0, reference=(1, 0,
     face1 = np.asarray(face1_list)
     face0_ids = np.asarray(face0_ids_list)
 
-    ply_thickness = float(np.median(spans))
-    if ply_thickness < 1e-12:
+    detected_thickness = float(np.median(spans))
+    if detected_thickness < 1e-12:
         raise ValueError("ply fibers: degenerate ply thickness")
 
-    if diameter > ply_thickness + 1e-12:
+    check_thickness = float(ply_thickness) if ply_thickness is not None else detected_thickness
+    if diameter > check_thickness + 1e-12:
         raise ValueError(
-            f"fiber diameter {diameter:.6g} m exceeds ply thickness {ply_thickness:.6g} m"
+            f"fiber diameter {diameter:.6g} m exceeds ply thickness {check_thickness:.6g} m"
         )
-    if diameter > 0.8 * ply_thickness:
+    if diameter > 0.8 * check_thickness:
         warnings.warn(
-            f"fiber diameter {diameter:.6g} m exceeds 0.8x ply thickness {ply_thickness:.6g} m",
+            f"fiber diameter {diameter:.6g} m exceeds 0.8x ply thickness {check_thickness:.6g} m",
             UserWarning,
             stacklevel=2,
         )
@@ -211,7 +226,8 @@ def ply_fibers(ply_part_hexes, nodes, angle, diameter, gap=0.0, reference=(1, 0,
     fibers = []
     label = 1
 
-    for s in _layer_positions(s_min, s_max, diameter, gap):
+    positions = (_centered_layer_positions if center_grid else _layer_positions)(s_min, s_max, diameter, gap)
+    for s in positions:
         a_quad = q_proj
         b_quad = np.roll(q_proj, -1, axis=1)
         cross = ((a_quad[:, :, 1] <= s) & (s < b_quad[:, :, 1])) | (
@@ -300,7 +316,7 @@ def ply_fibers(ply_part_hexes, nodes, angle, diameter, gap=0.0, reference=(1, 0,
         angle_deg=float(angle),
         fiber_count=len(fibers),
         fiber_segments=len(flat_lengths),
-        ply_thickness_m=ply_thickness,
+        ply_thickness_m=check_thickness,
         target_segment_length_m=target_length,
         total_fiber_length_m=float(flat_lengths.sum()) if len(flat_lengths) else 0.0,
         shortest_segment_m=float(flat_lengths.min()) if len(flat_lengths) else None,

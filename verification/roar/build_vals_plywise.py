@@ -8,6 +8,9 @@ node-based ball contact. Two decks:
 Everything else (ball -1000 m/s, symmetry BCs, 7e-5 s step, outputs) is taken from Vals.inp unchanged.
 
 Usage: python verification/roar/build_vals_plywise.py [out_dir]
+       python verification/roar/build_vals_plywise.py --element-deletion <built_dir> <out_dir>
+The second form copies the already built native/ and vuel/ decks into out_dir with element deletion on for every
+element type (fiber T3D2, steel ball, native matrix); it does not re-run the mesher.
 """
 import json
 import re
@@ -17,7 +20,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 VALS = ROOT / "Meshing" / "Vals.inp"
-OUT = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "Meshing" / "vals-plywise"
+DELETE_MODE = len(sys.argv) > 1 and sys.argv[1] == "--element-deletion"
+OUT = Path(sys.argv[1]) if len(sys.argv) > 1 and not DELETE_MODE else ROOT / "Meshing" / "vals-plywise"
 
 PLIES = 20
 FIBER_D = 0.632e-3
@@ -49,6 +53,26 @@ def with_cohesive(text):
     return text.replace(marker, marker + "** \n" + block, 1)
 
 
+def with_element_deletion(text):
+    """Turn element deletion on for every element type of a built deck.
+
+    The fiber (T3D2) and ball (Johnson-Cook) materials only had a damage-initiation card, which never deletes in
+    Abaqus/Explicit; add an instantaneous displacement-type evolution (as the VUEL ghost material uses) and attach
+    a deletion Section Controls to each Solid Section that has none (ghost hosts keep EMBMESH_GHOST_CONTROLS)."""
+    fiber = re.compile(r"(\*Material, name=Fiber\n\*Damage Initiation, criterion=DUCTILE\n(?: [^\n]*\n)+)")
+    steel = re.compile(r'(\*Material, name="Mild Steel"\n\*Damage Initiation, criterion=JOHNSON COOK\n[^\n]*\n)')
+    evolution = "*Damage Evolution, type=DISPLACEMENT\n0.\n"
+    for pattern in (fiber, steel):
+        assert len(pattern.findall(text)) == 1, pattern.pattern
+        text = pattern.sub(lambda m: m.group(1) + evolution, text, count=1)
+    marker = "*Material, name=Fiber\n"
+    assert text.count(marker) == 1
+    text = text.replace(marker, "*Section Controls, name=EMBMESH_DELETE_ALL, element deletion=YES\n" + marker, 1)
+    section = re.compile(r"^(\*Solid Section, elset=[^\n]*)$", re.M)
+    return section.sub(lambda m: m.group(1) if "controls=" in m.group(1)
+                       else m.group(1) + ", controls=EMBMESH_DELETE_ALL", text)
+
+
 def run_cli(deck, out, extra):
     out.mkdir(parents=True, exist_ok=True)
     cmd = [sys.executable, "-m", "embmesh.cli", "plywise", str(deck), "--instance", "Plate-1",
@@ -76,5 +100,15 @@ def main():
                                                           "ghost_ductile_failure_strain")})
 
 
+def main_delete():
+    src, dst = Path(sys.argv[2]), Path(sys.argv[3])
+    for case in ("native", "vuel"):
+        out = dst / case
+        out.mkdir(parents=True, exist_ok=True)
+        patched = with_element_deletion((src / case / "output.inp").read_text())
+        (out / "output.inp").write_text(patched)
+        print(case, "controls on", patched.count("controls=EMBMESH_DELETE_ALL"), "solid sections")
+
+
 if __name__ == "__main__":
-    main()
+    main_delete() if DELETE_MODE else main()

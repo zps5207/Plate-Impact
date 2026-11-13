@@ -21,6 +21,8 @@ class FiberInstanceRef:
     instance: str
     node_labels: tuple[int, ...]
 
+PLATE_ELEM_SURFACE = 'EMBMESH_PLATE_ELEMS'
+
 
 def _blocks(lines):
     starts = [i for i, s in enumerate(lines) if s.lstrip().startswith('*') and
@@ -181,7 +183,7 @@ def _limit_inclusions(lines):
 def add_plywise_ball_contact(path, old_instance, ball_instance, *, plate=True,
                              fibers=(), fiber=False, thickness='auto', interaction_name=None,
                              ply_thickness=None, ply=None, world_step=None, plies=None,
-                             ghost_by_host=None):
+                             ghost_by_host=None, plate_surface='nodes'):
     """Add ball contact (element-based and node-based) after plywise writer has produced its deck."""
     if not (plate or fiber):
         return None
@@ -223,7 +225,10 @@ def add_plywise_ball_contact(path, old_instance, ball_instance, *, plate=True,
             fiber_segment = float(np.median(lengths))
         elif isinstance(thickness, str) and thickness.lower() == 'auto':
             raise ValueError('automatic fiber contact thickness needs fiber segment elements')
-    plate_t, fiber_t = resolve_contact_thickness(thickness, edge, fiber_segment, plate, fiber)
+    if plate_surface not in ('nodes', 'elements'):
+        raise ValueError(f'plate_surface must be nodes or elements, got {plate_surface!r}')
+    plate_elements = plate and plate_surface == 'elements'
+    plate_t, fiber_t = resolve_contact_thickness(thickness, edge, fiber_segment, plate and not plate_elements, fiber)
     lines = Path(path).read_text().splitlines()
 
     # Detect original element-based impact surface (e.g. Surf-1) before cleaning
@@ -266,8 +271,15 @@ def add_plywise_ball_contact(path, old_instance, ball_instance, *, plate=True,
                             for eid in ply_elements_dict:
                                 top_facets.add((eid, parts[1].upper()))
 
-        matching_bot = all_facets & bot_facets
-        matching_top = all_facets & top_facets
+        E_stride = getattr(ply, '_E_stride', None)
+        if E_stride is not None:
+            bot_col = {(eid % E_stride, fid) for eid, fid in bot_facets}
+            top_col = {(eid % E_stride, fid) for eid, fid in top_facets}
+            matching_bot = all_facets & bot_col
+            matching_top = all_facets & top_col
+        else:
+            matching_bot = all_facets & bot_facets
+            matching_top = all_facets & top_facets
 
         if matching_bot and matching_top:
             step_arr = np.asarray(world_step, float) if world_step is not None else np.array([0., 0., 1.])
@@ -362,7 +374,13 @@ def add_plywise_ball_contact(path, old_instance, ball_instance, *, plate=True,
         pairs.append(('Surf-1', ''))
         pairs.append(('Surf-2', ''))
 
-    if plate:
+    if plate_elements:
+        # eroding element-based host surface: free faces of the (ghost) host elements, no contact thickness;
+        # nodes of deleted elements leave the contact
+        host_elset = 'EMBMESH_GHOST_HOST' if ghost_by_host else 'PLY'
+        assembly += [f'*Surface, type=ELEMENT, name={PLATE_ELEM_SURFACE}'] + [f'{h}.{host_elset},' for h in hosts]
+        pairs.append((PLATE_ELEM_SURFACE, BALL_SURFACE))
+    elif plate:
         for host in hosts:
             assembly += _set_lines('Nset', PLATE_NSET, host, deck.parts[deck.instances[host].part].nodes)
         assembly += [f'*Surface, type=NODE, name={PLATE_SURFACE}', f'{PLATE_NSET},']
@@ -429,6 +447,7 @@ def add_plywise_ball_contact(path, old_instance, ball_instance, *, plate=True,
                 fiber_node_count=sum(len(r.node_labels) for r in fibers) if fiber else 0,
                 host_median_edge_length=edge, host_edge_source=f'part {part.name}, median of all 12 C3D8 edges' if part else None,
                 fiber_median_segment_length=fiber_segment,
+                plate_surface=plate_surface if plate else None,
                 plate_contact_thickness=plate_t, fiber_contact_thickness=fiber_t,
                 plate_thickness_ratio=plate_t / ply_thickness if plate_t is not None and ply_thickness else None,
                 thickness_note=('auto plate thickness exceeds ply thickness; review with Abaqus' if plate_t is not None and ply_thickness and plate_t > ply_thickness else 'within ply thickness'),

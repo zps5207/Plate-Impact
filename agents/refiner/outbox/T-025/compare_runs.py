@@ -25,8 +25,7 @@ def deck_stats(path):
             a=[int(x) for x in stripped.split(',') if x.strip()]
             if len(a)==3:
                 length+=float(np.linalg.norm(nodes[a[1]]-nodes[a[2]]));segments+=1
-    return dict(nodes=len(nodes),fiber_runs=len(nodes)-segments,segments=segments,
-                length_m=length,volume_m3=length*np.pi*.001**2/4)
+    return dict(nodes=len(nodes),segments=segments,length_m=length,volume_m3=length*np.pi*.001**2/4)
 
 curved_deck=deck_stats(curved/'output.inp')
 stacked_deck=deck_stats(flat_stacked/'output.inp')

@@ -24,6 +24,19 @@ Rules the user set (relayed from their CLAUDE.md):
 
 ---
 
+## HARD RULE: every ROAR submission starts from run.sh
+
+Every job submitted to ROAR must use `run.sh` (in the project root) as its template. No exceptions, including quick tests, datacheck runs and post-processing jobs.
+
+- Copy `run.sh` to the job directory under `/storage/home/zps5207/scratch` and edit the copy. Never edit the template itself, and never write a submission script from scratch or from the older example in section 5.
+- Keep every line of the template that is not job-specific: the shebang, `--account`, `--partition`, `--nodes`, the scratch-directory guard (`readlink -f` and the `REFUSING` case block), `source ~/.bashrc`, the module loads, the `LANG`/`LC_ALL`/`PYTHONIOENCODING` exports, the `cd $SLURM_SUBMIT_DIR` line and the start-up echo and `sacct` lines.
+- Change only what the job needs: the job name (the job name is the input file base name, so `job=$SLURM_JOB_NAME input=$SLURM_JOB_NAME.inp` stays), `--ntasks-per-node` and `--mem` (ntasks = ceil(max elements / 100000), mem = ntasks x 6GB), `--time`, and the solver line. Extra flags such as `user=` for a subroutine go on the solver line. Extra modules a job needs (for example `module load intel` for a Fortran subroutine) are added after `module load abaqus`.
+- If the project has no `run.sh`, or the job cannot be expressed as an edit of it, stop and ask the user. Do not submit.
+- State in your reply which lines you changed from `run.sh`, before asking for approval to submit.
+- This rule is in addition to the per-submission approval rule in section 1, not instead of it.
+
+---
+
 ## 2. Connecting from the Claude Bash tool [verified]
 
 ROAR requires key authentication **plus a Duo/Microsoft MFA push** on every new SSH connection. Fully unattended access is impossible: the user approves a silent push on their phone. There is no ControlMaster reuse (Windows OpenSSH), so each `ssh`/`scp` call is a new connection and a new push.
@@ -98,7 +111,9 @@ Notes:
 
 ## 5. Submitting jobs [verified]
 
-### Sbatch template (Abaqus job with a user subroutine)
+### Older example sbatch (reference only, superseded by run.sh)
+
+Do not submit from this example. Use `run.sh` as described in the hard rule above; this shows only how a user-subroutine job was written before the rule.
 
 ```bash
 #!/bin/bash
@@ -176,12 +191,13 @@ scancel <jobid>                              # cancel (ask the user first)
 ## 8. Safety checklist for Claude (or any agent) before touching ROAR
 
 1. Has the user approved *this* submission? If unsure, ask.
-2. Is the working directory under `/storage/home/zps5207/scratch`? (The sbatch guard refuses otherwise.)
-3. Did a datacheck pass for any changed deck?
-4. Will the call trigger a Duo push? Tell the user so they can approve it.
-5. Never delete or overwrite remote results without looking at them first; ODBs are large and not backed up here.
-6. Use one connection per batch of work (tar through ssh) and one monitor per wait.
-7. Report outcomes faithfully (failed jobs, partial ODBs, time-limit hits) with the file or log line that shows it.
+2. Is the script a copy of `run.sh` with only job-specific edits, and have you told the user which lines changed?
+3. Is the working directory under `/storage/home/zps5207/scratch`? (The sbatch guard refuses otherwise.)
+4. Did a datacheck pass for any changed deck?
+5. Will the call trigger a Duo push? Tell the user so they can approve it.
+6. Never delete or overwrite remote results without looking at them first; ODBs are large and not backed up here.
+7. Use one connection per batch of work (tar through ssh) and one monitor per wait.
+8. Report outcomes faithfully (failed jobs, partial ODBs, time-limit hits) with the file or log line that shows it.
 
 ---
 

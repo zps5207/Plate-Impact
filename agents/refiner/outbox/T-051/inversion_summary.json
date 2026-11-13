@@ -1,0 +1,1190 @@
+{
+  "b1_beamsurf": {
+    "name": "b1_beamsurf_viewer.npz",
+    "frames": 150,
+    "time_end_us": 11.989961421932094,
+    "hexes": 17000,
+    "wedges": 1500,
+    "first_inversion_bracket_us": [
+      1.8536812831371208,
+      1.936420858328347
+    ],
+    "first_inversion_count": 4,
+    "first_inversion_indices_0based": [
+      39,
+      41,
+      129,
+      133
+    ],
+    "initial_min_sj_quantiles": [
+      0.7726817814363682,
+      0.8337527570634936,
+      0.9921673463335274,
+      0.999493812488916
+    ],
+    "initial_min_edge_mm_quantiles": [
+      0.0390536649568992,
+      0.03905368601856558,
+      0.2402398903573027,
+      0.5449827494951366
+    ],
+    "end_inverted": 650,
+    "ever_inverted": 656,
+    "snapshots": {
+      "24": {
+        "time_us": 1.936420858328347,
+        "count": 4,
+        "with_surface_node": 4,
+        "with_nose_node": 4,
+        "with_symmetry_plane_node": 0,
+        "mean_initial_z_mm": 1.7664373444858938,
+        "mean_initial_radial_mm": 9.325880370809507
+      },
+      "149": {
+        "time_us": 11.989961421932094,
+        "count": 650,
+        "with_surface_node": 529,
+        "with_nose_node": 175,
+        "with_symmetry_plane_node": 162,
+        "mean_initial_z_mm": 4.5349120712713695,
+        "mean_initial_radial_mm": 8.953644054825974
+      }
+    },
+    "first_location": {
+      "centroids_mm": [
+        [
+          0.9015,
+          0.3246,
+          1.7299
+        ],
+        [
+          0.9201,
+          0.2673,
+          1.7299
+        ],
+        [
+          1.4895,
+          0.5362,
+          1.803
+        ],
+        [
+          1.5202,
+          0.4417,
+          1.803
+        ]
+      ],
+      "radius_from_ball_center_mm": [
+        9.3195,
+        9.3195,
+        9.3322,
+        9.3322
+      ],
+      "min_edge_mm": [
+        0.0398,
+        0.0398,
+        0.0793,
+        0.0793
+      ],
+      "initial_min_sj": [
+        0.9973,
+        0.9973,
+        0.9948,
+        0.9948
+      ],
+      "surface_node_count": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "nose_node_count": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "symmetry_plane_node_count": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "first_deletion_bracket_us": [
+      1.203843908115232,
+      1.5049906778585864
+    ],
+    "first_deletion_sample_count": 27,
+    "end_deleted": 979,
+    "ALLKE_initial_raw": 3546.134521484375
+  },
+  "b2_newball": {
+    "name": "b2_newball_viewer.npz",
+    "frames": 150,
+    "time_end_us": 11.97827896248782,
+    "hexes": 17248,
+    "wedges": 0,
+    "first_inversion_bracket_us": [
+      2.1864284462935757,
+      2.290256361447973
+    ],
+    "first_inversion_count": 6,
+    "first_inversion_indices_0based": [
+      17240,
+      17241,
+      17244,
+      17245,
+      17246,
+      17247
+    ],
+    "initial_min_sj_quantiles": [
+      0.6950276202405595,
+      0.7968880097362415,
+      0.990029932013308,
+      1.0
+    ],
+    "initial_min_edge_mm_quantiles": [
+      0.11524026006801356,
+      0.16870585616094183,
+      0.3411378711462021,
+      0.470139044737765
+    ],
+    "end_inverted": 681,
+    "ever_inverted": 701,
+    "snapshots": {
+      "29": {
+        "time_us": 2.290256361447973,
+        "count": 6,
+        "with_surface_node": 6,
+        "with_nose_node": 6,
+        "with_symmetry_plane_node": 4,
+        "mean_initial_z_mm": 1.768800805924305,
+        "mean_initial_radial_mm": 9.293462878444087
+      },
+      "149": {
+        "time_us": 11.97827896248782,
+        "count": 681,
+        "with_surface_node": 498,
+        "with_nose_node": 67,
+        "with_symmetry_plane_node": 230,
+        "mean_initial_z_mm": 5.284947349538442,
+        "mean_initial_radial_mm": 8.988503610660588
+      }
+    },
+    "first_location": {
+      "centroids_mm": [
+        [
+          1.3118,
+          0.7839,
+          1.8312
+        ],
+        [
+          1.3163,
+          0.2616,
+          1.8025
+        ],
+        [
+          0.7887,
+          0.7887,
+          1.7742
+        ],
+        [
+          0.7915,
+          0.2632,
+          1.7449
+        ],
+        [
+          0.2632,
+          0.7915,
+          1.7449
+        ],
+        [
+          0.2641,
+          0.2641,
+          1.7152
+        ]
+      ],
+      "radius_from_ball_center_mm": [
+        9.2953,
+        9.2949,
+        9.293,
+        9.2926,
+        9.2926,
+        9.2923
+      ],
+      "min_edge_mm": [
+        0.4942,
+        0.4957,
+        0.5,
+        0.5014,
+        0.5014,
+        0.5023
+      ],
+      "initial_min_sj": [
+        0.9984,
+        0.9987,
+        0.9987,
+        0.999,
+        0.999,
+        0.999
+      ],
+      "surface_node_count": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "nose_node_count": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "symmetry_plane_node_count": [
+        0,
+        4,
+        0,
+        4,
+        4,
+        6
+      ]
+    },
+    "first_deletion_bracket_us": [
+      1.3557995544033474,
+      1.6413304138040985
+    ],
+    "first_deletion_sample_count": 11,
+    "end_deleted": 795,
+    "ALLKE_initial_raw": 3577.1669921875
+  },
+  "b3_both": {
+    "name": "b3_both_viewer.npz",
+    "frames": 150,
+    "time_end_us": 11.991485735052265,
+    "hexes": 17248,
+    "wedges": 0,
+    "first_inversion_bracket_us": [
+      2.1045875655545387,
+      2.234190560557181
+    ],
+    "first_inversion_count": 4,
+    "first_inversion_indices_0based": [
+      17244,
+      17245,
+      17246,
+      17247
+    ],
+    "initial_min_sj_quantiles": [
+      0.6950276202405595,
+      0.7968880097362415,
+      0.990029932013308,
+      1.0
+    ],
+    "initial_min_edge_mm_quantiles": [
+      0.11524026006801356,
+      0.16870585616094183,
+      0.3411378711462021,
+      0.470139044737765
+    ],
+    "end_inverted": 643,
+    "ever_inverted": 654,
+    "snapshots": {
+      "17": {
+        "time_us": 2.234190560557181,
+        "count": 4,
+        "with_surface_node": 4,
+        "with_nose_node": 4,
+        "with_symmetry_plane_node": 3,
+        "mean_initial_z_mm": 1.7447657046432141,
+        "mean_initial_radial_mm": 9.292663864090434
+      },
+      "149": {
+        "time_us": 11.991485735052265,
+        "count": 643,
+        "with_surface_node": 492,
+        "with_nose_node": 67,
+        "with_symmetry_plane_node": 199,
+        "mean_initial_z_mm": 5.230309174229169,
+        "mean_initial_radial_mm": 9.076958827176329
+      }
+    },
+    "first_location": {
+      "centroids_mm": [
+        [
+          0.7887,
+          0.7887,
+          1.7742
+        ],
+        [
+          0.7915,
+          0.2632,
+          1.7449
+        ],
+        [
+          0.2632,
+          0.7915,
+          1.7449
+        ],
+        [
+          0.2641,
+          0.2641,
+          1.7152
+        ]
+      ],
+      "radius_from_ball_center_mm": [
+        9.293,
+        9.2926,
+        9.2926,
+        9.2923
+      ],
+      "min_edge_mm": [
+        0.5,
+        0.5014,
+        0.5014,
+        0.5023
+      ],
+      "initial_min_sj": [
+        0.9987,
+        0.999,
+        0.999,
+        0.999
+      ],
+      "surface_node_count": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "nose_node_count": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "symmetry_plane_node_count": [
+        0,
+        4,
+        4,
+        6
+      ]
+    },
+    "first_deletion_bracket_us": [
+      1.4047293461771915,
+      1.8972226598634734
+    ],
+    "first_deletion_sample_count": 24,
+    "end_deleted": 802,
+    "ALLKE_initial_raw": 3577.1669921875
+  },
+  "b4_d4fix": {
+    "name": "b4_d4fix_viewer.npz",
+    "frames": 150,
+    "time_end_us": 11.989279300905764,
+    "hexes": 17000,
+    "wedges": 1500,
+    "first_inversion_bracket_us": [
+      1.776709495970863,
+      1.8534339005782385
+    ],
+    "first_inversion_count": 1,
+    "first_inversion_indices_0based": [
+      409
+    ],
+    "initial_min_sj_quantiles": [
+      0.7726817814363682,
+      0.8337527570634936,
+      0.9921673463335274,
+      0.999493812488916
+    ],
+    "initial_min_edge_mm_quantiles": [
+      0.0390536649568992,
+      0.03905368601856558,
+      0.2402398903573027,
+      0.5449827494951366
+    ],
+    "end_inverted": 603,
+    "ever_inverted": 610,
+    "snapshots": {
+      "23": {
+        "time_us": 1.8534339005782385,
+        "count": 1,
+        "with_surface_node": 1,
+        "with_nose_node": 1,
+        "with_symmetry_plane_node": 0,
+        "mean_initial_z_mm": 1.729856274323538,
+        "mean_initial_radial_mm": 9.319525699861046
+      },
+      "149": {
+        "time_us": 11.989279300905764,
+        "count": 603,
+        "with_surface_node": 494,
+        "with_nose_node": 175,
+        "with_symmetry_plane_node": 147,
+        "mean_initial_z_mm": 4.269329459604515,
+        "mean_initial_radial_mm": 9.01028436057696
+      }
+    },
+    "first_location": {
+      "centroids_mm": [
+        [
+          0.9539,
+          0.0902,
+          1.7299
+        ]
+      ],
+      "radius_from_ball_center_mm": [
+        9.3195
+      ],
+      "min_edge_mm": [
+        0.0398
+      ],
+      "initial_min_sj": [
+        0.9973
+      ],
+      "surface_node_count": [
+        4
+      ],
+      "nose_node_count": [
+        4
+      ],
+      "symmetry_plane_node_count": [
+        0
+      ]
+    },
+    "first_deletion_bracket_us": [
+      1.504978172306437,
+      1.8003128161581117
+    ],
+    "first_deletion_sample_count": 25,
+    "end_deleted": 853,
+    "ALLKE_initial_raw": 3546.13427734375
+  },
+  "b5_steelA": {
+    "name": "b5_steelA_viewer.npz",
+    "frames": 150,
+    "time_end_us": 11.988588084932417,
+    "hexes": 17000,
+    "wedges": 1500,
+    "first_inversion_bracket_us": [
+      1.853340563684469,
+      1.9359438283572672
+    ],
+    "first_inversion_count": 5,
+    "first_inversion_indices_0based": [
+      224,
+      409,
+      410,
+      499,
+      500
+    ],
+    "initial_min_sj_quantiles": [
+      0.7726817814363682,
+      0.8337527570634936,
+      0.9921673463335274,
+      0.999493812488916
+    ],
+    "initial_min_edge_mm_quantiles": [
+      0.0390536649568992,
+      0.03905368601856558,
+      0.2402398903573027,
+      0.5449827494951366
+    ],
+    "end_inverted": 636,
+    "ever_inverted": 646,
+    "snapshots": {
+      "24": {
+        "time_us": 1.9359438283572672,
+        "count": 5,
+        "with_surface_node": 5,
+        "with_nose_node": 5,
+        "with_symmetry_plane_node": 2,
+        "mean_initial_z_mm": 1.7591211304534227,
+        "mean_initial_radial_mm": 9.324609436500227
+      },
+      "149": {
+        "time_us": 11.988588084932417,
+        "count": 636,
+        "with_surface_node": 520,
+        "with_nose_node": 175,
+        "with_symmetry_plane_node": 153,
+        "mean_initial_z_mm": 4.4754494841261065,
+        "mean_initial_radial_mm": 8.967412287498837
+      }
+    },
+    "first_location": {
+      "centroids_mm": [
+        [
+          0.0902,
+          0.9539,
+          1.7299
+        ],
+        [
+          0.9539,
+          0.0902,
+          1.7299
+        ],
+        [
+          0.9576,
+          0.0301,
+          1.7299
+        ],
+        [
+          1.5761,
+          0.149,
+          1.803
+        ],
+        [
+          1.5823,
+          0.0497,
+          1.803
+        ]
+      ],
+      "radius_from_ball_center_mm": [
+        9.3195,
+        9.3195,
+        9.3195,
+        9.3322,
+        9.3322
+      ],
+      "min_edge_mm": [
+        0.0398,
+        0.0398,
+        0.0398,
+        0.0793,
+        0.0793
+      ],
+      "initial_min_sj": [
+        0.9973,
+        0.9973,
+        0.9973,
+        0.9948,
+        0.9948
+      ],
+      "surface_node_count": [
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "nose_node_count": [
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "symmetry_plane_node_count": [
+        0,
+        0,
+        4,
+        0,
+        4
+      ]
+    },
+    "first_deletion_bracket_us": [
+      1.504978172306437,
+      1.8002413071371848
+    ],
+    "first_deletion_sample_count": 82,
+    "end_deleted": 869,
+    "ALLKE_initial_raw": 3546.134521484375
+  },
+  "b6_316L": {
+    "name": "b6_316L_viewer.npz",
+    "frames": 150,
+    "time_end_us": 11.992003237537574,
+    "hexes": 17000,
+    "wedges": 1500,
+    "first_inversion_bracket_us": [
+      1.6123700561365695,
+      1.6972711591733969
+    ],
+    "first_inversion_count": 1,
+    "first_inversion_indices_0based": [
+      224
+    ],
+    "initial_min_sj_quantiles": [
+      0.7726817814363682,
+      0.8337527570634936,
+      0.9921673463335274,
+      0.999493812488916
+    ],
+    "initial_min_edge_mm_quantiles": [
+      0.0390536649568992,
+      0.03905368601856558,
+      0.2402398903573027,
+      0.5449827494951366
+    ],
+    "end_inverted": 610,
+    "ever_inverted": 616,
+    "snapshots": {
+      "21": {
+        "time_us": 1.6972711591733969,
+        "count": 1,
+        "with_surface_node": 1,
+        "with_nose_node": 1,
+        "with_symmetry_plane_node": 0,
+        "mean_initial_z_mm": 1.729856274323538,
+        "mean_initial_radial_mm": 9.319525699861046
+      },
+      "149": {
+        "time_us": 11.992003237537574,
+        "count": 610,
+        "with_surface_node": 498,
+        "with_nose_node": 175,
+        "with_symmetry_plane_node": 151,
+        "mean_initial_z_mm": 4.288610489514168,
+        "mean_initial_radial_mm": 8.996283683967576
+      }
+    },
+    "first_location": {
+      "centroids_mm": [
+        [
+          0.0902,
+          0.9539,
+          1.7299
+        ]
+      ],
+      "radius_from_ball_center_mm": [
+        9.3195
+      ],
+      "min_edge_mm": [
+        0.0398
+      ],
+      "initial_min_sj": [
+        0.9973
+      ],
+      "surface_node_count": [
+        4
+      ],
+      "nose_node_count": [
+        4
+      ],
+      "symmetry_plane_node_count": [
+        0
+      ]
+    },
+    "first_deletion_bracket_us": [
+      1.5012444691819837,
+      1.8017404954662197
+    ],
+    "first_deletion_sample_count": 83,
+    "end_deleted": 732,
+    "ALLKE_initial_raw": 3640.999267578125
+  },
+  "c1_beam_d4_v500": {
+    "name": "c1_beam_d4_v500_viewer.npz",
+    "frames": 150,
+    "time_end_us": 11.988248843408655,
+    "hexes": 17000,
+    "wedges": 1500,
+    "first_inversion_bracket_us": [
+      4.505631750362227,
+      4.588280262396438
+    ],
+    "first_inversion_count": 1,
+    "first_inversion_indices_0based": [
+      57
+    ],
+    "initial_min_sj_quantiles": [
+      0.7726817814363682,
+      0.8337527570634936,
+      0.9921673463335274,
+      0.999493812488916
+    ],
+    "initial_min_edge_mm_quantiles": [
+      0.0390536649568992,
+      0.03905368601856558,
+      0.2402398903573027,
+      0.5449827494951366
+    ],
+    "end_inverted": 257,
+    "ever_inverted": 257,
+    "snapshots": {
+      "57": {
+        "time_us": 4.588280262396438,
+        "count": 1,
+        "with_surface_node": 1,
+        "with_nose_node": 1,
+        "with_symmetry_plane_node": 0,
+        "mean_initial_z_mm": 1.8030184146482497,
+        "mean_initial_radial_mm": 9.332235039950394
+      },
+      "149": {
+        "time_us": 11.988248843408655,
+        "count": 257,
+        "with_surface_node": 241,
+        "with_nose_node": 175,
+        "with_symmetry_plane_node": 36,
+        "mean_initial_z_mm": 2.5278388388710393,
+        "mean_initial_radial_mm": 9.230924175930102
+      }
+    },
+    "first_location": {
+      "centroids_mm": [
+        [
+          0.149,
+          1.5761,
+          1.803
+        ]
+      ],
+      "radius_from_ball_center_mm": [
+        9.3322
+      ],
+      "min_edge_mm": [
+        0.0793
+      ],
+      "initial_min_sj": [
+        0.9948
+      ],
+      "surface_node_count": [
+        4
+      ],
+      "nose_node_count": [
+        4
+      ],
+      "symmetry_plane_node_count": [
+        0
+      ]
+    },
+    "first_deletion_bracket_us": [
+      3.000290007548756,
+      3.3015442113537574
+    ],
+    "first_deletion_sample_count": 4,
+    "end_deleted": 354,
+    "ALLKE_initial_raw": 886.5336303710938
+  },
+  "c1_beam_d4": {
+    "name": "c1_beam_d4_viewer.npz",
+    "frames": 150,
+    "time_end_us": 11.98889276565751,
+    "hexes": 17000,
+    "wedges": 1500,
+    "first_inversion_bracket_us": [
+      1.7767251847544685,
+      1.8534509536038968
+    ],
+    "first_inversion_count": 1,
+    "first_inversion_indices_0based": [
+      47
+    ],
+    "initial_min_sj_quantiles": [
+      0.7726817814363682,
+      0.8337527570634936,
+      0.9921673463335274,
+      0.999493812488916
+    ],
+    "initial_min_edge_mm_quantiles": [
+      0.0390536649568992,
+      0.03905368601856558,
+      0.2402398903573027,
+      0.5449827494951366
+    ],
+    "end_inverted": 558,
+    "ever_inverted": 563,
+    "snapshots": {
+      "23": {
+        "time_us": 1.8534509536038968,
+        "count": 1,
+        "with_surface_node": 1,
+        "with_nose_node": 1,
+        "with_symmetry_plane_node": 0,
+        "mean_initial_z_mm": 1.729856274323538,
+        "mean_initial_radial_mm": 9.319525699861046
+      },
+      "149": {
+        "time_us": 11.98889276565751,
+        "count": 558,
+        "with_surface_node": 465,
+        "with_nose_node": 175,
+        "with_symmetry_plane_node": 130,
+        "mean_initial_z_mm": 4.015189192708879,
+        "mean_initial_radial_mm": 9.040301195129993
+      }
+    },
+    "first_location": {
+      "centroids_mm": [
+        [
+          0.9539,
+          0.0902,
+          1.7299
+        ]
+      ],
+      "radius_from_ball_center_mm": [
+        9.3195
+      ],
+      "min_edge_mm": [
+        0.0398
+      ],
+      "initial_min_sj": [
+        0.9973
+      ],
+      "surface_node_count": [
+        4
+      ],
+      "nose_node_count": [
+        4
+      ],
+      "symmetry_plane_node_count": [
+        0
+      ]
+    },
+    "first_deletion_bracket_us": [
+      1.5049906778585864,
+      1.8003285049417173
+    ],
+    "first_deletion_sample_count": 25,
+    "end_deleted": 741,
+    "ALLKE_initial_raw": 3546.134521484375
+  },
+  "c2_truss_d4_md80_v500": {
+    "name": "c2_truss_d4_md80_v500_viewer.npz",
+    "frames": 150,
+    "time_end_us": 11.991635801678058,
+    "hexes": 17000,
+    "wedges": 1500,
+    "first_inversion_bracket_us": [
+      3.785494300245773,
+      3.8681378100591246
+    ],
+    "first_inversion_count": 2,
+    "first_inversion_indices_0based": [
+      409,
+      499
+    ],
+    "initial_min_sj_quantiles": [
+      0.7726817814363682,
+      0.8337527570634936,
+      0.9921673463335274,
+      0.999493812488916
+    ],
+    "initial_min_edge_mm_quantiles": [
+      0.0390536649568992,
+      0.03905368601856558,
+      0.2402398903573027,
+      0.5449827494951366
+    ],
+    "end_inverted": 285,
+    "ever_inverted": 285,
+    "snapshots": {
+      "48": {
+        "time_us": 3.8681378100591246,
+        "count": 2,
+        "with_surface_node": 2,
+        "with_nose_node": 2,
+        "with_symmetry_plane_node": 0,
+        "mean_initial_z_mm": 1.7664373444858938,
+        "mean_initial_radial_mm": 9.325880369905718
+      },
+      "149": {
+        "time_us": 11.991635801678058,
+        "count": 285,
+        "with_surface_node": 267,
+        "with_nose_node": 175,
+        "with_symmetry_plane_node": 40,
+        "mean_initial_z_mm": 2.680231926231563,
+        "mean_initial_radial_mm": 9.226368708347833
+      }
+    },
+    "first_location": {
+      "centroids_mm": [
+        [
+          0.9539,
+          0.0902,
+          1.7299
+        ],
+        [
+          1.5761,
+          0.149,
+          1.803
+        ]
+      ],
+      "radius_from_ball_center_mm": [
+        9.3195,
+        9.3322
+      ],
+      "min_edge_mm": [
+        0.0398,
+        0.0793
+      ],
+      "initial_min_sj": [
+        0.9973,
+        0.9948
+      ],
+      "surface_node_count": [
+        4,
+        4
+      ],
+      "nose_node_count": [
+        4,
+        4
+      ],
+      "symmetry_plane_node_count": [
+        0,
+        0
+      ]
+    },
+    "first_deletion_bracket_us": [
+      3.000269089170615,
+      3.301541028122301
+    ],
+    "first_deletion_sample_count": 4,
+    "end_deleted": 381,
+    "ALLKE_initial_raw": 886.5335693359375
+  },
+  "c2_truss_d4_md80": {
+    "name": "c2_truss_d4_md80_viewer.npz",
+    "frames": 150,
+    "time_end_us": 11.989418453595135,
+    "hexes": 17000,
+    "wedges": 1500,
+    "first_inversion_bracket_us": [
+      1.7767097233445384,
+      1.8534343553255894
+    ],
+    "first_inversion_count": 1,
+    "first_inversion_indices_0based": [
+      409
+    ],
+    "initial_min_sj_quantiles": [
+      0.7726817814363682,
+      0.8337527570634936,
+      0.9921673463335274,
+      0.999493812488916
+    ],
+    "initial_min_edge_mm_quantiles": [
+      0.0390536649568992,
+      0.03905368601856558,
+      0.2402398903573027,
+      0.5449827494951366
+    ],
+    "end_inverted": 607,
+    "ever_inverted": 619,
+    "snapshots": {
+      "23": {
+        "time_us": 1.8534343553255894,
+        "count": 1,
+        "with_surface_node": 1,
+        "with_nose_node": 1,
+        "with_symmetry_plane_node": 0,
+        "mean_initial_z_mm": 1.729856274323538,
+        "mean_initial_radial_mm": 9.319525699861046
+      },
+      "149": {
+        "time_us": 11.989418453595135,
+        "count": 607,
+        "with_surface_node": 510,
+        "with_nose_node": 175,
+        "with_symmetry_plane_node": 133,
+        "mean_initial_z_mm": 4.382760754045746,
+        "mean_initial_radial_mm": 9.031047459241275
+      }
+    },
+    "first_location": {
+      "centroids_mm": [
+        [
+          0.9539,
+          0.0902,
+          1.7299
+        ]
+      ],
+      "radius_from_ball_center_mm": [
+        9.3195
+      ],
+      "min_edge_mm": [
+        0.0398
+      ],
+      "initial_min_sj": [
+        0.9973
+      ],
+      "surface_node_count": [
+        4
+      ],
+      "nose_node_count": [
+        4
+      ],
+      "symmetry_plane_node_count": [
+        0
+      ]
+    },
+    "first_deletion_bracket_us": [
+      1.504978172306437,
+      1.8003130435317871
+    ],
+    "first_deletion_sample_count": 25,
+    "end_deleted": 803,
+    "ALLKE_initial_raw": 3546.13427734375
+  },
+  "c3_beam_d4_md80_v500": {
+    "name": "c3_beam_d4_md80_v500_viewer.npz",
+    "frames": 150,
+    "time_end_us": 11.988480764557607,
+    "hexes": 17000,
+    "wedges": 1500,
+    "first_inversion_bracket_us": [
+      4.588277988659684,
+      4.670936959882965
+    ],
+    "first_inversion_count": 1,
+    "first_inversion_indices_0based": [
+      57
+    ],
+    "initial_min_sj_quantiles": [
+      0.7726817814363682,
+      0.8337527570634936,
+      0.9921673463335274,
+      0.999493812488916
+    ],
+    "initial_min_edge_mm_quantiles": [
+      0.0390536649568992,
+      0.03905368601856558,
+      0.2402398903573027,
+      0.5449827494951366
+    ],
+    "end_inverted": 259,
+    "ever_inverted": 259,
+    "snapshots": {
+      "58": {
+        "time_us": 4.670936959882965,
+        "count": 1,
+        "with_surface_node": 1,
+        "with_nose_node": 1,
+        "with_symmetry_plane_node": 0,
+        "mean_initial_z_mm": 1.8030184146482497,
+        "mean_initial_radial_mm": 9.332235039950394
+      },
+      "149": {
+        "time_us": 11.988480764557607,
+        "count": 259,
+        "with_surface_node": 245,
+        "with_nose_node": 175,
+        "with_symmetry_plane_node": 36,
+        "mean_initial_z_mm": 2.5407612341964927,
+        "mean_initial_radial_mm": 9.236314734167404
+      }
+    },
+    "first_location": {
+      "centroids_mm": [
+        [
+          0.149,
+          1.5761,
+          1.803
+        ]
+      ],
+      "radius_from_ball_center_mm": [
+        9.3322
+      ],
+      "min_edge_mm": [
+        0.0793
+      ],
+      "initial_min_sj": [
+        0.9948
+      ],
+      "surface_node_count": [
+        4
+      ],
+      "nose_node_count": [
+        4
+      ],
+      "symmetry_plane_node_count": [
+        0
+      ]
+    },
+    "first_deletion_bracket_us": [
+      3.000290007548756,
+      3.3015442113537574
+    ],
+    "first_deletion_sample_count": 4,
+    "end_deleted": 359,
+    "ALLKE_initial_raw": 886.5336303710938
+  },
+  "c3_beam_d4_md80": {
+    "name": "c3_beam_d4_md80_viewer.npz",
+    "frames": 150,
+    "time_end_us": 11.988669029960874,
+    "hexes": 17000,
+    "wedges": 1500,
+    "first_inversion_bracket_us": [
+      1.776725412128144,
+      1.8534511809775722
+    ],
+    "first_inversion_count": 1,
+    "first_inversion_indices_0based": [
+      47
+    ],
+    "initial_min_sj_quantiles": [
+      0.7726817814363682,
+      0.8337527570634936,
+      0.9921673463335274,
+      0.999493812488916
+    ],
+    "initial_min_edge_mm_quantiles": [
+      0.0390536649568992,
+      0.03905368601856558,
+      0.2402398903573027,
+      0.5449827494951366
+    ],
+    "end_inverted": 557,
+    "ever_inverted": 564,
+    "snapshots": {
+      "23": {
+        "time_us": 1.8534511809775722,
+        "count": 1,
+        "with_surface_node": 1,
+        "with_nose_node": 1,
+        "with_symmetry_plane_node": 0,
+        "mean_initial_z_mm": 1.729856274323538,
+        "mean_initial_radial_mm": 9.319525699861046
+      },
+      "149": {
+        "time_us": 11.988669029960874,
+        "count": 557,
+        "with_surface_node": 463,
+        "with_nose_node": 175,
+        "with_symmetry_plane_node": 132,
+        "mean_initial_z_mm": 3.9974117273388723,
+        "mean_initial_radial_mm": 9.041984920308911
+      }
+    },
+    "first_location": {
+      "centroids_mm": [
+        [
+          0.9539,
+          0.0902,
+          1.7299
+        ]
+      ],
+      "radius_from_ball_center_mm": [
+        9.3195
+      ],
+      "min_edge_mm": [
+        0.0398
+      ],
+      "initial_min_sj": [
+        0.9973
+      ],
+      "surface_node_count": [
+        4
+      ],
+      "nose_node_count": [
+        4
+      ],
+      "symmetry_plane_node_count": [
+        0
+      ]
+    },
+    "first_deletion_bracket_us": [
+      1.5049906778585864,
+      1.8003288460022304
+    ],
+    "first_deletion_sample_count": 25,
+    "end_deleted": 762,
+    "ALLKE_initial_raw": 3546.134521484375
+  }
+}

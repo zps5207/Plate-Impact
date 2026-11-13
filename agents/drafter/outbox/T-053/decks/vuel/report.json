@@ -1,0 +1,582 @@
+{
+  "plies": 20,
+  "thickness_min": 0.0253999997,
+  "thickness_mean": 0.025399999700000005,
+  "thickness_max": 0.0253999997,
+  "resulting_ply_thickness": 0.0012699999850000004,
+  "stack_vector": [
+    0.0,
+    0.0,
+    0.0253999997
+  ],
+  "step": [
+    0.0,
+    0.0,
+    0.001269999985
+  ],
+  "mismatch_max": 0.00011697871844006467,
+  "mismatch_mean": 4.539210808576396e-06,
+  "mismatch_p95": 2.340391238404224e-05,
+  "mismatch_tolerance": 0.0001331513734878035,
+  "expected_interface_gap_max": 0.0,
+  "stacked_top_residual_max": 0.00011697871844006467,
+  "stacked_top_residual_mean": 4.539210808576396e-06,
+  "stacked_top_residual_p95": 2.340391238404224e-05,
+  "through_thickness": 3,
+  "through_thickness_element_thickness": 0.0004233333283333334,
+  "N_stride": 100000,
+  "E_stride": 100000,
+  "collapse": {
+    "instance": "Plate-1",
+    "part": "Plate",
+    "thickness_axis": [
+      0.0,
+      0.0,
+      1.0
+    ],
+    "columns": 4025,
+    "layers_per_column_min": 9,
+    "layers_per_column_max": 9,
+    "elements_before": 36225,
+    "elements_after": 4025,
+    "nodes_before": 41360,
+    "nodes_after": 8272,
+    "volume_before": 0.00020590863553764346,
+    "volume_after": 0.00020590863553764338,
+    "volume_ratio": 0.9999999999999996,
+    "stack_vector": [
+      0.0,
+      0.0,
+      0.0253999997
+    ],
+    "residual_max": 0.00011697871844006467,
+    "residual_mean": 4.539210808576396e-06,
+    "residual_p95": 2.340391238404224e-05,
+    "dropped_side_faces": {},
+    "surviving_faces": {},
+    "nsets_rewritten": [
+      "_PickedSet2",
+      "fix",
+      "X (instance=Plate-1)",
+      "Y (instance=Plate-1)"
+    ],
+    "elsets_rewritten": [
+      "_PickedSet2",
+      "fix",
+      "X (instance=Plate-1)",
+      "Y (instance=Plate-1)"
+    ]
+  },
+  "step_world": [
+    0.0,
+    0.0,
+    0.001269999984999999
+  ],
+  "boundaries_expanded": [
+    "Plate-1.fix, ENCASTRE"
+  ],
+  "old_instance_references": [],
+  "assembly_sets_rewritten": [
+    "*elset X",
+    "*elset Y",
+    "*nset X",
+    "*nset Y"
+  ],
+  "impact_surface_elsets_left": [],
+  "warnings": [
+    "fiber volume fraction reaches or exceeds 1 in some hosts; VUEL floors remaining matrix fraction at 1e-6"
+  ],
+  "vuel_ghost": {
+    "host_mode": "vuel-ghost",
+    "vuel_type": "VU1",
+    "vuel_nsvars": 159,
+    "matrix_model": "ductile-damage",
+    "user_subroutine": "VUEL_material.for",
+    "fiber_volume_svar": 107,
+    "ghost_scale": 0.0001,
+    "ghost_ductile_failure_strain": 0.16664975077902366,
+    "ghost_label_min": 231326,
+    "ghost_label_max": 243400,
+    "ghost_diagnostic_elset": "EMBMESH_GHOST_DIAGNOSTICS",
+    "ghost_diagnostic_variables": [
+      "S",
+      "LE",
+      "PEEQ",
+      "SDEG",
+      "STATUS"
+    ],
+    "source_host_material": "Matrix",
+    "vuel_properties": [
+      700000000.0,
+      0.45,
+      980.0,
+      0.0,
+      0.06,
+      1.2,
+      10.0,
+      70000000.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      1460.0,
+      0.0,
+      1.0,
+      1.0,
+      1.0,
+      70000000.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.1,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "matrix_rate_mode": "plastic",
+    "matrix_yield_table": [
+      [
+        1.0,
+        70000000.0
+      ]
+    ],
+    "matrix_fracture_strain_table": [
+      [
+        1.0,
+        0.1
+      ]
+    ],
+    "matrix_gf": 1460.0,
+    "expected_host_mass_ratio_including_ghost": 1.0001,
+    "vuel_elements_per_ply": 12075,
+    "ghost_elements_per_ply": 12075,
+    "total_vuel_elements": 241500,
+    "total_ghost_elements": 241500,
+    "per_ply_fractions": {
+      "Ply-1": {
+        "min": 0.0,
+        "max": 1.7321812032571011,
+        "mean": 0.39078931151322627,
+        "at_or_above_one": 3691
+      },
+      "Ply-2": {
+        "min": 0.0,
+        "max": 1.8149952050032216,
+        "mean": 0.3882579007118127,
+        "at_or_above_one": 3617
+      },
+      "Ply-3": {
+        "min": 0.0,
+        "max": 1.7321812032571011,
+        "mean": 0.39078931151322627,
+        "at_or_above_one": 3691
+      },
+      "Ply-4": {
+        "min": 0.0,
+        "max": 1.8149952050032216,
+        "mean": 0.3882579007118127,
+        "at_or_above_one": 3617
+      },
+      "Ply-5": {
+        "min": 0.0,
+        "max": 1.7321812032571011,
+        "mean": 0.39078931151322627,
+        "at_or_above_one": 3691
+      },
+      "Ply-6": {
+        "min": 0.0,
+        "max": 1.8149952050032216,
+        "mean": 0.3882579007118127,
+        "at_or_above_one": 3617
+      },
+      "Ply-7": {
+        "min": 0.0,
+        "max": 1.7321812032571011,
+        "mean": 0.39078931151322627,
+        "at_or_above_one": 3691
+      },
+      "Ply-8": {
+        "min": 0.0,
+        "max": 1.8149952050032216,
+        "mean": 0.3882579007118127,
+        "at_or_above_one": 3617
+      },
+      "Ply-9": {
+        "min": 0.0,
+        "max": 1.7321812032571011,
+        "mean": 0.39078931151322627,
+        "at_or_above_one": 3691
+      },
+      "Ply-10": {
+        "min": 0.0,
+        "max": 1.8149952050032216,
+        "mean": 0.3882579007118127,
+        "at_or_above_one": 3617
+      },
+      "Ply-11": {
+        "min": 0.0,
+        "max": 1.7321812032571011,
+        "mean": 0.39078931151322627,
+        "at_or_above_one": 3691
+      },
+      "Ply-12": {
+        "min": 0.0,
+        "max": 1.8149952050032216,
+        "mean": 0.3882579007118127,
+        "at_or_above_one": 3617
+      },
+      "Ply-13": {
+        "min": 0.0,
+        "max": 1.7321812032571011,
+        "mean": 0.39078931151322627,
+        "at_or_above_one": 3691
+      },
+      "Ply-14": {
+        "min": 0.0,
+        "max": 1.8149952050032216,
+        "mean": 0.3882579007118127,
+        "at_or_above_one": 3617
+      },
+      "Ply-15": {
+        "min": 0.0,
+        "max": 1.7321812032571011,
+        "mean": 0.39078931151322627,
+        "at_or_above_one": 3691
+      },
+      "Ply-16": {
+        "min": 0.0,
+        "max": 1.8149952050032216,
+        "mean": 0.3882579007118127,
+        "at_or_above_one": 3617
+      },
+      "Ply-17": {
+        "min": 0.0,
+        "max": 1.7321812032571011,
+        "mean": 0.39078931151322627,
+        "at_or_above_one": 3691
+      },
+      "Ply-18": {
+        "min": 0.0,
+        "max": 1.8149952050032216,
+        "mean": 0.3882579007118127,
+        "at_or_above_one": 3617
+      },
+      "Ply-19": {
+        "min": 0.0,
+        "max": 1.7321812032571011,
+        "mean": 0.39078931151322627,
+        "at_or_above_one": 3691
+      },
+      "Ply-20": {
+        "min": 0.0,
+        "max": 1.8149952050032216,
+        "mean": 0.3882579007118127,
+        "at_or_above_one": 3617
+      }
+    }
+  },
+  "fiber_boundary_nodes_per_ply": {
+    "Ply-1": {
+      "fiber_end_nodes_per_boundary_set": {
+        "X": 160,
+        "Y": 0
+      },
+      "total_fiber_nodes": 15129,
+      "total_fiber_end_nodes": 320,
+      "ends_not_on_host_boundary_face": []
+    },
+    "Ply-2": {
+      "fiber_end_nodes_per_boundary_set": {
+        "X": 0,
+        "Y": 160
+      },
+      "total_fiber_nodes": 15046,
+      "total_fiber_end_nodes": 320,
+      "ends_not_on_host_boundary_face": []
+    },
+    "Ply-3": {
+      "fiber_end_nodes_per_boundary_set": {
+        "X": 160,
+        "Y": 0
+      },
+      "total_fiber_nodes": 15129,
+      "total_fiber_end_nodes": 320,
+      "ends_not_on_host_boundary_face": []
+    },
+    "Ply-4": {
+      "fiber_end_nodes_per_boundary_set": {
+        "X": 0,
+        "Y": 160
+      },
+      "total_fiber_nodes": 15046,
+      "total_fiber_end_nodes": 320,
+      "ends_not_on_host_boundary_face": []
+    },
+    "Ply-5": {
+      "fiber_end_nodes_per_boundary_set": {
+        "X": 160,
+        "Y": 0
+      },
+      "total_fiber_nodes": 15129,
+      "total_fiber_end_nodes": 320,
+      "ends_not_on_host_boundary_face": []
+    },
+    "Ply-6": {
+      "fiber_end_nodes_per_boundary_set": {
+        "X": 0,
+        "Y": 160
+      },
+      "total_fiber_nodes": 15046,
+      "total_fiber_end_nodes": 320,
+      "ends_not_on_host_boundary_face": []
+    },
+    "Ply-7": {
+      "fiber_end_nodes_per_boundary_set": {
+        "X": 160,
+        "Y": 0
+      },
+      "total_fiber_nodes": 15129,
+      "total_fiber_end_nodes": 320,
+      "ends_not_on_host_boundary_face": []
+    },
+    "Ply-8": {
+      "fiber_end_nodes_per_boundary_set": {
+        "X": 0,
+        "Y": 160
+      },
+      "total_fiber_nodes": 15046,
+      "total_fiber_end_nodes": 320,
+      "ends_not_on_host_boundary_face": []
+    },
+    "Ply-9": {
+      "fiber_end_nodes_per_boundary_set": {
+        "X": 160,
+        "Y": 0
+      },
+      "total_fiber_nodes": 15129,
+      "total_fiber_end_nodes": 320,
+      "ends_not_on_host_boundary_face": []
+    },
+    "Ply-10": {
+      "fiber_end_nodes_per_boundary_set": {
+        "X": 0,
+        "Y": 160
+      },
+      "total_fiber_nodes": 15046,
+      "total_fiber_end_nodes": 320,
+      "ends_not_on_host_boundary_face": []
+    },
+    "Ply-11": {
+      "fiber_end_nodes_per_boundary_set": {
+        "X": 160,
+        "Y": 0
+      },
+      "total_fiber_nodes": 15129,
+      "total_fiber_end_nodes": 320,
+      "ends_not_on_host_boundary_face": []
+    },
+    "Ply-12": {
+      "fiber_end_nodes_per_boundary_set": {
+        "X": 0,
+        "Y": 160
+      },
+      "total_fiber_nodes": 15046,
+      "total_fiber_end_nodes": 320,
+      "ends_not_on_host_boundary_face": []
+    },
+    "Ply-13": {
+      "fiber_end_nodes_per_boundary_set": {
+        "X": 160,
+        "Y": 0
+      },
+      "total_fiber_nodes": 15129,
+      "total_fiber_end_nodes": 320,
+      "ends_not_on_host_boundary_face": []
+    },
+    "Ply-14": {
+      "fiber_end_nodes_per_boundary_set": {
+        "X": 0,
+        "Y": 160
+      },
+      "total_fiber_nodes": 15046,
+      "total_fiber_end_nodes": 320,
+      "ends_not_on_host_boundary_face": []
+    },
+    "Ply-15": {
+      "fiber_end_nodes_per_boundary_set": {
+        "X": 160,
+        "Y": 0
+      },
+      "total_fiber_nodes": 15129,
+      "total_fiber_end_nodes": 320,
+      "ends_not_on_host_boundary_face": []
+    },
+    "Ply-16": {
+      "fiber_end_nodes_per_boundary_set": {
+        "X": 0,
+        "Y": 160
+      },
+      "total_fiber_nodes": 15046,
+      "total_fiber_end_nodes": 320,
+      "ends_not_on_host_boundary_face": []
+    },
+    "Ply-17": {
+      "fiber_end_nodes_per_boundary_set": {
+        "X": 160,
+        "Y": 0
+      },
+      "total_fiber_nodes": 15129,
+      "total_fiber_end_nodes": 320,
+      "ends_not_on_host_boundary_face": []
+    },
+    "Ply-18": {
+      "fiber_end_nodes_per_boundary_set": {
+        "X": 0,
+        "Y": 160
+      },
+      "total_fiber_nodes": 15046,
+      "total_fiber_end_nodes": 320,
+      "ends_not_on_host_boundary_face": []
+    },
+    "Ply-19": {
+      "fiber_end_nodes_per_boundary_set": {
+        "X": 160,
+        "Y": 0
+      },
+      "total_fiber_nodes": 15129,
+      "total_fiber_end_nodes": 320,
+      "ends_not_on_host_boundary_face": []
+    },
+    "Ply-20": {
+      "fiber_end_nodes_per_boundary_set": {
+        "X": 0,
+        "Y": 160
+      },
+      "total_fiber_nodes": 15046,
+      "total_fiber_end_nodes": 320,
+      "ends_not_on_host_boundary_face": []
+    }
+  },
+  "layup": [
+    0.0,
+    90.0,
+    0.0,
+    90.0,
+    0.0,
+    90.0,
+    0.0,
+    90.0,
+    0.0,
+    90.0,
+    0.0,
+    90.0,
+    0.0,
+    90.0,
+    0.0,
+    90.0,
+    0.0,
+    90.0,
+    0.0,
+    90.0
+  ],
+  "fibers_per_angle": {
+    "0.0": 160,
+    "90.0": 160
+  },
+  "ball_contact": {
+    "ball_instance": "Ball-1",
+    "plate_instances": [
+      "Ply-1",
+      "Ply-2",
+      "Ply-3",
+      "Ply-4",
+      "Ply-5",
+      "Ply-6",
+      "Ply-7",
+      "Ply-8",
+      "Ply-9",
+      "Ply-10",
+      "Ply-11",
+      "Ply-12",
+      "Ply-13",
+      "Ply-14",
+      "Ply-15",
+      "Ply-16",
+      "Ply-17",
+      "Ply-18",
+      "Ply-19",
+      "Ply-20"
+    ],
+    "plate_node_count": 330880,
+    "fiber_instances": [
+      "Fibers-Ply-1",
+      "Fibers-Ply-2",
+      "Fibers-Ply-3",
+      "Fibers-Ply-4",
+      "Fibers-Ply-5",
+      "Fibers-Ply-6",
+      "Fibers-Ply-7",
+      "Fibers-Ply-8",
+      "Fibers-Ply-9",
+      "Fibers-Ply-10",
+      "Fibers-Ply-11",
+      "Fibers-Ply-12",
+      "Fibers-Ply-13",
+      "Fibers-Ply-14",
+      "Fibers-Ply-15",
+      "Fibers-Ply-16",
+      "Fibers-Ply-17",
+      "Fibers-Ply-18",
+      "Fibers-Ply-19",
+      "Fibers-Ply-20"
+    ],
+    "fiber_node_count": 301750,
+    "host_median_edge_length": 0.0011683980919568334,
+    "host_edge_source": "part Plate, median of all 12 C3D8 edges",
+    "fiber_median_segment_length": 0.0008565919885298659,
+    "plate_contact_thickness": 0.0005841990459784167,
+    "fiber_contact_thickness": 0.00042829599426493295,
+    "plate_thickness_ratio": 0.45999925423496485,
+    "thickness_note": "within ply thickness",
+    "interaction": "General",
+    "interaction_reused": true,
+    "inclusion_pairs": [
+      [
+        "EMBMESH_PLATE_NODES",
+        "EMBMESH_BALL_SURF"
+      ],
+      [
+        "EMBMESH_FIBER_NODES",
+        "EMBMESH_BALL_SURF"
+      ]
+    ],
+    "existing_contact_extended": true,
+    "removed_old_references": [],
+    "stale_references_found": [],
+    "replaced_contact_inclusions": [
+      "*Contact Inclusions, ALL EXTERIOR",
+      "*Contact Property Assignment",
+      ",  , General"
+    ],
+    "element_contact": null
+  },
+  "cohesion": {
+    "interaction": "Cohesion",
+    "pairs": 19,
+    "mechanism": "general contact (*Contact Property Assignment per interface)"
+  }
+}

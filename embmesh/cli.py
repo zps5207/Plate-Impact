@@ -35,6 +35,8 @@ def build_parser():
     w.add_argument("--ghost-scale", type=float, default=1e-4)
     w.add_argument("--ghost-ductile-failure-strain", type=float)
     w.add_argument("--vuel-eps-fail", type=float)
+    w.add_argument("--vuel-smear-through-thickness", action="store_true",
+                   help="vuel-ghost with --through-thickness>1: give every hex of a column the column-mean fiber fraction")
     w.add_argument("--vuel-yield-stress", type=float)
     w.add_argument("--vuel-hardening-modulus", type=float)
     w.add_argument("--vuel-jac-fail", type=float, default=0.05)
@@ -45,6 +47,8 @@ def build_parser():
     w.add_argument("--matrix-gf", type=float)
     w.add_argument("--cohesion", nargs="?", const="Cohesion", metavar="INTERACTION",
                    help="add cohesive general contact per ply interface using this *Surface Interaction (default Cohesion)")
+    w.add_argument("--plate-contact-surface", choices=("nodes", "elements"), default="nodes",
+                   help="ball contact on the plate: node surface with contact thickness (default) or an eroding element surface with none")
     w.add_argument("--cohesive-material", choices=("dyneema-hb26",),
                    help="generate cohesive *Surface Interaction from preset (e.g. dyneema-hb26)")
     w.add_argument("--cohesive-rate", choices=("quasi-static", "ballistic"), default="quasi-static",
@@ -53,6 +57,8 @@ def build_parser():
                    help="name for the generated *Surface Interaction (default from preset)")
     w.add_argument("--length-units", choices=("m", "mm"), default="m",
                    help="model length units: 'm' (SI) or 'mm' (default: m)")
+    w.add_argument("--through-thickness", type=int, default=1,
+                   help="odd number of hex elements through the thickness of each ply (1, 3, 5, ...; default 1)")
     w.add_argument("--cohesive-overwrite", action="store_true",
                    help="overwrite existing *Surface Interaction if name collides")
     count = w.add_mutually_exclusive_group(required=True)
@@ -159,8 +165,11 @@ def main(argv=None):
                                         cohesive_name=a.cohesive_name,
                                         length_units=a.length_units,
                                         cohesive_overwrite=a.cohesive_overwrite,
+                                        through_thickness=a.through_thickness,
                                         collapse_layers=a.collapse_layers,
-                                        host_mode=a.host_mode, vuel_ghost_options=vuel_options)
+                                        host_mode=a.host_mode, vuel_ghost_options=vuel_options,
+                                        vuel_smear_through_thickness=a.vuel_smear_through_thickness,
+                                        plate_surface=a.plate_contact_surface)
             report_json = json.dumps(report, indent=2)
             Path(a.output).with_name('report.json').write_text(report_json + '\n')
             if a.preview:

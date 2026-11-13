@@ -55,6 +55,7 @@
   "host_count": 24000,
   "host_mode": "native",
   "layer_count": 10,
+  "length_times_area_volume_m3": 1.49801162297884e-05,
   "longest_fiber_segment_m": 0.0009693952156906156,
   "max_neighbour_overlap_fraction": 0.019969104031053897,
   "per_fiber_segment_spread_max_relative": 8.108596639933713e-11,
@@ -72,7 +73,10 @@
   "symmetry_constraints": {},
   "target_segment_length_m": 0.0009479235326776202,
   "theta_max_deg": 11.469441918063955,
+  "total_fiber_length_m": 19.073276368495605,
   "total_fiber_volume": 1.4978046636045521e-05,
   "volume_fraction_max": 1.87554421909828,
-  "volume_fraction_min": 0.0
+  "volume_fraction_min": 0.0,
+  "written_sample_outside_distance_over_d": 0.0,
+  "written_sample_outside_distance_um": 0.0
 }

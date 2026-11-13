@@ -147,6 +147,9 @@ def mesh(deck_path, instance, diameter, output_dir, elset=None, gap=0., fiber_ty
     if curved == "stacked":
         report_kw.update(curve_meta)
         report_kw["shortest_fiber_segment_m"] = stable_dt
+        centerline_length = sum(float(np.linalg.norm(np.diff(f.points, axis=0), axis=1).sum()) for f in fibers)
+        report_kw["total_fiber_length_m"] = centerline_length
+        report_kw["length_times_area_volume_m3"] = centerline_length * np.pi * diameter**2 / 4
     report_kw.update(host_meta)
     if contact_meta is not None:
         report_kw["ball_node_contact"] = contact_meta

@@ -1,0 +1,18 @@
+{
+  "1us": {
+    "native_deleted_hosts": 48,
+    "vuel_deleted_hosts_total": 67644
+  },
+  "70us": {
+    "native_deleted_hosts": 16864,
+    "vuel_deleted_hosts_total": 178652,
+    "native_cohesive_ge99": 12320,
+    "vuel_cohesive_ge99": 64140
+  },
+  "100us": {
+    "native_deleted_hosts": 22520,
+    "vuel_deleted_hosts_total": 195336,
+    "native_cohesive_ge99": 19961,
+    "vuel_cohesive_ge99": 64687
+  }
+}

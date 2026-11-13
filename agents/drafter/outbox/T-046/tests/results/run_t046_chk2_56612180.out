@@ -1,0 +1,13 @@
+host: p-bc-5406  date: Wed Oct 21 12:45:21 EDT 2026  job=t046_chk2  mode=datacheck  inp=test2_single_host_pull.inp 
+abaqus rc=1
+done Wed Oct 21 12:45:24 EDT 2026
+DATACHECK ERRORS FOUND:
+ ***ERROR: NODE 103 ON AN EMBEDDED ELEMENT DOES NOT LIE IN ANY HOST ELEMENT. 
+           CHECK COORDINATES, EXTERIOR TOLERANCE AND ABSOLUTE EXTERIOR 
+           TOLERANCE PARAMETERS, AND THE HOST ELEMENT SET DEFINITION.
+ ***NOTE: DUE TO AN INPUT ERROR THE ANALYSIS PRE-PROCESSOR HAS BEEN UNABLE TO 
+--
+ ***ERROR: 1 nodes on an embedded element do not lie in any host element. Check 
+           coordinates, exterior tolerance and absolute exterior tolerance 
+           parameters, and the host element set definition. The nodes have been 
+           identified in node set ErrNodeEmbeddedNode.

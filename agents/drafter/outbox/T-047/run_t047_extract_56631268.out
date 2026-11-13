@@ -1,0 +1,68 @@
+host: p-bc-5403  date: Wed Oct 21 22:37:04 EDT 2026
+Running T-046 ODB extraction in /scratch/zps5207/ctv/t046
+Extracting Test 1 from /scratch/zps5207/ctv/t046/t046_sol1.odb ...
+  Wrote 68 frames to /scratch/zps5207/ctv/t046/t046_sol1.csv
+Extracting Test 2 from /scratch/zps5207/ctv/t046/t046_sol2.odb ...
+  Wrote 101 frames to /scratch/zps5207/ctv/t046/t046_sol2.csv
+Extracting Test 3 from /scratch/zps5207/ctv/t046/t046_sol3.odb ...
+  Wrote 101 frames to /scratch/zps5207/ctv/t046/t046_sol3.csv
+Extracting Test 4 from /scratch/zps5207/ctv/t046/t046_sol4.odb ...
+  Wrote 101 frames to /scratch/zps5207/ctv/t046/t046_sol4.csv
+Extracting Test 5 from /scratch/zps5207/ctv/t046/t046_sol5.odb ...
+  Wrote 31 frames to /scratch/zps5207/ctv/t046/t046_sol5.csv
+Saved combined summary to /scratch/zps5207/ctv/t046/t046_extracted.json
+extraction rc=0
+============================================================
+           T-046 / T-047 VERIFICATION TEST SUITE            
+============================================================
+Extracting fresh results from ODBs in /scratch/zps5207/ctv/t046...
+Extracting Test 1 from /scratch/zps5207/ctv/t046/t046_sol1.odb ...
+  Wrote 68 frames to /scratch/zps5207/ctv/t046/t046_sol1.csv
+Extracting Test 2 from /scratch/zps5207/ctv/t046/t046_sol2.odb ...
+  Wrote 101 frames to /scratch/zps5207/ctv/t046/t046_sol2.csv
+Extracting Test 3 from /scratch/zps5207/ctv/t046/t046_sol3.odb ...
+  Wrote 101 frames to /scratch/zps5207/ctv/t046/t046_sol3.csv
+Extracting Test 4 from /scratch/zps5207/ctv/t046/t046_sol4.odb ...
+  Wrote 101 frames to /scratch/zps5207/ctv/t046/t046_sol4.csv
+Extracting Test 5 from /scratch/zps5207/ctv/t046/t046_sol5.odb ...
+  Wrote 31 frames to /scratch/zps5207/ctv/t046/t046_sol5.csv
+============================================================
+Checking Test 1: Single T3D2 Fiber Uniaxial Tension Failure
+  Fiber Element Deletion Confirmed: YES (STATUS -> 0)
+  Deletion Time: 4.814e-05 s
+  Peak Fiber Stress S11: 4.500e+09 Pa (4.50 GPa)
+  Peak Reaction Force: 1351.55 N
+  Measured Failure Strain: LE11 = 0.0435 (4.35%), Nominal = 0.0465 (4.65%)
+  Predicted Failure Strain: 4.50%% (dynamic at 1000/s) to 6.50%% (static)
+  Result: PASS
+============================================================
+Checking Test 2: Single Native Host Pull & Constraint Severing
+  [FAIL] Host element did not delete.
+============================================================
+Checking Test 3: VUEL Ghost Element Decoupling under Minute Force
+  [FAIL] Ghost element did not delete.
+============================================================
+Checking Test 4: 3x3 Host Block Sequential Host Deletion (Unzipping)
+  Deleted Host Elements: [] (Count: 0/9)
+  Fiber Elements Alive at End: False
+  Predicted Behavior: Progressive sequential unzipping of host elements while fiber remains intact.
+  Result: FAIL
+============================================================
+Checking Test 5: Lumped Nodal Mass Retention on Deleted Element Nodes
+  Host Element Deleted at: 1.456e-05 s
+  Theoretical Lumped Mass on 4 Pulled Nodes: 4.900e-07 kg
+  Measured Apparent Mass from RF/A: 4.900e-07 kg
+  Relative Difference: 0.00%
+  Predicted: Abaqus/Explicit retains lumped nodal mass after element deletion.
+  Result: PASS
+
+============================================================
+SUMMARY OF VERIFICATION CHECKS:
+  Test 1 (Fiber Alone Deletion & Failure Strain): PASS
+  Test 2 (Single Host Deletion & Decoupling):     FAIL
+  Test 3 (VUEL Ghost MilliNewton Deletion):       FAIL
+  Test 4 (3x3 Block Sequential Unzipping):        FAIL
+  Test 5 (Lumped Nodal Mass Retention):          PASS
+============================================================
+check_tests rc=0
+done Wed Oct 21 22:37:07 EDT 2026

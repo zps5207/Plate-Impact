@@ -1,0 +1,3 @@
+host: p-bc-5403  date: Wed Oct 21 14:10:39 EDT 2026  job=t046_chk5  mode=datacheck  inp=test5_mass_conservation.inp 
+abaqus rc=0
+done Wed Oct 21 14:10:42 EDT 2026

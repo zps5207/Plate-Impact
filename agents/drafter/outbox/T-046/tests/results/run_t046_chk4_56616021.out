@@ -1,0 +1,3 @@
+host: p-bc-5405  date: Wed Oct 21 14:08:37 EDT 2026  job=t046_chk4  mode=datacheck  inp=test4_block_3x3_pull.inp 
+abaqus rc=0
+done Wed Oct 21 14:08:46 EDT 2026

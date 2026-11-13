@@ -27,6 +27,7 @@
   // Render Modes
   let hostMode = 'wireframe';   // 'wireframe', 'solid', 'hidden'
   let fibersOnly = false;
+  let hostOnly = false;         // hide the fibers, show only host + ball
   let ballMode = 'wireframe';   // 'wireframe', 'solid', 'hidden'
   let hostOpacity = 1.0;
   let hostEdges = false;
@@ -113,6 +114,7 @@
 
   const selHostMode = document.getElementById('sel-host-mode');
   const chkFibersOnly = document.getElementById('chk-fibers-only');
+  const chkHostOnly = document.getElementById('chk-host-only');
   const selBallMode = document.getElementById('sel-ball-mode');
   const sliderHostOpacity = document.getElementById('slider-host-opacity');
   const lblHostOpacity = document.getElementById('lbl-host-opacity');
@@ -623,7 +625,10 @@
     }
 
     // Fibers
-    if (fiberLineWidth > 1.0 && fiberFatMesh) {
+    if (hostOnly) {
+      fiberMesh.visible = false;
+      if (fiberFatMesh) fiberFatMesh.visible = false;
+    } else if (fiberLineWidth > 1.0 && fiberFatMesh) {
       fiberMesh.visible = false;
       fiberFatMesh.visible = true;
       fiberFatMaterial.linewidth = fiberLineWidth;
@@ -871,7 +876,7 @@
     // HUD overlays
     const statusStr = isPlaying ? 'PLAYING' : 'PAUSED';
     const hostStr = fibersOnly ? 'hidden' : hostMode;
-    const fibStr = fibersOnly ? 'ONLY' : 'ON';
+    const fibStr = fibersOnly ? 'ONLY' : (hostOnly ? 'OFF' : 'ON');
     hudLine1.textContent = `Time: ${t_us.toFixed(2)} \u03bcs | Frame: ${currentFrame + 1}/${n_frames} | Speed: ${speed.toFixed(2)}x [${statusStr}]`;
     hudLine2.textContent = `Host: ${hostStr} | Fibers: ${fibStr} | Ball: ${ballMode}`;
   }
@@ -969,6 +974,14 @@
 
     chkFibersOnly.addEventListener('change', e => {
       fibersOnly = e.target.checked;
+      if (fibersOnly) { hostOnly = false; chkHostOnly.checked = false; }
+      updateMeshVisibilities();
+      updateUI();
+    });
+
+    chkHostOnly.addEventListener('change', e => {
+      hostOnly = e.target.checked;
+      if (hostOnly) { fibersOnly = false; chkFibersOnly.checked = false; }
       updateMeshVisibilities();
       updateUI();
     });
@@ -1070,6 +1083,13 @@
       } else if (key === 'f' || key === 'F') {
         fibersOnly = !fibersOnly;
         chkFibersOnly.checked = fibersOnly;
+        if (fibersOnly) { hostOnly = false; chkHostOnly.checked = false; }
+        updateMeshVisibilities();
+        updateUI();
+      } else if (key === 'g' || key === 'G') {
+        hostOnly = !hostOnly;
+        chkHostOnly.checked = hostOnly;
+        if (hostOnly) { fibersOnly = false; chkFibersOnly.checked = false; }
         updateMeshVisibilities();
         updateUI();
       } else if (key === 'b' || key === 'B') {

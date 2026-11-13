@@ -1,0 +1,3 @@
+host: p-bc-5403  date: Wed Oct 21 14:07:35 EDT 2026  job=t046_sol3  mode=run  inp=test3_vuel_ghost_pull.inp 
+abaqus rc=0
+done Wed Oct 21 14:07:41 EDT 2026
