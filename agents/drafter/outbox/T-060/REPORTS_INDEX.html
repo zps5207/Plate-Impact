@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Plate Impact Simulation Timeline &amp; Knowledge Evolution</title>
+  <style>
+    
+:root {
+  --bg: #ffffff;
+  --fg: #1c1c1c;
+  --mut: #666666;
+  --line: #dddddd;
+  --card-bg: #f8f9fa;
+  --accent: #1f77b4;
+  --accent-light: rgba(31, 119, 180, 0.1);
+  --success: #28a745;
+  --warn-bg: #fff3cd;
+  --warn-border: #ffeeba;
+  --warn-fg: #856404;
+  --err-bg: #f8d7da;
+  --err-border: #f5c6cb;
+  --err-fg: #721c24;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c;
+    --fg: #e8e8e8;
+    --mut: #a0a0a0;
+    --line: #333333;
+    --card-bg: #1f2328;
+    --accent: #58a6ff;
+    --accent-light: rgba(88, 166, 255, 0.15);
+    --warn-bg: #2d2613;
+    --warn-border: #594716;
+    --warn-fg: #e3b341;
+    --err-bg: #2e1a1e;
+    --err-border: #67222a;
+    --err-fg: #f85149;
+  }
+}
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font: 15px/1.55 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  max-width: 1150px;
+  margin: 0 auto;
+  padding: 28px 20px;
+}
+h1 { font-size: 1.75rem; line-height: 1.25; margin-bottom: 0.5rem; }
+h2 { font-size: 1.35rem; margin-top: 2.2rem; border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+h3 { font-size: 1.1rem; margin-top: 1.4rem; color: var(--fg); }
+p { margin: 0.8rem 0; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: 0.88rem; }
+td, th { border-bottom: 1px solid var(--line); padding: 7px 10px; text-align: left; }
+th { color: var(--mut); font-weight: 600; background: var(--card-bg); }
+td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+img { max-width: 100%; height: auto; border-radius: 6px; }
+video { width: 100%; border-radius: 6px; border: 1px solid var(--line); background: #000; }
+figure { margin: 16px 0; }
+figcaption { color: var(--mut); font-size: 0.82rem; margin-top: 6px; text-align: center; }
+.note { color: var(--mut); font-size: 0.9rem; }
+.card { background: var(--card-bg); border: 1px solid var(--line); border-radius: 6px; padding: 16px 20px; margin: 16px 0; }
+.corr { border: 1px solid #c0392b; background: rgba(192, 57, 43, 0.08); padding: 12px 16px; border-radius: 6px; margin: 16px 0; }
+.warn { border: 1px solid var(--warn-border); background: var(--warn-bg); color: var(--warn-fg); padding: 12px 16px; border-radius: 6px; margin: 16px 0; }
+.placeholder { border: 2px dashed var(--accent); background: var(--accent-light); padding: 16px 20px; border-radius: 6px; margin: 20px 0; }
+.badge { display: inline-block; padding: 2px 8px; font-size: 0.75rem; font-weight: 600; border-radius: 4px; text-transform: uppercase; }
+.badge-done { background: #28a745; color: #fff; }
+.badge-warn { background: #ffc107; color: #000; }
+.badge-pending { background: #17a2b8; color: #fff; }
+.badge-crash { background: #dc3545; color: #fff; }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(480px, 1fr)); gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; }
+code { background: rgba(127, 127, 127, 0.15); padding: 2px 5px; border-radius: 4px; font-size: 0.88em; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+ul, ol { padding-left: 24px; margin: 0.6rem 0; }
+li { margin: 0.35rem 0; }
+
+    .timeline-nav { display:flex; flex-wrap:wrap; gap:8px; margin:16px 0; }
+    .timeline-nav a { background:var(--card-bg); border:1px solid var(--line); padding:4px 10px; border-radius:4px; font-size:0.82rem; }
+  </style>
+</head>
+<body>
+  <h1>Plate Impact Knowledge Evolution Timeline (Oct 1 &ndash; Nov 13, 2026)</h1>
+  <p class="note"><strong>Repository:</strong> Plate Impact Simulation Architecture &middot; <strong>Total Reports:</strong> 29 Studies &middot; <strong>Order:</strong> Chronological (Oldest First)</p>
+
+  <div class="card" style="border-left: 4px solid var(--accent); background: var(--accent-light);">
+    <h3 style="margin-top:0;">The Evolution of Project Knowledge: Decision Chain Summary</h3>
+    <p>This master timeline tracks how the understanding of composite impact physics, numerical stability, and projectile dynamics evolved across 44 days of high-performance explicit FEA modeling on Penn State ROAR:</p>
+    <ol style="margin-bottom:0; font-size:0.92rem;">
+      <li><strong>VUEL Foundation (Oct 1&ndash;6):</strong> Developed and verified user-defined 8-node hex element with J2 plasticity and failure triggers (Stages 0&ndash;6), establishing ghost-element synchronization.</li>
+      <li><strong>Node-Contact &amp; Rim Island Workarounds (Oct 12&ndash;14):</strong> Solved surviving ghost elements in Flat v2 by introducing node-based plate contact. Characterized velocity scaling from 100 to 500 m/s.</li>
+      <li><strong>Plywise Laminates &amp; Contact Thickness Pathology (Oct 16&ndash;23):</strong> Moving from monolithic plates to 20-ply laminates (vp3/vp4) revealed that assigning artificial contact thickness to all ply nodes creates massive kinetic energy blowups (+73% ALLKE) and premature host deaths.</li>
+      <li><strong>Eroding Element Contact (vp5, Oct 23):</strong> Eliminated artificial energy creation by migrating plate-ball contact to an eroding element-based surface (<code>EMBMESH_PLATE_ELEMS</code>).</li>
+      <li><strong>The Inversion Resolution &amp; Ball Test Suites (Oct 26&ndash;31):</strong> Audited apparent ball 'inversion' in bt1/bt2. Extraction of element STATUS proved that 99.8% of inverted hexes were already deleted ghost elements. Rigid projectile modeling adopted as standard (bt3).</li>
+      <li><strong>Projectile Geometry Error Discovery (Nov 2):</strong> Discovered root error in <code>Vals.inp</code>: projectile was 3/4-in diameter instead of the experimental 3/8-in diameter (8&times; mass error). Corrected in <code>vrb_native</code>/<code>vrb_vuel</code>.</li>
+      <li><strong>Through-Thickness Meshing &amp; Overclosure (Nov 5&ndash;6):</strong> In 3-elements-per-ply meshing (NV3), node contact overclosed cohesive interfaces (27,000 dead hosts in inc 1 of <code>nv3_smear</code>). Resolved with element contact in <code>nv3_elem</code> (100 &mu;s in 13.3 h).</li>
+      <li><strong>Fiber-Host Contact Resolution (Nov 10&ndash;13):</strong> Attempted own-ply fiber-host contact via <code>VUINTERACTION</code> in <code>nv3_fh</code>, causing energy explosion. A/B bisection and cluster coupons (<code>cx057b</code>) proved proximity state is not fresh per facet. Dropped own-ply contact, stabilizing production candidate <code>nv3_fhA100</code>.</li>
+    </ol>
+  </div>
+
+  <h2>Report Catalog (Chronological)</h2>
+  <div class="timeline-nav">
+    <a href="#rep-1">01. 10-01</a> <a href="#rep-2">02. 10-01</a> <a href="#rep-3">03. 10-01</a> <a href="#rep-4">04. 10-01</a> <a href="#rep-5">05. 10-01</a> <a href="#rep-6">06. 10-01</a> <a href="#rep-7">07. 10-01</a> <a href="#rep-8">08. 10-06</a> <a href="#rep-9">09. 10-06</a> <a href="#rep-10">10. 10-12</a> <a href="#rep-11">11. 10-12</a> <a href="#rep-12">12. 10-13</a> <a href="#rep-13">13. 10-14</a> <a href="#rep-14">14. 10-14</a> <a href="#rep-15">15. 10-16</a> <a href="#rep-16">16. 10-17</a> <a href="#rep-17">17. 10-17</a> <a href="#rep-18">18. 10-17</a> <a href="#rep-19">19. 10-19</a> <a href="#rep-20">20. 10-20</a> <a href="#rep-21">21. 10-20</a> <a href="#rep-22">22. 10-23</a> <a href="#rep-23">23. 10-28</a> <a href="#rep-24">24. 10-28</a> <a href="#rep-25">25. 10-30</a> <a href="#rep-26">26. 10-31</a> <a href="#rep-27">27. 11-02</a> <a href="#rep-28">28. 11-06</a> <a href="#rep-29">29. 11-13</a>
+  </div>
+
+  <div class="report-list">
+    
+<div class="card" id="rep-1">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+    <div>
+      <span class="badge badge-done">Milestone</span>
+      <span class="note" style="margin-left:8px;"><strong>#01</strong> &middot; 2026-10-01 &middot; <code>VUEL Formulation</code></span>
+    </div>
+    <div>
+      <a href="VUEL_FAILURE_CRITERION_REPORT_2026-10-01.html" style="font-weight:600;">Open Report &rarr;</a>
+    </div>
+  </div>
+  <h3 style="margin:4px 0 8px 0;"><a href="VUEL_FAILURE_CRITERION_REPORT_2026-10-01.html">VUEL Failure Criterion Validation</a></h3>
+  <p style="margin:4px 0; font-size:0.92rem;">Investigated whether Abaqus/Explicit honors user-defined engineering-strain failure triggers in VUEL elements. Confirmed that element deletion and stress-clearing behave correctly under single-element tension and shear benchmarks with EPS_FAIL = 1.0.</p>
+  <p class="note" style="margin-top:6px; font-size:0.8rem;">File: <code>VUEL_FAILURE_CRITERION_REPORT_2026-10-01.html</code></p>
+</div>
+
+<div class="card" id="rep-2">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+    <div>
+      <span class="badge badge-done">Plan</span>
+      <span class="note" style="margin-left:8px;"><strong>#02</strong> &middot; 2026-10-01 &middot; <code>VUEL Formulation</code></span>
+    </div>
+    <div>
+      <a href="VUEL_PLASTIC_FAILURE_STAGE0_PLAN.html" style="font-weight:600;">Open Report &rarr;</a>
+    </div>
+  </div>
+  <h3 style="margin:4px 0 8px 0;"><a href="VUEL_PLASTIC_FAILURE_STAGE0_PLAN.html">Stage 0 Plan: Elastic-Plastic VUEL with Homegrown Failure</a></h3>
+  <p style="margin:4px 0; font-size:0.92rem;">Outlined mathematical formulation and verification roadmap for incorporating additive Green-Lagrange J2 plasticity with radial return mapping into uel/VUEL_failure.for prior to code implementation.</p>
+  <p class="note" style="margin-top:6px; font-size:0.8rem;">File: <code>VUEL_PLASTIC_FAILURE_STAGE0_PLAN.html</code></p>
+</div>
+
+<div class="card" id="rep-3">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+    <div>
+      <span class="badge badge-done">Verified</span>
+      <span class="note" style="margin-left:8px;"><strong>#03</strong> &middot; 2026-10-01 &middot; <code>VUEL Formulation</code></span>
+    </div>
+    <div>
+      <a href="VUEL_PLASTIC_FAILURE_STAGE1_REPORT_2026-10-01.html" style="font-weight:600;">Open Report &rarr;</a>
+    </div>
+  </div>
+  <h3 style="margin:4px 0 8px 0;"><a href="VUEL_PLASTIC_FAILURE_STAGE1_REPORT_2026-10-01.html">Stage 1 Report: Linear-Hardening J2 Plasticity</a></h3>
+  <p style="margin:4px 0; font-size:0.92rem;">Implemented closed-form radial return mapping for von Mises plasticity on VUEL_failure.for. Verified against native Abaqus C3D8R plastic benchmarks under cyclic uniaxial tension and compression.</p>
+  <p class="note" style="margin-top:6px; font-size:0.8rem;">File: <code>VUEL_PLASTIC_FAILURE_STAGE1_REPORT_2026-10-01.html</code></p>
+</div>
+
+<div class="card" id="rep-4">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+    <div>
+      <span class="badge badge-done">Verified</span>
+      <span class="note" style="margin-left:8px;"><strong>#04</strong> &middot; 2026-10-01 &middot; <code>VUEL Formulation</code></span>
+    </div>
+    <div>
+      <a href="VUEL_PLASTIC_FAILURE_STAGE2_REPORT_2026-10-01.html" style="font-weight:600;">Open Report &rarr;</a>
+    </div>
+  </div>
+  <h3 style="margin:4px 0 8px 0;"><a href="VUEL_PLASTIC_FAILURE_STAGE2_REPORT_2026-10-01.html">Stage 2 Report: Engineering-Strain Failure Trigger on Plastic Element</a></h3>
+  <p style="margin:4px 0; font-size:0.92rem;">Coupled plastic flow with the maximum engineering strain failure criterion. Demonstrated that plastic deformation does not corrupt failure detection or premature deletion.</p>
+  <p class="note" style="margin-top:6px; font-size:0.8rem;">File: <code>VUEL_PLASTIC_FAILURE_STAGE2_REPORT_2026-10-01.html</code></p>
+</div>
+
+<div class="card" id="rep-5">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+    <div>
+      <span class="badge badge-done">Verified</span>
+      <span class="note" style="margin-left:8px;"><strong>#05</strong> &middot; 2026-10-01 &middot; <code>VUEL Formulation</code></span>
+    </div>
+    <div>
+      <a href="VUEL_PLASTIC_FAILURE_STAGE3_REPORT_2026-10-01.html" style="font-weight:600;">Open Report &rarr;</a>
+    </div>
+  </div>
+  <h3 style="margin:4px 0 8px 0;"><a href="VUEL_PLASTIC_FAILURE_STAGE3_REPORT_2026-10-01.html">Stage 3 Report: Jacobian Collapse Failure Trigger</a></h3>
+  <p style="margin:4px 0; font-size:0.92rem;">Added props(11)=JAC_FAIL and min(det(F)) evaluation over all 8 Gauss integration points. Successfully catches element geometric inversion under severe compressive impact before negative Jacobian aborts.</p>
+  <p class="note" style="margin-top:6px; font-size:0.8rem;">File: <code>VUEL_PLASTIC_FAILURE_STAGE3_REPORT_2026-10-01.html</code></p>
+</div>
+
+<div class="card" id="rep-6">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+    <div>
+      <span class="badge badge-done">Verified</span>
+      <span class="note" style="margin-left:8px;"><strong>#06</strong> &middot; 2026-10-01 &middot; <code>VUEL Formulation</code></span>
+    </div>
+    <div>
+      <a href="VUEL_PLASTIC_FAILURE_STAGE4_REPORT_2026-10-01.html" style="font-weight:600;">Open Report &rarr;</a>
+    </div>
+  </div>
+  <h3 style="margin:4px 0 8px 0;"><a href="VUEL_PLASTIC_FAILURE_STAGE4_REPORT_2026-10-01.html">Stage 4 Report: Dead-State Hygiene & Energy Bookkeeping</a></h3>
+  <p style="margin:4px 0; font-size:0.92rem;">Fixed two critical state variable bookkeeping bugs in VUEL_failure.for to ensure zero residual stress, zero artificial stiffness, and clean nodal mass conservation after element deletion.</p>
+  <p class="note" style="margin-top:6px; font-size:0.8rem;">File: <code>VUEL_PLASTIC_FAILURE_STAGE4_REPORT_2026-10-01.html</code></p>
+</div>
+
+<div class="card" id="rep-7">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+    <div>
+      <span class="badge badge-done">Verified</span>
+      <span class="note" style="margin-left:8px;"><strong>#07</strong> &middot; 2026-10-01 &middot; <code>VUEL Formulation</code></span>
+    </div>
+    <div>
+      <a href="VUEL_PLASTIC_FAILURE_STAGE5_REPORT_2026-10-01.html" style="font-weight:600;">Open Report &rarr;</a>
+    </div>
+  </div>
+  <h3 style="margin:4px 0 8px 0;"><a href="VUEL_PLASTIC_FAILURE_STAGE5_REPORT_2026-10-01.html">Stage 5 Report: Degradation-Ramp Softening Behavior</a></h3>
+  <p style="margin:4px 0; font-size:0.92rem;">Verified the linear degradation ramp failure model (props(12)=DEGRADE_TIME, props(13)=COMP_RESIDUAL_BULK_FRAC) to eliminate abrupt force shocks during dynamic failure transitions.</p>
+  <p class="note" style="margin-top:6px; font-size:0.8rem;">File: <code>VUEL_PLASTIC_FAILURE_STAGE5_REPORT_2026-10-01.html</code></p>
+</div>
+
+<div class="card" id="rep-8">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+    <div>
+      <span class="badge badge-done">Milestone</span>
+      <span class="note" style="margin-left:8px;"><strong>#08</strong> &middot; 2026-10-06 &middot; <code>Ghost Synchronization</code></span>
+    </div>
+    <div>
+      <a href="VUEL_PLASTIC_FAILURE_STAGE6_REPORT.html" style="font-weight:600;">Open Report &rarr;</a>
+    </div>
+  </div>
+  <h3 style="margin:4px 0 8px 0;"><a href="VUEL_PLASTIC_FAILURE_STAGE6_REPORT.html">Stage 6 Report: Ghost-VUEL Element Synchronization</a></h3>
+  <p style="margin:4px 0; font-size:0.92rem;">Validated the mesher dual-mesh concept on full Flat.inp scale (24,000 VU1 hosts + 24,000 ghost C3D8Rs + 125 fibers). Confirmed that native ghost element deletion tracks VUEL failure within a single frame interval.</p>
+  <p class="note" style="margin-top:6px; font-size:0.8rem;">File: <code>VUEL_PLASTIC_FAILURE_STAGE6_REPORT.html</code></p>
+</div>
+
+<div class="card" id="rep-9">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+    <div>
+      <span class="badge badge-done">Verified</span>
+      <span class="note" style="margin-left:8px;"><strong>#09</strong> &middot; 2026-10-06 &middot; <code>Mesher Verification</code></span>
+    </div>
+    <div>
+      <a href="VERIFICATION_REPORT.html" style="font-weight:600;">Open Report &rarr;</a>
+    </div>
+  </div>
+  <h3 style="margin:4px 0 8px 0;"><a href="VERIFICATION_REPORT.html">Independent Verification Report: Embedded Mesher Toolchain</a></h3>
+  <p style="margin:4px 0; font-size:0.92rem;">Comprehensive 7-step independent audit of the embedded mesher toolchain (mesh round-trip, truss/beam fiber definitions, coordinate transforms, volume fractions, and volume scaling).</p>
+  <p class="note" style="margin-top:6px; font-size:0.8rem;">File: <code>VERIFICATION_REPORT.html</code></p>
+</div>
+
+<div class="card" id="rep-10">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+    <div>
+      <span class="badge badge-done">Done</span>
+      <span class="note" style="margin-left:8px;"><strong>#10</strong> &middot; 2026-10-12 &middot; <code>Plate Impact</code></span>
+    </div>
+    <div>
+      <a href="flat_v2_report.html" style="font-weight:600;">Open Report &rarr;</a>
+    </div>
+  </div>
+  <h3 style="margin:4px 0 8px 0;"><a href="flat_v2_report.html">Flat v2 Impact Run: Full Plate Penetration</a></h3>
+  <p style="margin:4px 0; font-size:0.92rem;">First full 100 us impact simulation of Flatv2.inp on ROAR (job 56286114). The central crater deleted with 0 solver errors (1,357 ghosts deleted of 24,000). Identified the island problem where 85 ghost elements survived within 10 mm of the axis despite all their neighbours being deleted.</p>
+  <p class="note" style="margin-top:6px; font-size:0.8rem;">File: <code>flat_v2_report.html</code></p>
+</div>
+
+<div class="card" id="rep-11">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+    <div>
+      <span class="badge badge-done">Done</span>
+      <span class="note" style="margin-left:8px;"><strong>#11</strong> &middot; 2026-10-12 &middot; <code>Diagnostics</code></span>
+    </div>
+    <div>
+      <a href="flat_v2_diagnostics_report.html" style="font-weight:600;">Open Report &rarr;</a>
+    </div>
+  </div>
+  <h3 style="margin:4px 0 8px 0;"><a href="flat_v2_diagnostics_report.html">Flat v2 Diagnostics: Auditing Surviving Ghost Elements</a></h3>
+  <p style="margin:4px 0; font-size:0.92rem;">Read all 1001 frames of flat_v2.odb (ROAR job 56305969 on run 56286114). Proved surviving ghosts were not a synchronization mismatch: 74 of the 85 surviving ghosts within 10 mm of the axis had intact VU1s because they never met the failure criterion. Confirmed the ball retained 983 of 1000 m/s and entered all 58 surviving islands while alive.</p>
+  <p class="note" style="margin-top:6px; font-size:0.8rem;">File: <code>flat_v2_diagnostics_report.html</code></p>
+</div>
+
+<div class="card" id="rep-12">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+    <div>
+      <span class="badge badge-done">Done</span>
+      <span class="note" style="margin-left:8px;"><strong>#12</strong> &middot; 2026-10-13 &middot; <code>Contact Formulation</code></span>
+    </div>
+    <div>
+      <a href="flat_v2_workarounds_report.html" style="font-weight:600;">Open Report &rarr;</a>
+    </div>
+  </div>
+  <h3 style="margin:4px 0 8px 0;"><a href="flat_v2_workarounds_report.html">Flat v2 Workarounds: Node-Based Contact Surface</a></h3>
+  <p style="margin:4px 0; font-size:0.92rem;">Evaluated 8 contact workarounds on ROAR. Demonstrated that adding a node-based contact surface over all plate nodes deleted all 802 ghost elements within 10 mm of the axis, completely solving the island problem, while whole-ghost contact and penalty stiffness adjustments failed.</p>
+  <p class="note" style="margin-top:6px; font-size:0.8rem;">File: <code>flat_v2_workarounds_report.html</code></p>
+</div>
+
+<div class="card" id="rep-13">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+    <div>
+      <span class="badge badge-done">Done</span>
+      <span class="note" style="margin-left:8px;"><strong>#13</strong> &middot; 2026-10-14 &middot; <code>Velocity Sweep</code></span>
+    </div>
+    <div>
+      <a href="NODE_CONTACT_SPEED_SERIES_REPORT.html" style="font-weight:600;">Open Report &rarr;</a>
+    </div>
+  </div>
+  <h3 style="margin:4px 0 8px 0;"><a href="NODE_CONTACT_SPEED_SERIES_REPORT.html">Node-Contact Speed Series: 100 to 500 m/s Impact</a></h3>
+  <p style="margin:4px 0; font-size:0.92rem;">Systematic speed series (100, 200, 300, 400, 500 m/s) completed to 70 us with 0 solver errors using plate node-contact. Proved ball speed retention scales linearly and ghost islands vanish above 200 m/s (8 islands at 100 m/s, 2 at 200 m/s, 0 at 300-500 m/s).</p>
+  <p class="note" style="margin-top:6px; font-size:0.8rem;">File: <code>NODE_CONTACT_SPEED_SERIES_REPORT.html</code></p>
+</div>
+
+<div class="card" id="rep-14">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+    <div>
+      <span class="badge badge-done">Done</span>
+      <span class="note" style="margin-left:8px;"><strong>#14</strong> &middot; 2026-10-14 &middot; <code>Visualization</code></span>
+    </div>
+    <div>
+      <a href="NODE_CONTACT_SPEED_SERIES_REPORT_VIDEOS.html" style="font-weight:600;">Open Report &rarr;</a>
+    </div>
+  </div>
+  <h3 style="margin:4px 0 8px 0;"><a href="NODE_CONTACT_SPEED_SERIES_REPORT_VIDEOS.html">Node-Contact Speed Series: Wireframe & Video Renders</a></h3>
+  <p style="margin:4px 0; font-size:0.92rem;">Cataloged 30 MP4 videos across all 5 impact speeds (solid status and wireframe passes in sidev, iso, and side views). Established the symmetry-plane vertical wireframe pass (sidev) as the optimal perspective for visualizing fiber stretch and plate shear fracture.</p>
+  <p class="note" style="margin-top:6px; font-size:0.8rem;">File: <code>NODE_CONTACT_SPEED_SERIES_REPORT_VIDEOS.html</code></p>
+</div>
+
+<div class="card" id="rep-15">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+    <div>
+      <span class="badge badge-done">Done</span>
+      <span class="note" style="margin-left:8px;"><strong>#15</strong> &middot; 2026-10-16 &middot; <code>Contact Formulation</code></span>
+    </div>
+    <div>
+      <a href="FIBER_CONTACT_COMPARISON_REPORT.html" style="font-weight:600;">Open Report &rarr;</a>
+    </div>
+  </div>
+  <h3 style="margin:4px 0 8px 0;"><a href="FIBER_CONTACT_COMPARISON_REPORT.html">Fiber Contact Comparison: v500 vs v500*</a></h3>
+  <p style="margin:4px 0; font-size:0.92rem;">Compared 500 m/s ball impact with and without fiber node contact (v500 vs v500*, ROAR jobs 56489085/56489086). Adding 14,192 fiber nodes to ball contact reduced peak fiber nodes inside the ball from 218 to 2, stopping fibers from passing through the projectile, while host deletions rose from 2,389 to 3,548.</p>
+  <p class="note" style="margin-top:6px; font-size:0.8rem;">File: <code>FIBER_CONTACT_COMPARISON_REPORT.html</code></p>
+</div>
+
+<div class="card" id="rep-16">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+    <div>
+      <span class="badge badge-done">Done</span>
+      <span class="note" style="margin-left:8px;"><strong>#16</strong> &middot; 2026-10-17 &middot; <code>Structural Mechanics</code></span>
+    </div>
+    <div>
+      <a href="CURVED_VS_FLAT_REPORT.html" style="font-weight:600;">Open Report &rarr;</a>
+    </div>
+  </div>
+  <h3 style="margin:4px 0 8px 0;"><a href="CURVED_VS_FLAT_REPORT.html">Curved vs Flat Plate Impact Comparison</a></h3>
+  <p style="margin:4px 0; font-size:0.92rem;">Compared 500 m/s ball impact on a concave spherical bowl (radius 0.25 m, rim 5.05 mm raised) vs flat plate (ROAR jobs 56512623/56489086). Curvature increased stiffness: at 100 us the ball retained 457.8 m/s on curved vs 453.3 m/s on flat; ball lost 165.4 J KE on curved vs 182.4 J on flat (17.0 J less), while host deletions rose to 6,588 vs 3,548.</p>
+  <p class="note" style="margin-top:6px; font-size:0.8rem;">File: <code>CURVED_VS_FLAT_REPORT.html</code></p>
+</div>
+
+<div class="card" id="rep-17">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+    <div>
+      <span class="badge badge-done">Milestone</span>
+      <span class="note" style="margin-left:8px;"><strong>#17</strong> &middot; 2026-10-17 &middot; <code>Meshing Architecture</code></span>
+    </div>
+    <div>
+      <a href="PLYWISE_VS_SOLID_REPORT.html" style="font-weight:600;">Open Report &rarr;</a>
+    </div>
+  </div>
+  <h3 style="margin:4px 0 8px 0;"><a href="PLYWISE_VS_SOLID_REPORT.html">Plywise Laminate vs Solid Host Representation</a></h3>
+  <p style="margin:4px 0; font-size:0.92rem;">Evaluated 8-ply cohesive laminate against continuous 10-layer solid host at 500 m/s (ROAR jobs 56525373/56525375). At 100 us on the flat plate, the ball moved at 457.8 m/s on plywise vs 453.3 m/s on solid (+4.5 m/s), deleting 3,923 host elements vs 3,548 on solid, exhibiting realistic inter-ply cohesive delamination.</p>
+  <p class="note" style="margin-top:6px; font-size:0.8rem;">File: <code>PLYWISE_VS_SOLID_REPORT.html</code></p>
+</div>
+
+<div class="card" id="rep-18">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+    <div>
+      <span class="badge badge-done">Done</span>
+      <span class="note" style="margin-left:8px;"><strong>#18</strong> &middot; 2026-10-17 &middot; <code>Diagnostics</code></span>
+    </div>
+    <div>
+      <a href="HOST_FAILURE_ANALYSIS_REPORT.html" style="font-weight:600;">Open Report &rarr;</a>
+    </div>
+  </div>
+  <h3 style="margin:4px 0 8px 0;"><a href="HOST_FAILURE_ANALYSIS_REPORT.html">Host Failure Analysis: Timing of Ghost vs VUEL Failure</a></h3>
+  <p style="margin:4px 0; font-size:0.92rem;">Analyzed timing of VUEL failure vs ghost deletion across 500 m/s runs. Found that 344 (flat) and 350 (concave) VUEL elements failed at t=0 before contact in plywise runs due to initial constraint state, whereas ghost deletion lagged; identified that 82% to 92% of fiber nodes become orphaned as surrounding hosts delete.</p>
+  <p class="note" style="margin-top:6px; font-size:0.8rem;">File: <code>HOST_FAILURE_ANALYSIS_REPORT.html</code></p>
+</div>
+
+<div class="card" id="rep-19">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+    <div>
+      <span class="badge badge-done">Milestone</span>
+      <span class="note" style="margin-left:8px;"><strong>#19</strong> &middot; 2026-10-19 &middot; <code>Material Modeling</code></span>
+    </div>
+    <div>
+      <a href="MATRIX_MATERIAL_REPORT.html" style="font-weight:600;">Open Report &rarr;</a>
+    </div>
+  </div>
+  <h3 style="margin:4px 0 8px 0;"><a href="MATRIX_MATERIAL_REPORT.html">Stage 8 Report: Ductile-Damage Elastic-Plastic Matrix VUEL</a></h3>
+  <p style="margin:4px 0; font-size:0.92rem;">Implemented Stage 8 matrix material in uel/VUEL_material.for (linear J2 plasticity, ductile initiation at 0.1 strain, displacement-based damage evolution). Matched native Abaqus C3D8R across 6 of 6 single-element test cases (at 1000/s and 1/s) within < 1% pre-softening stress and <= 0.35% total dissipation difference.</p>
+  <p class="note" style="margin-top:6px; font-size:0.8rem;">File: <code>MATRIX_MATERIAL_REPORT.html</code></p>
+</div>
+
+<div class="card" id="rep-20">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+    <div>
+      <span class="badge badge-warn">Warning</span>
+      <span class="note" style="margin-left:8px;"><strong>#20</strong> &middot; 2026-10-20 &middot; <code>Validation</code></span>
+    </div>
+    <div>
+      <a href="VALS_PLYWISE_VUEL_VS_NATIVE_REPORT.html" style="font-weight:600;">Open Report &rarr;</a>
+    </div>
+  </div>
+  <h3 style="margin:4px 0 8px 0;"><a href="VALS_PLYWISE_VUEL_VS_NATIVE_REPORT.html">Vals 20-Ply Laminate: VUEL vs Native Baseline (vp3)</a></h3>
+  <p style="margin:4px 0; font-size:0.92rem;">First 20-ply Valerie laminate run (1000 m/s, ROAR jobs 56574395/56574396). Both models perforated, but VUEL lost 3.4x more host elements (31.2% vs 9.2%) and fiber nodes displaced up to 290 mm because fibers lacked damage evolution and could not delete.</p>
+  <p class="note" style="margin-top:6px; font-size:0.8rem;">File: <code>VALS_PLYWISE_VUEL_VS_NATIVE_REPORT.html</code></p>
+</div>
+
+<div class="card" id="rep-21">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+    <div>
+      <span class="badge badge-warn">Warning</span>
+      <span class="note" style="margin-left:8px;"><strong>#21</strong> &middot; 2026-10-20 &middot; <code>Pathology</code></span>
+    </div>
+    <div>
+      <a href="VALS_PLYWISE_DELETION_RERUN_REPORT.html" style="font-weight:600;">Open Report &rarr;</a>
+    </div>
+  </div>
+  <h3 style="margin:4px 0 8px 0;"><a href="VALS_PLYWISE_DELETION_RERUN_REPORT.html">Vals Plywise Deletion Rerun: Energy Generation Pathology (vp4)</a></h3>
+  <p style="margin:4px 0; font-size:0.92rem;">Added element deletion to all materials in 20-ply Valerie decks (vp4, ROAR jobs 56641617/56641618). Eliminated fiber displacement blow-up, but revealed non-conservation of energy: ALLKE peaked at 6.1 J (+73% over initial kinetic energy in native, +63% in VUEL; note: raw ODB energies uncorrected for 1000x factor).</p>
+  <p class="note" style="margin-top:6px; font-size:0.8rem;">File: <code>VALS_PLYWISE_DELETION_RERUN_REPORT.html</code></p>
+</div>
+
+<div class="card" id="rep-22">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+    <div>
+      <span class="badge badge-done">Milestone</span>
+      <span class="note" style="margin-left:8px;"><strong>#22</strong> &middot; 2026-10-23 &middot; <code>Contact Formulation</code></span>
+    </div>
+    <div>
+      <a href="VALS_VP5_ERODING_CONTACT_REPORT.html" style="font-weight:600;">Open Report &rarr;</a>
+    </div>
+  </div>
+  <h3 style="margin:4px 0 8px 0;"><a href="VALS_VP5_ERODING_CONTACT_REPORT.html">Vals Native Eroding Contact Rerun (vp5)</a></h3>
+  <p style="margin:4px 0; font-size:0.92rem;">Replaced node contact with an eroding element-based host surface (EMBMESH_PLATE_ELEMS, ROAR job 56651971). ALLKE peak dropped from +73% to +6.8% over initial kinetic energy, eliminating the energy blowup. Ball eroded heavily: 3,161 of 18,500 elements (17.1%) deleted by 70 us, and host deletions rose from 517 to 1,351.</p>
+  <p class="note" style="margin-top:6px; font-size:0.8rem;">File: <code>VALS_VP5_ERODING_CONTACT_REPORT.html</code></p>
+</div>
+
+<div class="card" id="rep-23">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+    <div>
+      <span class="badge badge-done">Done</span>
+      <span class="note" style="margin-left:8px;"><strong>#23</strong> &middot; 2026-10-28 &middot; <code>Ball Tests</code></span>
+    </div>
+    <div>
+      <a href="VALS_BT1_BALL_TESTS_REPORT.html" style="font-weight:600;">Open Report &rarr;</a>
+    </div>
+  </div>
+  <h3 style="margin:4px 0 8px 0;"><a href="VALS_BT1_BALL_TESTS_REPORT.html">Vals Ball Tests Suite 1: Single-Variable Variants (bt1)</a></h3>
+  <p style="margin:4px 0; font-size:0.92rem;">Tested 6 variants against vp5 (b1-b6: beam surfaces, O-grid, D4 rate fix, alternate steels) over 12 us. All showed steady ball erosion of 80-90 elements/us starting at 1.5-1.9 us; D4 (b4) reduced ball deletions by 8% (840 vs 913), but none halted erosion. Carries correction note: inversion metric evaluated deleted ghost elements.</p>
+  <p class="note" style="margin-top:6px; font-size:0.8rem;">File: <code>VALS_BT1_BALL_TESTS_REPORT.html</code></p>
+</div>
+
+<div class="card" id="rep-24">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+    <div>
+      <span class="badge badge-done">Corrected</span>
+      <span class="note" style="margin-left:8px;"><strong>#24</strong> &middot; 2026-10-28 &middot; <code>Ball Tests</code></span>
+    </div>
+    <div>
+      <a href="VALS_BT2_BALL_TESTS_REPORT.html" style="font-weight:600;">Open Report &rarr;</a>
+    </div>
+  </div>
+  <h3 style="margin:4px 0 8px 0;"><a href="VALS_BT2_BALL_TESTS_REPORT.html">Vals Ball Tests Suite 2: Beam Fibers, D4, and Matrix Degradation (bt2)</a></h3>
+  <p style="margin:4px 0; font-size:0.92rem;">Tested beam vs truss fibers, Johnson-Cook D4=+0.002, and max degradation 0.8 across 6 decks at 1000 and 500 m/s (c1-c3). Beam decks deleted 63-68 fibers at 1000 m/s vs 11-16 for truss, but ball deletion remained 4.2-4.5% (1000 m/s) and 1.8-2.0% (500 m/s). Carries correction note: inversion metric evaluated deleted ghost elements.</p>
+  <p class="note" style="margin-top:6px; font-size:0.8rem;">File: <code>VALS_BT2_BALL_TESTS_REPORT.html</code></p>
+</div>
+
+<div class="card" id="rep-25">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+    <div>
+      <span class="badge badge-done">Done</span>
+      <span class="note" style="margin-left:8px;"><strong>#25</strong> &middot; 2026-10-30 &middot; <code>Visualization</code></span>
+    </div>
+    <div>
+      <a href="D6_PAPER_MATERIALS_VIDEO.html" style="font-weight:600;">Open Report &rarr;</a>
+    </div>
+  </div>
+  <h3 style="margin:4px 0 8px 0;"><a href="D6_PAPER_MATERIALS_VIDEO.html">Plate Impact d6: Valerie Paper Matched Materials Video</a></h3>
+  <p style="margin:4px 0; font-size:0.92rem;">Standalone video presentation of the 100 us d6 run (ROAR job 56873219) with Valerie paper Table 2 properties and a rigid non-deformable ball. Demonstrated stable plate penetration without numerical ball breakdown, showing wide-angle and close-up symmetry-plane views.</p>
+  <p class="note" style="margin-top:6px; font-size:0.8rem;">File: <code>D6_PAPER_MATERIALS_VIDEO.html</code></p>
+</div>
+
+<div class="card" id="rep-26">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+    <div>
+      <span class="badge badge-done">Milestone</span>
+      <span class="note" style="margin-left:8px;"><strong>#26</strong> &middot; 2026-10-31 &middot; <code>Ball Tests</code></span>
+    </div>
+    <div>
+      <a href="VALS_BT3_BALL_TESTS_REPORT.html" style="font-weight:600;">Open Report &rarr;</a>
+    </div>
+  </div>
+  <h3 style="margin:4px 0 8px 0;"><a href="VALS_BT3_BALL_TESTS_REPORT.html">Vals Ball Tests Suite 3: Projectile Models & Inversion Resolution (bt3)</a></h3>
+  <p style="margin:4px 0; font-size:0.92rem;">Evaluated the bt3 simulation suite (d1-d7) at 1000 m/s. Proved ball inversion was a ghost-element artifact (609 of 610 hexes in b4 and 618 of 619 in c2 were already deleted before non-positive Jacobian). Evaluated coupon matrix t052 (01-12), elastic ball solver collapse in d3 at 22.77 us, Weldox 460E steel in d4 (17.3% ball deletion, 1,443 host deletions), and rigid ball models (d5-d7, 100 us ALLKE retention 87.3% to 88.5%).</p>
+  <p class="note" style="margin-top:6px; font-size:0.8rem;">File: <code>VALS_BT3_BALL_TESTS_REPORT.html</code></p>
+</div>
+
+<div class="card" id="rep-27">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+    <div>
+      <span class="badge badge-done">Milestone</span>
+      <span class="note" style="margin-left:8px;"><strong>#27</strong> &middot; 2026-11-02 &middot; <code>Geometry Fix</code></span>
+    </div>
+    <div>
+      <a href="VALS_BALL_SIZE_FIX_REPORT.html" style="font-weight:600;">Open Report &rarr;</a>
+    </div>
+  </div>
+  <h3 style="margin:4px 0 8px 0;"><a href="VALS_BALL_SIZE_FIX_REPORT.html">Vals Projectile Geometry Correction: 3/4-in vs 3/8-in Ball Error</a></h3>
+  <p style="margin:4px 0; font-size:0.92rem;">Discovered that Vals.inp defined an oversized 3/4-inch diameter projectile (3546.1 J) instead of the experimental 3/8-inch ball (469.2 J, 8.0x mass difference). Evaluated 70 us corrected impact at 1028 m/s: native C3D8R deleted 611 of 80,500 host cells (0.76%), and VUEL deleted 1,222 of 161,000 sub-elements (611 host cell pairs, 0.76%), compared to 1,704 host cells deleted (2.12%) in 3/4-inch d6 at 70 us.</p>
+  <p class="note" style="margin-top:6px; font-size:0.8rem;">File: <code>VALS_BALL_SIZE_FIX_REPORT.html</code></p>
+</div>
+
+<div class="card" id="rep-28">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+    <div>
+      <span class="badge badge-done">Milestone</span>
+      <span class="note" style="margin-left:8px;"><strong>#28</strong> &middot; 2026-11-06 &middot; <code>Through-Thickness</code></span>
+    </div>
+    <div>
+      <a href="NEWVALS_NV3_CONTACT_EVOLUTION_REPORT.html" style="font-weight:600;">Open Report &rarr;</a>
+    </div>
+  </div>
+  <h3 style="margin:4px 0 8px 0;"><a href="NEWVALS_NV3_CONTACT_EVOLUTION_REPORT.html">NewVals NV3 Contact Evolution: Overclosure Pathology & Eroding Contact</a></h3>
+  <p style="margin:4px 0; font-size:0.92rem;">Diagnosed pre-impact host failure pathology in 3-elements-per-ply laminate nv3_smear (27,293 host deaths in increment 1) caused by 0.2117 mm node contact thickness overclosing cohesive interfaces. Resolved via eroding element-based contact in nv3_elem: completed 100 us in 13 h 20 min (48,004 s) with 0 pre-impact deaths, deleting 39,016 of 435,000 host hexes (8.97%) and 73 of 524,180 fiber trusses (0.014%).</p>
+  <p class="note" style="margin-top:6px; font-size:0.8rem;">File: <code>NEWVALS_NV3_CONTACT_EVOLUTION_REPORT.html</code></p>
+</div>
+
+<div class="card" id="rep-29">
+  <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+    <div>
+      <span class="badge badge-done">Milestone</span>
+      <span class="note" style="margin-left:8px;"><strong>#29</strong> &middot; 2026-11-13 &middot; <code>Fiber-Host Contact</code></span>
+    </div>
+    <div>
+      <a href="FIBER_HOST_CONTACT_REPORT.html" style="font-weight:600;">Open Report &rarr;</a>
+    </div>
+  </div>
+  <h3 style="margin:4px 0 8px 0;"><a href="FIBER_HOST_CONTACT_REPORT.html">Fiber-Host Contact Architecture: VUINTERACTION & Resolution</a></h3>
+  <p style="margin:4px 0; font-size:0.92rem;">Investigated fiber-host contact architecture for NV3 composite plates. Diagnostic A/B bisection proved native other-ply contact (nv3_fhA, 380 pairs) is 100% stable (468.8 J ETOTAL), while own-ply VUINTERACTION (nv3_fhB, 20 pairs) triggered kinetic energy explosion (25,710 J at 1.9 us in nv3_fh). Physical ROAR coupons (cx057b) proved VUINTERACTION state is not fresh across node-facet pairs. Dropped own-ply contact; submitted 100 us production run nv3_fhA100.</p>
+  <p class="note" style="margin-top:6px; font-size:0.8rem;">File: <code>FIBER_HOST_CONTACT_REPORT.html</code></p>
+</div>
+
+  </div>
+
+  <hr style="border:0; border-top:1px solid var(--line); margin:32px 0;">
+  <p class="note" style="text-align:center;">Generated automatically by <code>build_t060_reports.py</code> &middot; Plate Impact Project &middot; Penn State University</p>
+</body>
+</html>
